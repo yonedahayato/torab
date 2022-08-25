@@ -8,14 +8,15 @@
 </body>
 
 <script>
-for (let i = 1; i < 3; i++){
-  console.log("https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" + i + ".png");
+const images = [];
+for (let i = 1; i <= 54; i++){
+  images.push("https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" + i + ".png");
 }
 
 const imageArea = document.getElementById('imageArea');
-const images = ['https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust2.png', 
-                'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png',
-                'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust4.png'];
+// const images = ['https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust2.png', 
+//                 'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png',
+//                 'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust4.png'];
 
 const imageNo = Math.floor( Math.random() * images.length)
 imageArea.src = images[imageNo];
