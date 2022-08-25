@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea' width=50%>
+  <div>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea' width=50%>
+  </div>
 </body>
 
 <script>
@@ -14,9 +16,25 @@ for (let i = 1; i <= 54; i++){
   images.push("https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" + i + ".png");
 }
 
+// カードをシャッフル
+function arrayShuffle(array) {
+  for(var i = (array.length - 1); 0 < i; i--){
+
+    // 0〜(i+1)の範囲で値を取得
+    var r = Math.floor(Math.random() * (i + 1));
+
+    // 要素の並び替えを実行
+    var tmp = array[i];
+    array[i] = array[r];
+    array[r] = tmp;
+  }
+  return array;
+}
+
+const shuffled = arrayShuffle(images);
 const imageArea = document.getElementById('imageArea');
 const imageNo = Math.floor( Math.random() * images.length)
 
-imageArea.src = images[imageNo];
+imageArea.src = shuffled[imageNo];
 </script>
 </html>
