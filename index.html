@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea'>
+  <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea' width=50%>
 </body>
 
 <script>
@@ -14,11 +14,8 @@ for (let i = 1; i <= 54; i++){
 }
 
 const imageArea = document.getElementById('imageArea');
-// const images = ['https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust2.png', 
-//                 'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png',
-//                 'https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust4.png'];
-
 const imageNo = Math.floor( Math.random() * images.length)
+
 imageArea.src = images[imageNo];
 </script>
 </html>
