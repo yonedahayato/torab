@@ -4,16 +4,26 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <div>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea' width=50%>
+  <h1>Declare Thinking Beta</h1>
+  <div id="field">
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea0' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea1' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea2' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea3' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea4' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea5' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea6' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea7' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea8' width=9%>
+    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea9' width=9%>
   </div>
 </body>
 
 <script>
 //　54 枚のカードを用意
-const images = [];
+const images = {};
 for (let i = 1; i <= 54; i++){
-  images.push("https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" + i + ".png");
+  images[i] = "https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" + i + ".png"
 }
 
 // カードをシャッフル
@@ -31,10 +41,19 @@ function arrayShuffle(array) {
   return array;
 }
 
-const shuffled = arrayShuffle(images);
-const imageArea = document.getElementById('imageArea');
-const imageNo = Math.floor( Math.random() * images.length)
+const shuffled = arrayShuffle(Object.keys(images));
 
-imageArea.src = shuffled[imageNo];
+const hand_num = 10;
+const hands = shuffled.slice(0, hand_num).sort((a, b) => a - b);
+
+for (let i = 0; i < hand_num; i++) {
+  const imageArea = document.getElementById('imageArea' + i);
+  imageArea.src = images[hands[i]];
+}
+
+// const imageArea = document.getElementById('imageArea0');
+// const imageNo = Math.floor( Math.random() * Object.keys(images).length)
+
+// imageArea.src = images[imageNo];
 </script>
 </html>
