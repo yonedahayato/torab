@@ -5,6 +5,8 @@
 </head>
 <body>
   <h1>Declare Thinking Beta</h1>
+
+  <h2>Your Hand</h2>
   <div id="field">
     <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea0' width=9%>
     <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea1' width=9%>
@@ -17,6 +19,23 @@
     <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea8' width=9%>
     <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea9' width=9%>
   </div>
+  <p>hand_id: </p><p id="hand_id_field"></p>
+
+  <h2>Your Think</h2>
+  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfC0xE7a2kPEhSJLLuwl261P5l6kULKPzpeqdPcgZCPerV8IQ/formResponse" 
+        method="POST"
+        target="hidden_iframe"
+        onsubmit="submitted=true;">
+
+    <input type="hidden" name="entry.64674262" value="" id="hand_id_form">
+
+    <input type="radio" name="entry.88364419" value="declare">Declare
+    <input type="radio" name="entry.88364419" value="not declare">Not Declare<br>
+    <br>
+    <button type="submit">Submit</button>
+    
+  </form>
+  <h2>Our Think</h2>
 </body>
 
 <script>
@@ -45,15 +64,27 @@ const shuffled = arrayShuffle(Object.keys(images));
 
 const hand_num = 10;
 const hands = shuffled.slice(0, hand_num).sort((a, b) => a - b);
+var hand_id = "";
 
 for (let i = 0; i < hand_num; i++) {
   const imageArea = document.getElementById('imageArea' + i);
   imageArea.src = images[hands[i]];
+  hand_id += hands[i] + ",";
 }
 
-// const imageArea = document.getElementById('imageArea0');
-// const imageNo = Math.floor( Math.random() * Object.keys(images).length)
+const handIdArea = document.getElementById('hand_id_field');
+handIdArea.textContent = hand_id
 
-// imageArea.src = images[imageNo];
+const handIdFormArea = document.getElementById('hand_id_form');
+handIdFormArea.value = hand_id
+
 </script>
+
+<iframe
+    name="hidden_iframe"
+    id="hidden_iframe"
+    style="display: none"
+    onload="if(submitted){location.reload()}"
+>
+</iframe>
 </html>
