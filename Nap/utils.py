@@ -19,6 +19,7 @@ class Suit(IntEnum):
 class Card:
     """Card class.
     カードクラス
+    スートの比較はしない
 
     Attributes:
         num (int): カードの数字
@@ -37,29 +38,30 @@ class Card:
     def __eq__(self, other):
         """Equal.
         カードの強さが同じかどうか
+        
         """
-        return self.num == other.num and self.suit == other.suit
+        return self.num == other.num
     
     def __gt__(self, other):
         """Greater than.
-        カードの強さが他の宣言より強いかどうか
+        カードの強さが他のカードより強いかどうか
         """
-        return self.num > other.num or (self.num == other.num and self.suit > other.suit)
+        return self.num > other.num
     
     def __ge__(self, other):
         """Greater than or equal.
-        カードの強さが他の宣言以上かどうか
+        カードの強さが他のカード以上かどうか
         """
-        return self.num > other.num or (self.num == other.num and self.suit >= other.suit)
+        return self.num >= other.num
     
     def __lt__(self, other):
         """Less than.
-        カードの強さが他の宣言より弱いかどうか
+        カードの強さが他のカードより弱いかどうか
         """
-        return self.num < other.num or (self.num == other.num and self.suit < other.suit)
+        return self.num < other.num
     
     def __le__(self, other):
         """Less than or equal.
-        カードの強さが他の宣言以下かどうか
+        カードの強さが他のカード以下かどうか
         """
-        return self.num < other.num or (self.num == other.num and self.suit <= other.suit)
+        return self.num <= other.num

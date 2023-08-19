@@ -1,11 +1,13 @@
-# import pytest
-
 import sys
 from pathlib import Path
+
 filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
 sys.path.append(str(parentdir))
-from player import Suit
+
+from utils import (
+    Suit,
+)
 
 def test_suit():
     """Test suit.

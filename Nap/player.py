@@ -7,10 +7,15 @@ class Declear:
     def __init__(self, num: int = 13, suit: Suit = Suit.club) -> None:
         """Constructor.
         
+        宣言ができるのは、13 以上の数字のみ
+        
         Args:
             num (int): カードの数字
             suit (Suit): カードのスート
         """
+        if num < 13:
+            raise ValueError("宣言ができるのは、13 以上の数字のみ")
+
         self.num = num
         self.suit = suit
 
