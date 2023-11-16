@@ -1,8 +1,19 @@
-from utils import Suit
+from utils import (
+    Suit,
+    Card,
+    Field,
+)
+
+import random
 
 class Declear:
     """Declear class.
     宣言クラス
+    
+    Note:
+        宣言は、ナポレオンになりたいプレイヤーが行う
+        宣言の強さは、(ゲーム内で獲得できるであろう)枚数と(切り札となる)スートの強さで決まる
+        ナポレオンになりたくないプレイヤーは、宣言を行わない (pass を宣言する)
     """
     def __init__(self, num: int = 13, suit: Suit = Suit.club) -> None:
         """Constructor.
@@ -57,31 +68,50 @@ class Player:
         is_nap (bool): ナポレオンかどうか
         is_adjutant (bool): 副官かどうか
         is_allied (bool): 連合軍かどうか
+        
+    Note:
+        プレイヤーは、ナポレオン、副官、連合軍のいずれかである
+        プレイヤーが行うことができることは、以下の通り
+            1. 手札を受け取る
+            2. 宣言する
+            3. カードを出す
     """
 
     is_nap = False
     is_adjutant = False
     is_allied = False
 
-    def __init__(self):
+    def __init__(self, name: str = "Unknown", cpu: bool = False):
         """Constructor.
+        
+        Args:
+            name (str): プレイヤーの名前
+            cpu (bool): CPU かどうか
         """
 
         self.cards = []
+        self.name = name
+        self.cpu = cpu
 
-    def take_hand(self, cards):
+    def __str__(self):
+        """String.
+        """
+        return self.name
+
+    def take_hand(self, cards: list[Card]):
         """Take hand.
         Args:
             cards (list): List of cards.
         """
         self.cards = cards
 
-    def declare(self, before_declare: Declear = None) -> Declear:
+    def declare(self, strong_declear: Declear, is_random: bool = False) -> Declear:
         """Declare.
         宣言する
         
         Args:
-            before_declare (Declear): 前の宣言
+            strong_declear (Declear): 一番強い宣言
+            is_random (bool): ランダムに宣言するかどうか
 
         Returns:
             Declear: 宣言
@@ -89,12 +119,32 @@ class Player:
         Raises:
             ValueError: 宣言が弱い
         """
-        declear = Declear()
 
-        if before_declare is None:
-            return declear
-
-        if declear <= before_declare:
-            raise ValueError("宣言が弱いです")
+        if is_random:
+            num = random.randint(13, 20)
+            suit = random.choice([Suit.spade, Suit.heart, Suit.diamond, Suit.club])
+        else:
+            num = int(input("宣言する数字を入力してください: "))
+            suit = int(input("宣言するスートを入力してください: "))
+            
+        declear = Declear(num, suit)
 
         return declear
+    
+    def play_card(self, field: Field, is_random: bool = False) -> Card:
+        """Play card.
+        カードを出す
+        
+        Args:
+            field (Field): フィールド
+            is_random (bool): ランダムにカードを出すかどうか
+            
+        Returns:
+            Card: カード
+        """
+        if is_random:
+            card = random.choice(self.cards)
+        else:
+            card = int(input("出すカードを入力してください: "))
+
+        return card
