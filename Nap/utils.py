@@ -182,7 +182,7 @@ class Field:
         """
         self.cards.append(card)
         
-    def reset(self):
+    def clear(self):
         """Reset a field.
         
         場のカードをリセットする

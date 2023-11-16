@@ -77,9 +77,10 @@ class Game:
     def play(self):
         """Play a game.
         """
-        track = Track(self.deck, self.players, self.field)
         for _ in range(10):
+            track = Track(self.deck, self.players, self.field)
             track.play()
+            self.field.clear()
 
 class Track:
     """1 回のゲームを管理するクラス
@@ -91,16 +92,20 @@ class Track:
         self.players = players
         self.field = field
         
-    def play(self, is_random: bool = False, display: bool = False):
+    def play(self, is_random: bool = False, display: bool = False, is_first: bool = False):
         """Play a trak.
         
         Args:
             is_random (bool): ランダムにカードを出すかどうか
             display (bool): 出したカードを表示するかどうか
+            is_first (bool): 最初のプレイかどうか
 
         Note:
-            1. 各プレイヤーがカードを出す
-            2. 出されたカードの強さを比較する
+            トラックの流れは以下の通り
+                1. 各プレイヤーがカードを出す
+                2. 出されたカードの強さを比較する
+
+            最初のトラックは、特殊なカードの効果が発動しない
         """
         for player in self.players:
             card = player.play_card(self.field, is_random = is_random)
