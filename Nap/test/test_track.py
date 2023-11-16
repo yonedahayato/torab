@@ -23,12 +23,12 @@ def test_track():
     """Test track.
     トラックのテスト
     """
-    plyer_num = 5
-    plyers = [Player() for _ in range(plyer_num)]
+    player_names = ["A", "B", "C", "D"]
+    players = [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
     deck = Deck()
     field = Field()
 
-    game = Game(players = plyers, deck = deck, field = field)
+    game = Game(players = players, deck = deck, field = field)
     game.shuffle()
     game.deal()
     

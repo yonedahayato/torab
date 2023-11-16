@@ -105,5 +105,5 @@ class Track:
         for player in self.players:
             card = player.play_card(self.field, is_random = is_random)
             if display:
-                print(f"{player}が{card}を出した")
+                print(f"{player} が {card} を出した")
             self.field.put_card(card)

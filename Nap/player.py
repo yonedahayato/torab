@@ -71,10 +71,13 @@ class Player:
         
     Note:
         プレイヤーは、ナポレオン、副官、連合軍のいずれかである
+
         プレイヤーが行うことができることは、以下の通り
             1. 手札を受け取る
             2. 宣言する
             3. カードを出す
+        
+        CPU は、ランダムに宣言する
     """
 
     is_nap = False
@@ -103,7 +106,13 @@ class Player:
         Args:
             cards (list): List of cards.
         """
-        self.cards = cards
+        self.cards = sorted(cards)
+        
+    def show_hand(self):
+        """Show hand.
+        手札を表示する
+        """
+        print({i: str(c)for i, c in enumerate(self.cards)})
 
     def declare(self, strong_declear: Declear, is_random: bool = False) -> Declear:
         """Declare.
@@ -142,9 +151,12 @@ class Player:
         Returns:
             Card: カード
         """
-        if is_random:
+        if not self.cpu:
+            self.show_hand()
+            card_id = int(input("出すカードを入力してください: "))
+            card = self.cards.pop(card_id)
+
+        elif is_random or self.cpu:
             card = random.choice(self.cards)
-        else:
-            card = int(input("出すカードを入力してください: "))
 
         return card
