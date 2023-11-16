@@ -153,7 +153,10 @@ class Player:
         """
         if not self.cpu:
             self.show_hand()
-            card_id = int(input("出すカードを入力してください: "))
+            try:
+                card_id = int(input("出すカードを入力してください: "))
+            except ValueError:
+                raise ValueError("カードの番号を入力してください")
             card = self.cards.pop(card_id)
 
         elif is_random or self.cpu:

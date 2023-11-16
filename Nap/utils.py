@@ -163,29 +163,55 @@ class Field:
     
     ゲームのフィールドを管理するクラス
     
+    Attributes:
+        widow (list): ウィドー
+        cards (dict): プレイヤーが出したカード
+        trash (list): 捨て札
+        trump (Suit): 切り札
+    
     Note:
         フィールには、以下の要素がある
         1. ウィドー (widow)
         2. プレイヤーが出したカード (cards)
         3. 出し終わったカード (trash)
+        4. 切り札 (trump)
+            切り札とは、ナポレオンが宣言した強いスートのこと
     """
     trash = []
-    cards = []
+    cards = {}
+
+    def set_trump(self, trump: Suit):
+        """Set a trump.
+        """
+        self.trump = trump
 
     def set_widow(self, widow: list[Card]):
         """Set a widow.
         """
         self.widow = widow
         
-    def put_card(self, card: Card):
+    def put_card(self, name: str, card: Card):
         """Put a card.
+        
+        プレイヤーがカードを出す
+        
+        Args:
+            name (str): Name of a player.
+            card (Card): A card.
         """
-        self.cards.append(card)
+        self.cards[name] = card
+        
+    def show(self):
+        """Show a field.
+        """
+        print(f"ウィドー: {[str(c) for c in self.widow]}")
+        print(f"場: {[name + ' : ' + str(c) for name, c in self.cards.items()]}")
+        print(f"捨て札: {[str(c) for c in self.trash]}")
         
     def clear(self):
         """Reset a field.
         
         場のカードをリセットする
         """
-        self.trash.extend(self.cards)
-        self.cards = []
+        self.trash.extend(self.cards.values())
+        self.cards = {}

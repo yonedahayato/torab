@@ -8,6 +8,7 @@ sys.path.append(str(parentdir))
 from utils import (
     Deck,
     Field,
+    Suit,
 )
 
 from game import (
@@ -31,6 +32,7 @@ def test_track():
     game = Game(players = players, deck = deck, field = field)
     game.shuffle()
     game.deal()
+    game.field.set_trump(Suit.spade)
     
     plyers = game.players
     field = game.field

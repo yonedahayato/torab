@@ -1,4 +1,5 @@
 import random
+from typing import Any
 
 from player import Player
 from utils import Suit, Card
@@ -28,6 +29,8 @@ class Game:
                 1. デッキをシャッフルする
                 2. デッキからカードを配る
                 3. プレイヤーが強さを宣言する
+                    a. この宣言にて、ナポレオンが決まる
+                    b. ナポレオンが宣言したスートが切り札となる
                 4. Track を 10回行う
                     a. プレイヤーがカードを出す
                     b. 出されたカードの強さを比較する
@@ -84,6 +87,11 @@ class Game:
 
 class Track:
     """1 回のゲームを管理するクラス
+    
+    Note:
+        このクラスでは、以下のことを行う
+        1. トラックの処理の実行
+        2. そのトラックにおける勝者の決定
     """
     def __init__(self, players: list[Player], field: Field):
         """Constructor.
@@ -110,4 +118,22 @@ class Track:
             card = player.play_card(self.field, is_random = is_random)
             if display:
                 print(f"{player} が {card} を出した")
-            self.field.put_card(card)
+
+            self.field.put_card(player.name, card)
+
+        print(f"\n場に出たカードは {[name + ' : ' + str(c) for name, c in self.field.cards.items()]} です")
+        self.field.show()
+        
+        winner = self.winner()
+        
+    def winner(self) -> Player:
+        """Decide a winner.
+        勝者を決める
+        
+        Returns:
+            Player: 勝者
+            
+        Note:
+            各プレイヤーがフィールドに出したカードの強さを比較して、勝者を決める
+        """
+        return max(self.field.cards, key = lambda x: self.field.cards[x].strength)
