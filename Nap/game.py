@@ -85,10 +85,9 @@ class Game:
 class Track:
     """1 回のゲームを管理するクラス
     """
-    def __init__(self, deck: Deck, players: list[Player], field: Field):
+    def __init__(self, players: list[Player], field: Field):
         """Constructor.
         """
-        self.deck = deck
         self.players = players
         self.field = field
         

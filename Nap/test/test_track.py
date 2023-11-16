@@ -33,7 +33,8 @@ def test_track():
     game.deal()
     
     plyers = game.players
-    track = Track(players = plyers, deck = deck, field = field)
+    field = game.field
+    track = Track(players = plyers, field = field)
     track.play(is_random=True, display=True)
 
 if __name__ == '__main__':
