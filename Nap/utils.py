@@ -201,6 +201,47 @@ class Field:
         """
         self.cards[name] = card
         
+    @property
+    def lead(self):
+        """台札
+        一番最初に出されたカードのスート
+        """
+        return list(self.cards.values())[0].suit
+    
+    def suit_strength(self, suit: Suit):
+        """Suit strength.
+        スートの強さを計算する
+        
+        Note:
+            勝者を決める際に、スートの強さを考慮する必要がある
+            スートの強さの順番は、以下の通り
+            1. 切り札
+            2. 台札
+            3. spade
+            4. heart
+            5. diamond
+            6. club
+        """
+        
+        if suit == self.trump:
+            return 6
+        elif suit == self.lead:
+            return 5
+        elif suit == Suit.spade:
+            return 4
+        elif suit == Suit.heart:
+            return 3
+        elif suit == Suit.diamond:
+            return 2
+        elif suit == Suit.club:
+            return 1
+        else:
+            """
+            Note:
+                Joker の場合
+            """
+            return 0
+
     def show(self):
         """Show a field.
         """

@@ -37,7 +37,9 @@ def test_track():
     plyers = game.players
     field = game.field
     track = Track(players = plyers, field = field)
-    track.play(is_random=True, display=True)
+    winner = track.play(is_random=True, display=True)
+    
+    print(f"Winner is {winner}")
 
 if __name__ == '__main__':
     test_track()

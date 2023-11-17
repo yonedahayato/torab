@@ -125,6 +125,7 @@ class Track:
         self.field.show()
         
         winner = self.winner()
+        return winner
         
     def winner(self) -> Player:
         """Decide a winner.
@@ -136,4 +137,16 @@ class Track:
         Note:
             各プレイヤーがフィールドに出したカードの強さを比較して、勝者を決める
         """
-        return max(self.field.cards, key = lambda x: self.field.cards[x].strength)
+        winner_card = max(list(self.field.cards.values()), 
+                          key = lambda x: (self.field.suit_strength(x.suit), x.num))
+        
+        def get_key(dictionary, value):
+            """value から key を取得する
+            """
+            for k, v in dictionary.items():
+                if str(v) == str(value):
+                    return k
+            return None
+
+        winner = get_key(self.field.cards, winner_card)
+        return winner
