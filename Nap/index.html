@@ -1,0 +1,52 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8"/>
+		<!-- レスポンシブ動作対応 -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+		<!-- タイピングアニメーション -->
+		<script src="https://unpkg.com/ityped@1.0.3"></script>
+  </head>
+  <body>
+		<ul>
+			<li><span id="info-version"></span></li>
+		</ul>
+		<span id="ityped"></span>
+
+    <section class="pyscript">
+      <py-script>
+import platform
+
+display('Python version: {}'.format(platform.python_version()), target="info-version")
+      </py-script>
+    </section>
+
+		<script>
+			ityped.init(document.querySelector("#ityped"), {
+			  strings: ['このサイトは、Nap CLIです', '以下のスタートのボタンを押してください'],
+			  loop: false,
+			  disableBackTyping: false,
+			})
+
+		</script>
+
+		<!-- カーソルの点滅をコントロールする -->
+		<style>
+			.ityped-cursor {
+				opacity: 1;
+				animation: blink 0.3s infinite;
+				animation-direction: alternate;
+		}
+		
+			@keyframes blink {
+					100% {
+							opacity: 0;
+					}
+			}
+		</style>
+  </body>
+</html>
