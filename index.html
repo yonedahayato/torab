@@ -212,11 +212,11 @@ for (let i = 0; i < hand_num; i++) {
   // club Q は 裏J Killer と表示
   if (hands[i] == 25) {
     const cardDescription = document.getElementById('cardDescription' + i);
-    cardDescription.textContent = "正J Killer";
+    cardDescription.textContent = "裏J Killer";
   }
 
   // club K は 裏J Killer Killer と表示
-  if (hands[i] == 36) {
+  if (hands[i] == 26) {
     const cardDescription = document.getElementById('cardDescription' + i);
     cardDescription.textContent = "裏J Killer Killer";
   }
