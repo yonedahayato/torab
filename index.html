@@ -18,17 +18,49 @@
   <h1>Declare Thinking Beta</h1>
 
   <h2>Your Hand</h2>
-  <div id="field">
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea0' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea1' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea2' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea3' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea4' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea5' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea6' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea7' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea8' width=9%>
-    <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea9' width=9%>
+  <div id="field" class="container-fluid">
+    <div class="row row-cols-10 no-gutters">
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea0' width=100%>
+        <p align="center" id="cardDescription0">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea1' width=100%>
+        <p align="center" id="cardDescription1">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea2' width=100%>
+        <p align="center" id="cardDescription2">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea3' width=100%>
+        <p align="center" id="cardDescription3">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea4' width=100%>
+        <p align="center" id="cardDescription4">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea5' width=100%>
+        <p align="center" id="cardDescription5">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea6' width=100%>
+        <p align="center" id="cardDescription6">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea7' width=100%>
+        <p align="center" id="cardDescription7">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea8' width=100%>
+        <p align="center" id="cardDescription8">-</p>
+      </div>
+      <div class="col px-0">
+        <img src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust1.png" id='imageArea9' width=100%>
+        <p align="center" id="cardDescription9">-</p>
+      </div>
+    </div>
   </div>
   <p>hand_id: </p><p id="hand_id_field"></p>
 
@@ -93,6 +125,102 @@ var hand_id = "";
 for (let i = 0; i < hand_num; i++) {
   const imageArea = document.getElementById('imageArea' + i);
   imageArea.src = images[hands[i]];
+
+  // spade 1 は ALL と表示
+  if (hands[i] == 1) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "ALL";
+  }
+
+  // 2 は S2 と表示
+  if (hands[i] % 13 == 2 && hands[i] <= 52) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "S2";
+  }
+
+  // 3 は D3 と表示
+  if (hands[i] % 13 == 3 && hands[i] <= 52) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    if (hands[i] == 16) {
+      cardDescription.textContent = "D3 / Joker Killer";
+    }
+    else {
+      cardDescription.textContent = "D3";
+    }
+  }
+  
+  // J は 複数の役割 を表示
+  if (hands[i] % 13 == 11 && hands[i] <= 52) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "正J / 裏J / 逆J";
+  }
+
+  // 1つ目のJoker は 強Joker と表示
+  if (hands[i] == 53) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "強Joker";
+  }
+
+  // 2つ目のJoker は 弱Joker と表示
+  if (hands[i] == 54) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "弱Joker";
+  }
+
+  // club 10 は 裏切り と表示
+  if (hands[i] == 23) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "裏切り";
+  }
+
+  // heart Q は よろめき と表示
+  if (hands[i] == 51) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "よろめき";
+  }
+
+  // heart K は よろめき返し と表示
+  if (hands[i] == 52) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "よろめき返し";
+  }
+
+  // heart A は よろめき返し返し と表示
+  if (hands[i] == 40) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "よろめき返し返し";
+  }
+
+  // heart 10 は ときめき と表示
+  if (hands[i] == 49) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "ときめき";
+  }
+
+  // diamond Q は 正J Killer と表示
+  if (hands[i] == 38) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "正J Killer";
+  }
+
+  // diamond K は 正J Killer Killer と表示
+  if (hands[i] == 39) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "正J Killer Killer";
+  }
+
+  // club Q は 裏J Killer と表示
+  if (hands[i] == 25) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "正J Killer";
+  }
+
+  // club K は 裏J Killer Killer と表示
+  if (hands[i] == 36) {
+    const cardDescription = document.getElementById('cardDescription' + i);
+    cardDescription.textContent = "裏J Killer Killer";
+  }
+
   hand_id += hands[i] + ",";
 }
 
