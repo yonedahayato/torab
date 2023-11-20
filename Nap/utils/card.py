@@ -1,6 +1,8 @@
 from enum import IntEnum
 import random
 
+from .base import BasePicture
+
 class Suit(IntEnum):
     """Suit class.
     スートクラス
@@ -32,7 +34,7 @@ class Suit(IntEnum):
         else:
             raise ValueError("スートが不正です")
 
-class Card:
+class Card(BasePicture):
     """Card class.
     カードクラス
     スートの比較はしない
@@ -40,6 +42,8 @@ class Card:
     Attributes:
         num (int): カードの数字
         suit (Suit): カードのスート
+        joer (int): ジョーカーかどうか
+        image_url (str): カードの画像のURL
         
     Note:
         カードの種類は、以下の通り
@@ -48,6 +52,7 @@ class Card:
             a. 強いジョーカー : 1枚
             b. 弱いジョーカー : 1枚
     """
+
     def __init__(self, num: int = 2, suit: Suit = Suit.club, joker: int = 0) -> None:
         """Constructor.
         
@@ -72,39 +77,41 @@ class Card:
         else:
             raise ValueError("ジョーカーの種類が不正です")
         self.joker = joker
+        
+        self.set_url()
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Equal.
         カードの強さが同じかどうか
         
         """
         return self.num == other.num
     
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         """Greater than.
         カードの強さが他のカードより強いかどうか
         """
         return self.num > other.num
     
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         """Greater than or equal.
         カードの強さが他のカード以上かどうか
         """
         return self.num >= other.num
     
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """Less than.
         カードの強さが他のカードより弱いかどうか
         """
         return self.num < other.num
     
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         """Less than or equal.
         カードの強さが他のカード以下かどうか
         """
         return self.num <= other.num
     
-    def __str__(self):
+    def __str__(self) -> str:
         """String.
         カードの文字列表現
         """
@@ -114,12 +121,43 @@ class Card:
             return "Joker (strong)"
         elif self.joker == 2:
             return "Joker (weak)"
+        
+    def set_url(self) -> str:
+        """Set a url.
+        カードの画像のURLを設定する
+        
+        Returns:
+            str: カードの画像のURL
+        """
+
+        if self.joker == 1:
+            self.image_url = "https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust53.png"            
+        elif self.joker == 2:
+            self.image_url = "https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust54.png"            
+        elif self.suit == Suit.spade:
+            self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num}.png"
+        elif self.suit == Suit.club:
+            self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num + 13}.png"
+        elif self.suit == Suit.diamond:
+            self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num + (13 * 2)}.png"
+        elif self.suit == Suit.heart:
+            self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num + (13 * 3)}.png"
+        else:
+            raise ValueError("カードの種類が不正です")
+        
+        return self.image_url
     
-class Deck:
+class Deck(BasePicture):
     """A deck of Nap.
     
     デッキを管理するクラス
+    
+    Attributes:
+        cards (list[Card]): カード
     """
+    
+    cards = []
+
     def __init__(self):
         """Constructor.
         
@@ -158,7 +196,7 @@ class Deck:
             print("デッキにカードがありません")
             return []
 
-class Field:
+class Field(BasePicture):
     """A field of Nap.
     
     ゲームのフィールドを管理するクラス
@@ -177,8 +215,14 @@ class Field:
         4. 切り札 (trump)
             切り札とは、ナポレオンが宣言した強いスートのこと
     """
+    widow = []
+    cards = {}
     trash = []
     cards = {}
+
+    # 描画のための設定
+    color = "green"
+    image_size = [100, 150]
 
     def set_trump(self, trump: Suit):
         """Set a trump.
