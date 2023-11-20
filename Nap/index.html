@@ -15,20 +15,30 @@
 		<ul>
 			<li><span id="info-version"></span></li>
 		</ul>
+
 		<span id="ityped"></span>
+		<ul>
+			<li><span id="info-suit"></span></li>
+		</ul>
 
     <section class="pyscript">
+			<py-config>
+				[[fetch]]
+				files = ["./utils/card.py", "./utils/base.py"]
+			</py-config>
       <py-script>
 import platform
+from utils.card import Suit
 
-display('Python version: {}'.format(platform.python_version()), target="info-version")
+display(f"Python version: {platform.python_version()}", target="info-version")
+display(f"suit : {Suit}", target="info-suit")
       </py-script>
     </section>
 
 		<script>
 			ityped.init(document.querySelector("#ityped"), {
-			  strings: ['このサイトは、Nap CLIです', '以下のスタートのボタンを押してください'],
-			  loop: false,
+			  strings: ['このサイトは、Nap CLI を作成する予定です', '以下の項目については完了しております'],
+			  loop: true,
 			  disableBackTyping: false,
 			})
 
