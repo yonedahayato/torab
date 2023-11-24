@@ -18,7 +18,10 @@
 
 		<span id="ityped"></span>
 		<ul>
-			<li><span id="info-suit"></span></li>
+			<li>
+				<span id="info-suit"></span>
+				<button py-click="get_suit()" class="py-button">get suit</button>
+			</li>
 		</ul>
 
     <section class="pyscript">
@@ -27,11 +30,16 @@
 				files = ["./utils/card.py", "./utils/base.py"]
 			</py-config>
       <py-script>
+import random
 import platform
+
 from utils.card import Suit
 
 display(f"Python version: {platform.python_version()}", target="info-version")
-display(f"suit : {Suit}", target="info-suit")
+
+def get_suit():
+	suit = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
+	display(f"suit : {suit.mark()}", target="info-suit")
       </py-script>
     </section>
 
