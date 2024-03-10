@@ -5,18 +5,18 @@ filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
 sys.path.append(str(parentdir))
 
-from utils import (
+from src.utils import (
     Deck,
     Field,
     Suit,
 )
 
-from game import (
+from src.game import (
     Track,
     Game,
 )
 
-from player import (
+from src.player import (
     Player,
 )
 

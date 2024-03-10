@@ -6,7 +6,7 @@ filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
 sys.path.append(str(parentdir))
 
-from utils import (
+from src.utils import (
     Card,
     Suit,
 )
@@ -21,7 +21,7 @@ class TestCard(unittest.TestCase):
     def test_set_url(self):
         club_1 = Card(1, Suit.club)
         print(club_1)
-        print(club_1.url)
+        print(club_1.image_url)
         
     def test_draw(self):
         pass

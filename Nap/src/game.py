@@ -1,10 +1,10 @@
 import random
 from typing import Any
 
-from player import Player
-from utils import Suit, Card
+from .player import Player
+from .utils import Suit, Card
 
-from utils import (
+from .utils import (
     Deck,
     Field,
 )

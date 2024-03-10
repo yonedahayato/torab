@@ -6,7 +6,7 @@ filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
 sys.path.append(str(parentdir))
 
-from utils import (
+from src.utils import (
     Suit,
 )
 

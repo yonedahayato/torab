@@ -6,7 +6,7 @@ filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
 sys.path.append(str(parentdir))
 
-from utils import (
+from src.utils import (
     Card,
     Suit,
     Deck,
@@ -21,7 +21,7 @@ class TestDeck(unittest.TestCase):
         deck = Deck()
         deck.shuffle()
         print(len(deck))
-        print(deck.cards[0].url)
+        print(deck.cards[0].image_url)
         print(deck.cards[0].suit)
         
         hand = deck.deal(10)
