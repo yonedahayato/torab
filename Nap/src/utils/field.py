@@ -35,7 +35,7 @@ class Field(BasePicture):
     trump = None
 
     color = "green"
-    image_size = [100, 150]
+    image_size = [150, 100]
 
     def set_trump(self, trump: Suit):
         """Set a trump.
@@ -65,12 +65,19 @@ class Field(BasePicture):
         """
         return list(self.cards.values())[0].suit
     
-    def suit_strength(self, suit: Suit):
+    def suit_strength(self, suit: Suit) -> int:
         """Suit strength.
         スートの強さを計算する
         
+        Args:
+            suit (Suit): スート
+            
+        Returns:
+            int: スートの強さ
+
         Note:
             勝者を決める際に、スートの強さを考慮する必要がある
+
             スートの強さの順番は、以下の通り
             1. 切り札
             2. 台札
@@ -78,6 +85,8 @@ class Field(BasePicture):
             4. heart
             5. diamond
             6. club
+            
+            ゲームによっては変わるので、コールバックするメソッドをもらって、実行するでもいいかも
         """
         
         if suit == self.trump:
@@ -99,8 +108,11 @@ class Field(BasePicture):
             """
             return 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Show a field.
+        
+        Returns:
+            str: フィールドの状況
         """
         field_str = f"ウィドー: {[str(c) for c in self.widow]}" + "\n"
         field_str += f"場: {[name + ' : ' + str(c) for name, c in self.cards.items()]}" + "\n"
@@ -108,7 +120,7 @@ class Field(BasePicture):
 
         return field_str
 
-    def clear(self):
+    def clear(self) -> None:
         """Reset a field.
         
         場のカードをリセットする
@@ -123,4 +135,7 @@ class Field(BasePicture):
         Args:
             save_path (str): 画像ファイルとして出力するパス
         """
+        image = Image.new("RGB", self.image_size, self.color)
         
+        if save_path:
+            image.save(save_path, quality=95)
