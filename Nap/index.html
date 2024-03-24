@@ -22,6 +22,10 @@
 				<span id="info-suit"></span>
 				<button py-click="get_suit()" class="py-button">get suit</button>
 			</li>
+			<li>
+				<div id="info-card"></div>
+				<button py-click="get_card()" class="py-button">get card</button>
+			</li>
 		</ul>
 
     <section class="pyscript">
@@ -33,13 +37,18 @@
 import random
 import platform
 
-from src.utils.card import Suit
+from src.utils.card import Suit, Card
 
 display(f"Python version: {platform.python_version()}", target="info-version")
 
 def get_suit():
 	suit = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
-	display(f"suit : {suit.mark()}", target="info-suit")
+	display(f"suit : {suit.mark}", target="info-suit", append=False)
+
+def get_card():
+	suit = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
+	card = Card(num=random.randint(1, 13), suit=suit)
+	display(f"card : {card}", target="info-card", append=False)
       </py-script>
     </section>
 
