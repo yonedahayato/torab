@@ -1,1 +1,1 @@
-python3 -m pytest -s
+poetry run python3 -m pytest -s

@@ -122,7 +122,7 @@ class Track:
             self.field.put_card(player.name, card)
 
         print(f"\n場に出たカードは {[name + ' : ' + str(c) for name, c in self.field.cards.items()]} です")
-        self.field.show()
+        print(self.field)
         
         winner = self.winner()
         return winner
