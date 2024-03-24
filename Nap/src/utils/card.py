@@ -18,19 +18,63 @@ class Suit(IntEnum):
     heart = 3
     diamond = 2
     club = 1
+
+    @property
+    def mark(self) -> str:
+        """
+        スートのマークを出力する.
+        
+        Returns:
+            str: マークの文字
+        """
+        self.set_info()
+        return self.__mark
     
-    def mark(self):
-        """Mark.
-        スートのマーク
+    @mark.setter
+    def mark(self, value) -> None:
+        """
+        スートのマークを格納する.
+        
+        Args:
+            value: マークの情報
+        """
+        self.__mark = value
+    
+    @property
+    def image_url(self) -> str:
+        """
+        スートの画像のURLを出力する
+        """
+        
+        return self.__image_url
+    
+    @image_url.setter
+    def image_url(self, value):
+        """
+        スートの画像のURLを格納する
+        """
+        
+        self.__image_url = value
+
+    def set_info(self) -> None:
+        """
+        スートに応じて情報を取得する
+
+        Raises:
+            ValueError: マークが異常の場合
         """
         if self == Suit.spade:
-            return "♠"
+            self.mark = "♠"
+            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vShkEbM-bF8ZdFUUVDTsFPtamISa-TgR2_v26Bzf6f-ugqmt3Ry8Ncj59t3TIEK_Lumr4OoH5WSr7lG/pub?w=596&h=596"
         elif self == Suit.heart:
-            return "♥"
+            self.mark = "♥"
+            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vS4Y024nBwRGYfrQkJsvh0bsQhNiM8g-_-DMSY_tNslQ6b5noqpYZrQ2fnTQJ7bZiLhXjObDzGGJ1gk/pub?w=596&h=596"
         elif self == Suit.diamond:
-            return "♦"
+            self.mark = "♦"
+            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vQWHrseqkqz3Yb2On0NewQYzXvtNDxx99aKRHUw36S8XUn2AZ5hhohswUfiQH2bO18CzdF2gVJb_kPw/pub?w=596&h=596"
         elif self == Suit.club:
-            return "♣"
+            self.mark = "♣"
+            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vRhDX5xCJqqutdXbcfSZxunVzpktaaXClS-0245bLmYFYA5QyDqPyjMfhUFNW73h26kai7TJbAlRRsl/pub?w=596&h=596"
         else:
             raise ValueError("スートが不正です")
 
@@ -116,7 +160,7 @@ class Card(BasePicture):
         カードの文字列表現
         """
         if self.joker == 0:
-            return f"{self.num} {self.suit.mark()}"
+            return f"{self.num} {self.suit.mark}"
         elif self.joker == 1:
             return "Joker (strong)"
         elif self.joker == 2:

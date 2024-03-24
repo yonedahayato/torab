@@ -56,10 +56,10 @@ class TestSuit(unittest.TestCase):
         diamond = Suit.diamond
         club = Suit.club
         
-        assert spade.mark() == "♠"
-        assert heart.mark() == "♥"
-        assert diamond.mark() == "♦"
-        assert club.mark() == "♣"
+        assert spade.mark == "♠"
+        assert heart.mark == "♥"
+        assert diamond.mark == "♦"
+        assert club.mark == "♣"
 
 if __name__ == '__main__':
     unittest.main()
