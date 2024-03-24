@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "nap"
+version = "0.1.0"
+description = "トランプゲームNap"
+authors = ["yoneda <yhayato1320@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.5"
+pytest = "^8.1.1"
+pillow = "^10.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
