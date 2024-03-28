@@ -1,10 +1,13 @@
 from PIL import Image
 
-from .card import (
+from .player import Player
+
+from .utils.card import (
     Card,
     Suit,
+    Deck,
 )
-from .base import BasePicture
+from .utils.base import BasePicture
 
 class Field(BasePicture):
     """A field of Nap.
@@ -36,6 +39,17 @@ class Field(BasePicture):
 
     color = "green"
     image_size = [150, 100]
+    
+    def __init__(self, deck: Deck, players: list[Player]):
+        """
+        Args:
+            deck (Deck): xxx
+            
+        Note:
+            カードとプレイヤーがいなければ、そこはフィールドではない
+        """
+        super().__init__()
+        self.deck = deck
 
     def set_trump(self, trump: Suit):
         """Set a trump.
@@ -108,15 +122,29 @@ class Field(BasePicture):
             """
             return 0
 
-    def __str__(self) -> str:
+    def __str__(self, width: int = 50, pad_str: str = "#") -> str:
         """Show a field.
         
+        Args:
+            width (int): 文字列で表現するときの幅
+            pad_str (str): 文字列で表現するときに埋める文字列
+
         Returns:
             str: フィールドの状況
         """
-        field_str = f"ウィドー: {[str(c) for c in self.widow]}" + "\n"
-        field_str += f"場: {[name + ' : ' + str(c) for name, c in self.cards.items()]}" + "\n"
-        field_str += f"捨て札: {[str(c) for c in self.trash]}"
+
+        field_str = "\n"
+        field_str += pad_str * width
+        field_str += f"\n{pad_str}\n"
+
+        if len(self.widow) != 0:
+            field_str += f"{pad_str}\t\tウィドー: {len(self.widow)}\n"
+        field_str += f"{pad_str}\t\t山札: {len(self.deck)}\n"
+        field_str += f"{pad_str}\t\t場: {len(self.cards)}\n"
+        field_str += f"{pad_str}\t\t捨て札: {len(self.trash)}\n"
+
+        field_str += f"{pad_str}\n"
+        field_str += pad_str * width
 
         return field_str
 

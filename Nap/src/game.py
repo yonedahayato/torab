@@ -2,10 +2,12 @@ import random
 from typing import Any
 
 from .player import Player
-from .utils import Suit, Card
 
 from .utils import (
     Deck,
+)
+
+from .field import (
     Field,
 )
 
@@ -115,7 +117,7 @@ class Track:
             最初のトラックは、特殊なカードの効果が発動しない
         """
         for player in self.players:
-            card = player.play_card(self.field, is_random = is_random)
+            card = player.play_card(is_random = is_random)
             if display:
                 print(f"{player} が {card} を出した")
 
