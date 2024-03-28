@@ -7,8 +7,11 @@ sys.path.append(str(parentdir))
 
 from src.utils import (
     Deck,
-    Field,
     Suit,
+)
+
+from src.field import (
+    Field,
 )
 
 from src.game import (
@@ -20,14 +23,15 @@ from src.player import (
     Player,
 )
 
-def test_track():
+def test_track(players: list[Player]):
     """Test track.
     トラックのテスト
+    
+    Args:
+        players (list[Player]): 参加するプレイヤー
     """
-    player_names = ["A", "B", "C", "D"]
-    players = [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
     deck = Deck()
-    field = Field()
+    field = Field(deck, players)
 
     game = Game(players = players, deck = deck, field = field)
     game.shuffle()

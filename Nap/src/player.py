@@ -1,7 +1,6 @@
 from .utils import (
     Suit,
     Card,
-    Field,
 )
 
 import random
@@ -80,10 +79,6 @@ class Player:
         CPU は、ランダムに宣言する
     """
 
-    is_nap = False
-    is_adjutant = False
-    is_allied = False
-
     def __init__(self, name: str = "Unknown", cpu: bool = False):
         """Constructor.
         
@@ -95,6 +90,10 @@ class Player:
         self.cards = []
         self.name = name
         self.cpu = cpu
+
+        self.is_nap = False
+        self.is_adjutant = False
+        self.is_allied = False
 
     def __str__(self):
         """String.
@@ -140,7 +139,7 @@ class Player:
 
         return declear
     
-    def play_card(self, field: Field, is_random: bool = False) -> Card:
+    def play_card(self, is_random: bool = False) -> Card:
         """Play card.
         カードを出す
         
