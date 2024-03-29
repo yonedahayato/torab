@@ -1,6 +1,7 @@
 from pathlib import Path
 import pytest
 import sys
+from typing import Callable
 
 FILE_DIR = Path(__file__).parent.absolute()
 PROJECT_DIR = FILE_DIR.parent.absolute()
@@ -21,15 +22,25 @@ def data_dir() -> str:
     return str(_data_dir)
 
 @pytest.fixture
-def players(player_names: list[str] = ["A", "B", "C", "D"]) -> list[Player]:
+def players() -> Callable[[list[str]], list[Player]]:
     """
     ゲームに参加するプレイヤー
     
-    Args:
-        player_names (list[str]): プレイヤー達の名前
-        
-    Returns
-        list[Player]: プレイヤー達
-    """
+    Returns:
+        callable: ゲームに参加するプレイヤーを作成する関数
     
-    return [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
+    """
+    def _players(player_names: list[str] = ["A", "B", "C", "D"]) -> list[Player]:
+        """
+        ゲームに参加するプレイヤーを作成する
+
+        Args:
+            player_names (list[str]): プレイヤー達の名前
+            
+        Returns
+            list[Player]: プレイヤー達
+        """
+
+        return [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
+
+    return _players

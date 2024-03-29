@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Callable
 
 filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
@@ -23,7 +24,7 @@ from src.player import (
     Player,
 )
 
-def test_track(players: list[Player]):
+def test_track(players: Callable[[list[str]], list[Player]]):
     """Test track.
     トラックのテスト
     
@@ -31,6 +32,7 @@ def test_track(players: list[Player]):
         players (list[Player]): 参加するプレイヤー
     """
     deck = Deck()
+    players = players()
     field = Field(deck, players)
 
     game = Game(players = players, deck = deck, field = field)
