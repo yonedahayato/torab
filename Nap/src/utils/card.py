@@ -199,8 +199,6 @@ class Deck(BasePicture):
     Attributes:
         cards (list[Card]): カード
     """
-    
-    cards = []
 
     def __init__(self):
         """Constructor.
@@ -223,7 +221,9 @@ class Deck(BasePicture):
         random.shuffle(self.cards)
         
     def deal(self, num: int = 10):
-        """Deal a card.
+        """
+        
+        特定の枚数のカードを引く
         
         Args:
             num (int): Number of cards to deal.
@@ -231,7 +231,7 @@ class Deck(BasePicture):
         Returns:
             list[Card]: Dealed cards.
             
-        Exceptions:
+        Raises:
             IndexError: If there is no card in a deck.
         """
         try:
@@ -239,3 +239,18 @@ class Deck(BasePicture):
         except IndexError:
             print("デッキにカードがありません")
             return []
+        
+    def pull_out(self, targets: list[Card]):
+        """
+        特定のカードを引き抜く
+        
+        Args:
+            target (list[Card]): 対象のカード
+
+        Returns:
+            list[Card]: 山札から削除した対象のカード
+        """
+        for t in targets:
+            self.cards.remove(t)
+
+        return targets

@@ -3,7 +3,3 @@ from .card import (
     Suit,
     Deck,
 )
-
-from .field import (
-    Field,
-)

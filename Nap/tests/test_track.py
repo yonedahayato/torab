@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Callable
 
 filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
@@ -7,8 +8,11 @@ sys.path.append(str(parentdir))
 
 from src.utils import (
     Deck,
-    Field,
     Suit,
+)
+
+from src.field import (
+    Field,
 )
 
 from src.game import (
@@ -20,24 +24,25 @@ from src.player import (
     Player,
 )
 
-def test_track():
+def test_track(players: Callable[[list[str]], list[Player]]):
     """Test track.
     トラックのテスト
+    
+    Args:
+        players (list[Player]): 参加するプレイヤー
     """
-    player_names = ["A", "B", "C", "D"]
-    players = [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
     deck = Deck()
-    field = Field()
+    players = players()
+    field = Field(deck, players)
 
-    game = Game(players = players, deck = deck, field = field)
+    game = Game(field = field)
     game.shuffle()
     game.deal()
-    game.field.set_trump(Suit.spade)
-    
-    plyers = game.players
+    game.field.trump = Suit.spade
+
     field = game.field
-    track = Track(players = plyers, field = field)
-    winner = track.play(is_random=True, display=True)
+    track = Track(field = field)
+    winner = track.play(display=True)
     
     print(f"Winner is {winner}")
 

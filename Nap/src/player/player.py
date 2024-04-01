@@ -1,7 +1,6 @@
-from .utils import (
+from ..utils import (
     Suit,
     Card,
-    Field,
 )
 
 import random
@@ -80,10 +79,6 @@ class Player:
         CPU は、ランダムに宣言する
     """
 
-    is_nap = False
-    is_adjutant = False
-    is_allied = False
-
     def __init__(self, name: str = "Unknown", cpu: bool = False):
         """Constructor.
         
@@ -95,6 +90,10 @@ class Player:
         self.cards = []
         self.name = name
         self.cpu = cpu
+
+        self.is_nap = False
+        self.is_adjutant = False
+        self.is_allied = False
 
     def __str__(self):
         """String.
@@ -108,11 +107,39 @@ class Player:
         """
         self.cards = sorted(cards)
         
-    def show_hand(self):
+    def show_hand(self, hint: str = "no"):
         """Show hand.
-        手札を表示する
+        手札を開示する
+        
+        Args:
+            hint (str): CPU が開示する際に、ヒントを持たせるかどの程度ヒントを持たせるか
+                no : ヒントなし
+                mark-{n} : マークの開示
+
+        Return
+            list[Card]: 開示する情報
+            
+        Note:
+            (基本的に) CPU は、カードの種類までは開示しない
         """
-        print({i: str(c)for i, c in enumerate(self.cards)})
+        if hint not in ["no", "mark-1"]:
+            raise ValueError(f"想定していないヒントの値: {hint}")
+
+        if self.cpu and hint == "mark-1":
+            hand = []
+            for cnt, card in enumerate(self.cards):
+                if cnt < 1:
+                    hand.append(f"? {card.suit.mark}")
+                else:
+                    hand.append("?")
+
+        elif self.cpu:
+            hand = ["?" for _ in self.cards]
+
+        else:
+            hand = self.cards
+
+        return hand
 
     def declare(self, strong_declear: Declear, is_random: bool = False) -> Declear:
         """Declare.
@@ -140,7 +167,7 @@ class Player:
 
         return declear
     
-    def play_card(self, field: Field, is_random: bool = False) -> Card:
+    def play_card(self, is_random: bool = False) -> Card:
         """Play card.
         カードを出す
         
@@ -152,7 +179,7 @@ class Player:
             Card: カード
         """
         if not self.cpu:
-            self.show_hand()
+            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
             try:
                 card_id = int(input("出すカードを入力してください: "))
             except ValueError:
@@ -161,5 +188,6 @@ class Player:
 
         elif is_random or self.cpu:
             card = random.choice(self.cards)
+            self.cards.remove(card)
 
         return card
