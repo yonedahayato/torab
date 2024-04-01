@@ -38,8 +38,8 @@ def test_track(players: Callable[[list[str]], list[Player]]):
     game = Game(field = field)
     game.shuffle()
     game.deal()
-    game.field.set_trump(Suit.spade)
-    
+    game.field.trump = Suit.spade
+
     plyers = field.players
     field = game.field
     track = Track(players = plyers, field = field)

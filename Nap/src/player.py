@@ -107,11 +107,38 @@ class Player:
         """
         self.cards = sorted(cards)
         
-    def show_hand(self):
+    def show_hand(self, hint: str = "no"):
         """Show hand.
-        手札を表示する
+        手札を開示する
+        
+        Args:
+            hint (str): CPU が開示する際に、ヒントを持たせるかどの程度ヒントを持たせるか
+                no : ヒントなし
+                mark-{n} : マークの開示
+
+        Return
+            list[Card]: 開示する情報
+            
+        Note:
+            (基本的に) CPU は、カードの種類までは開示しない
         """
-        print({i: str(c)for i, c in enumerate(self.cards)})
+        if hint not in ["no", "mark-1"]:
+            raise ValueError(f"想定していないヒントの値: {hint}")
+
+        if self.cpu:
+            hand = ["?" for _ in self.cards]
+        elif self.cpu and hint == "mark-1":
+            hand = []
+            for cnt, card in self.cards:
+                if cnt < 1:
+                    hand.append(f"?-{card.mark}")
+                else:
+                    hand.append("?")
+            
+        else:
+            hand = self.cards
+
+        return hand
 
     def declare(self, strong_declear: Declear, is_random: bool = False) -> Declear:
         """Declare.
@@ -151,7 +178,7 @@ class Player:
             Card: カード
         """
         if not self.cpu:
-            self.show_hand()
+            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
             try:
                 card_id = int(input("出すカードを入力してください: "))
             except ValueError:
