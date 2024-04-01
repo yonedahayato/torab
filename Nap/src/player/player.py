@@ -1,4 +1,4 @@
-from .utils import (
+from ..utils import (
     Suit,
     Card,
 )
@@ -125,16 +125,17 @@ class Player:
         if hint not in ["no", "mark-1"]:
             raise ValueError(f"想定していないヒントの値: {hint}")
 
-        if self.cpu:
-            hand = ["?" for _ in self.cards]
-        elif self.cpu and hint == "mark-1":
+        if self.cpu and hint == "mark-1":
             hand = []
-            for cnt, card in self.cards:
+            for cnt, card in enumerate(self.cards):
                 if cnt < 1:
-                    hand.append(f"?-{card.mark}")
+                    hand.append(f"?-{card.suit.mark}")
                 else:
                     hand.append("?")
-            
+
+        elif self.cpu:
+            hand = ["?" for _ in self.cards]
+
         else:
             hand = self.cards
 

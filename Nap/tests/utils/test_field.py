@@ -18,7 +18,8 @@ from src.field import (
 )
 
 from src.player import (
-    Player
+    Player,
+    Takeshi,
 )
 
 FIELD_STR_CASE_01 = """
@@ -68,13 +69,29 @@ FIELD_STR_CASE_03 = """
 @pytest.fixture
 def field_two_cpu_payers(players: Callable[[list[str]], list[Player]]):
     """
-    CPU のプレイヤーが 2 人居る状態のフィールドクラス
+    CPU のプレイヤーが 2 人居る状態のフィールド
+    
+    Args:
+        players (Callable[[list[str]], list[Player]]): プレイヤーを作成する関数
+        
+    Returns:
+        Field: フィールド
     """
     deck = Deck()
     two_players = players(player_names=["A", "B"])
     
     return Field(deck, two_players)
 
+@pytest.fixture
+def field_with_takeshi():
+    """
+    CPU たけしが居る状態のフィールド
+
+    Returns:
+        Field: フィールド
+    """
+    deck = Deck()
+    return Field(deck, [Takeshi(), Player("You", cpu=False)])
 
 class TestField:
     """
@@ -146,6 +163,36 @@ class TestField:
 
         print(field_two_cpu_payers)
         assert str(field_two_cpu_payers) == FIELD_STR_CASE_03
+
+    def test_str_with_takeshi(self, field_with_takeshi: Field, hand_num: int = 3) -> None:
+        """
+        文字列を表示するメソッドのテスト
+        
+        Args:
+            field_with_takeshi (Field): フィールのクラス
+            hand_num (int): 配る枚数
+
+        Note:
+            確認する状態
+                各プレイヤーにカードが分配できている状態
+        """
+        field_with_takeshi.deck.shuffle()
+        field_with_takeshi.trump = Suit.spade
+
+        takeshi_hand = [Card(num = n, suit = Suit.heart) for n in range(1, 1 + hand_num)]
+        my_hand = [Card(num = n, suit = Suit.spade) for n in range(4, 4 + hand_num)]
+
+        for player in field_with_takeshi.players:
+            if player.name == "たけし":
+                # deck からカードを引き抜く
+                takeshi_hand = field_with_takeshi.deck.pull_out(takeshi_hand)
+                player.take_hand(takeshi_hand)
+                
+            else:
+                my_hand = field_with_takeshi.deck.pull_out(my_hand)
+                player.take_hand(my_hand)
+
+        print(field_with_takeshi)
 
     def test_image_outout(self, data_dir: str, players: Callable[[list[str]], list[Player]]) -> None:
         """
