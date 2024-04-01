@@ -54,7 +54,7 @@ class Game:
         for player in self.field.players:
             player.take_hand(self.field.deck.deal(self.hand_num))
 
-        self.field.set_widow(self.field.deck.deal(self.widow_num))
+        self.field.widow = self.field.deck.deal(self.widow_num)
 
     def declare(self):
         """Declare a strength.
@@ -88,38 +88,47 @@ class Game:
 class Track:
     """1 回のゲームを管理するクラス
     
+    Attributes:
+        field (Field): フィールド
+
     Note:
         このクラスでは、以下のことを行う
         1. トラックの処理の実行
         2. そのトラックにおける勝者の決定
     """
-    def __init__(self, players: list[Player], field: Field):
+    def __init__(self, field: Field):
         """Constructor.
         """
-        self.players = players
         self.field = field
         
-    def play(self, is_random: bool = False, display: bool = False, is_first: bool = False):
+    def play(self, 
+             display: bool = False, 
+             is_first: bool = False):
         """Play a trak.
         
         Args:
-            is_random (bool): ランダムにカードを出すかどうか
             display (bool): 出したカードを表示するかどうか
-            is_first (bool): 最初のプレイかどうか
+            is_first (bool): 最初のプレイ(トラック)かどうか
+                最初のプレイ(トラック)かどうかで、カードの強弱が変わる可能性がある
 
         Note:
             トラックの流れは以下の通り
                 1. 各プレイヤーがカードを出す
+                    最初に出したカードが、切り札となる
                 2. 出されたカードの強さを比較する
 
             最初のトラックは、特殊なカードの効果が発動しない
         """
-        for player in self.players:
-            card = player.play_card(is_random = is_random)
-            if display:
-                print(f"{player} が {card} を出した")
+        for cnt, player in enumerate(self.field.players):
+            card = player.play_card()
+            if cnt == 0:
+                self.field.trump = card.suit
 
             self.field.put_card(player.name, card)
+            self.field.message = f"{player.name} が {card} を出した"
+
+            if display:
+                print(self.field)
 
         print(f"\n場に出たカードは {[name + ' : ' + str(c) for name, c in self.field.cards.items()]} です")
         print(self.field)

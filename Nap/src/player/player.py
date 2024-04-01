@@ -129,7 +129,7 @@ class Player:
             hand = []
             for cnt, card in enumerate(self.cards):
                 if cnt < 1:
-                    hand.append(f"?-{card.suit.mark}")
+                    hand.append(f"? {card.suit.mark}")
                 else:
                     hand.append("?")
 
@@ -188,5 +188,6 @@ class Player:
 
         elif is_random or self.cpu:
             card = random.choice(self.cards)
+            self.cards.remove(card)
 
         return card

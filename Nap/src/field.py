@@ -28,6 +28,7 @@ class Field(BasePicture):
         # その他
         deck (Deck): トランプ
         players (list[Player]): プレイヤー
+        message (str): プレイヤーへ情報を提示する際に使用する
 
     Note:
         フィールには、以下の要素がある
@@ -50,13 +51,14 @@ class Field(BasePicture):
             カードとプレイヤーがいなければ、そこはフィールドではない
         """
         super().__init__()
-        self.widow = []
+        self._widow = []
+        self._trump = None
         self.cards = {}
         self.trash = []
-        self._trump = None
 
         self.deck = deck
         self.players = players
+        self._message = ""
 
     def __str__(self, width: int = 50, pad_str: str = "#") -> str:
         """Show a field.
@@ -86,6 +88,7 @@ class Field(BasePicture):
         token_tab1 = f"{pad_str}\t"
         token_tab2 = f"{pad_str}\t\t"
         token_tab3 = f"{pad_str}\t\t\t"
+        token_tab4 = f"{pad_str}\t\t\t\t"
 
         field_str = "\n"
         field_str += pad_str * width
@@ -94,8 +97,13 @@ class Field(BasePicture):
         if len(self.widow) != 0:
             field_str += f"{token_tab3}ウィドー: {len(self.widow)}\n"
         field_str += f"{token_tab3}山札: {len(self.deck)}\n"
-        field_str += f"{token_tab3}場: {len(self.cards)}\n"
         field_str += f"{token_tab3}捨て札: {len(self.trash)}\n"
+        if len(self.cards) == 0:
+            field_str += f"{token_tab3}場: {len(self.cards)}\n"
+        else:
+            field_str += f"{token_tab3}場:\n"
+            for n, c in self.cards.items():
+                field_str += f"{token_tab4}{n}: {str(c)}\n"
         if self.trump:
             field_str += f"{token_tab3}切り札: {self.trump.mark}\n"
 
@@ -104,6 +112,13 @@ class Field(BasePicture):
         for player in self.players:
             hand = player.show_hand()
             field_str += f"{token_tab2}{player}: {[str(card) for card in hand]}\n"
+            
+        if self.message != "":
+            field_str += f"{pad_str}\n"
+            field_str += f"{token_tab1}Message\n"
+            field_str += f"{token_tab2}{self.message}\n"
+            field_str += f"{pad_str}\n"
+            self.message = ""
 
         field_str += f"{pad_str}\n"
         field_str += pad_str * width
@@ -111,39 +126,58 @@ class Field(BasePicture):
         return field_str
 
     @property
-    def trump(self):
-        """切り札のgetter
+    def trump(self) -> Suit:
+        """切り札の getter
         """
         return self._trump
     
     @trump.setter
-    def trump(self, trump: Suit):
-        """Set a trump.
+    def trump(self, trump: Suit) -> None:
+        """切り札の setter
         """
         self._trump = trump
 
-    def set_widow(self, widow: list[Card]):
-        """Set a widow.
+    @property
+    def widow(self) -> list[Card]:
+        """ウィドーの getter
         """
-        self.widow = widow
-        
+        return self._widow
+    
+    @widow.setter
+    def widow(self, widow: list[Card]) -> None:
+        """ウィドーの setter
+        """
+        self._widow = widow
+    
+    @property
+    def message(self):
+        """メッセージの getter
+        """
+        return self._message
+    
+    @message.setter
+    def message(self, message) -> None:
+        """メッセージの setter
+        """
+        self._message = message
+
+    @property
+    def lead(self) -> Suit:
+        """台札
+        一番最初に出されたカードのスート
+        """
+        return list(self.cards.values())[0].suit
+
     def put_card(self, name: str, card: Card):
         """Put a card.
         
-        プレイヤーがカードを出す
+        プレイヤーのカードを受け取る
         
         Args:
             name (str): Name of a player.
             card (Card): A card.
         """
         self.cards[name] = card
-        
-    @property
-    def lead(self):
-        """台札
-        一番最初に出されたカードのスート
-        """
-        return list(self.cards.values())[0].suit
     
     def suit_strength(self, suit: Suit) -> int:
         """Suit strength.

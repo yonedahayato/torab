@@ -26,8 +26,8 @@ FIELD_STR_CASE_01 = """
 ##################################################
 #
 #\t\t\t山札: 54
-#\t\t\t場: 0
 #\t\t\t捨て札: 0
+#\t\t\t場: 0
 #
 #\tPlayers
 #\t\tA: []
@@ -40,8 +40,8 @@ FIELD_STR_CASE_02 = """
 ##################################################
 #
 #\t\t\t山札: 54
-#\t\t\t場: 0
 #\t\t\t捨て札: 0
+#\t\t\t場: 0
 #\t\t\t切り札: ♠
 #
 #\tPlayers
@@ -55,13 +55,27 @@ FIELD_STR_CASE_03 = """
 ##################################################
 #
 #\t\t\t山札: 45
-#\t\t\t場: 0
 #\t\t\t捨て札: 0
+#\t\t\t場: 0
 #\t\t\t切り札: ♠
 #
 #\tPlayers
 #\t\tA: ['?', '?', '?']
 #\t\tB: ['?', '?', '?']
+#\t\tYou: ['4 ♠', '5 ♠', '6 ♠']
+#
+##################################################"""
+
+FIELD_STR_CASE_04 = """
+##################################################
+#
+#\t\t\t山札: 48
+#\t\t\t捨て札: 0
+#\t\t\t場: 0
+#\t\t\t切り札: ♠
+#
+#\tPlayers
+#\t\tたけし: ['? ♥', '?', '?']
 #\t\tYou: ['4 ♠', '5 ♠', '6 ♠']
 #
 ##################################################"""
@@ -89,9 +103,30 @@ def field_with_takeshi():
 
     Returns:
         Field: フィールド
+        
+    Note:
+        hand_num (int): 配る枚数
     """
     deck = Deck()
-    return Field(deck, [Takeshi(), Player("You", cpu=False)])
+    field = Field(deck, [Takeshi(), Player("You", cpu=False)])
+    field.deck.shuffle()
+    field.trump = Suit.spade
+
+    hand_num = 3
+    takeshi_hand = [Card(num = n, suit = Suit.heart) for n in range(1, 1 + hand_num)]
+    my_hand = [Card(num = n, suit = Suit.spade) for n in range(4, 4 + hand_num)]
+
+    for player in field.players:
+        if player.name == "たけし":
+            # deck からカードを引き抜く
+            takeshi_hand = field.deck.pull_out(takeshi_hand)
+            player.take_hand(takeshi_hand)
+            
+        else:
+            my_hand = field.deck.pull_out(my_hand)
+            player.take_hand(my_hand)
+            
+    return field
 
 class TestField:
     """
@@ -164,35 +199,29 @@ class TestField:
         print(field_two_cpu_payers)
         assert str(field_two_cpu_payers) == FIELD_STR_CASE_03
 
-    def test_str_with_takeshi(self, field_with_takeshi: Field, hand_num: int = 3) -> None:
+    def test_str_with_takeshi(self, field_with_takeshi: Field) -> None:
         """
         文字列を表示するメソッドのテスト
         
         Args:
             field_with_takeshi (Field): フィールのクラス
-            hand_num (int): 配る枚数
 
         Note:
             確認する状態
                 各プレイヤーにカードが分配できている状態
         """
-        field_with_takeshi.deck.shuffle()
-        field_with_takeshi.trump = Suit.spade
-
-        takeshi_hand = [Card(num = n, suit = Suit.heart) for n in range(1, 1 + hand_num)]
-        my_hand = [Card(num = n, suit = Suit.spade) for n in range(4, 4 + hand_num)]
-
-        for player in field_with_takeshi.players:
-            if player.name == "たけし":
-                # deck からカードを引き抜く
-                takeshi_hand = field_with_takeshi.deck.pull_out(takeshi_hand)
-                player.take_hand(takeshi_hand)
-                
-            else:
-                my_hand = field_with_takeshi.deck.pull_out(my_hand)
-                player.take_hand(my_hand)
-
         print(field_with_takeshi)
+        assert str(field_with_takeshi) == FIELD_STR_CASE_04
+
+    def test_put_card(self, field_with_takeshi: Field) -> None:
+        """
+        プレイヤーがカードを置く処理のテスト
+        """
+        for player in field_with_takeshi.players:
+            card = player.play_card()
+            field_with_takeshi.put_card(player.name, card)
+            field_with_takeshi.message = f"{player.name} が {card} を出した"
+            print(field_with_takeshi)
 
     def test_image_outout(self, data_dir: str, players: Callable[[list[str]], list[Player]]) -> None:
         """

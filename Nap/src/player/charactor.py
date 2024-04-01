@@ -1,6 +1,16 @@
 from .player import Player
 
-class Takeshi(Player):
+class Charactor(Player):
+    """
+    キャラクターのクラス
+    """
+    def talk(self):
+        """
+        キャラクターのセリフを出力する
+        """
+        raise NotImplementedError
+
+class Takeshi(Charactor):
     """
     たけしは、手札公開の際に、マークの情報をくれる
     """

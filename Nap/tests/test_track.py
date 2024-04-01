@@ -40,10 +40,9 @@ def test_track(players: Callable[[list[str]], list[Player]]):
     game.deal()
     game.field.trump = Suit.spade
 
-    plyers = field.players
     field = game.field
-    track = Track(players = plyers, field = field)
-    winner = track.play(is_random=True, display=True)
+    track = Track(field = field)
+    winner = track.play(display=True)
     
     print(f"Winner is {winner}")
 
