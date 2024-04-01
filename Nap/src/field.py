@@ -15,15 +15,20 @@ class Field(BasePicture):
     ゲームのフィールドを管理するクラス
     
     Attributes:
+        # 描画のための設定
+        color (str): 背景色
+        image_size (list[int]): 画像サイズ
+
+        # ゲームに関する変数
         widow (list[Card]): ウィドー
         cards (dict{Player: Card}): プレイヤーが出したカード
         trash (list[Card]): 捨て札
         trump (Suit): 切り札
         
-        描画のための設定
-        color (str): 背景色
-        image_size (list[int]): 画像サイズ
-    
+        # その他
+        deck (Deck): トランプ
+        players (list[Player]): プレイヤー
+
     Note:
         フィールには、以下の要素がある
         1. ウィドー (widow)
@@ -32,10 +37,6 @@ class Field(BasePicture):
         4. 切り札 (trump)
             切り札とは、ナポレオンが宣言した強いスートのこと
     """
-    widow = []
-    cards = {}
-    trash = []
-    trump = None
 
     color = "green"
     image_size = [150, 100]
@@ -49,7 +50,13 @@ class Field(BasePicture):
             カードとプレイヤーがいなければ、そこはフィールドではない
         """
         super().__init__()
+        self.widow = []
+        self.cards = {}
+        self.trash = []
+        self.trump = None
+
         self.deck = deck
+        self.players = players
 
     def set_trump(self, trump: Suit):
         """Set a trump.
@@ -131,17 +138,39 @@ class Field(BasePicture):
 
         Returns:
             str: フィールドの状況
+            
+        Note:
+            以下の情報を文字列にて表示
+
+            1. フィールド状況 (カード数)
+                a. ウィドー
+                b. 山札
+                c. 場 (プレイヤーが出したカード)
+                d. 捨て札
+                
+            2. プレイヤーの情報
+                a. 手札の数
         """
+
+        token_tab1 = f"{pad_str}\t"
+        token_tab2 = f"{pad_str}\t\t"
+        token_tab3 = f"{pad_str}\t\t\t"
 
         field_str = "\n"
         field_str += pad_str * width
         field_str += f"\n{pad_str}\n"
 
         if len(self.widow) != 0:
-            field_str += f"{pad_str}\t\tウィドー: {len(self.widow)}\n"
-        field_str += f"{pad_str}\t\t山札: {len(self.deck)}\n"
-        field_str += f"{pad_str}\t\t場: {len(self.cards)}\n"
-        field_str += f"{pad_str}\t\t捨て札: {len(self.trash)}\n"
+            field_str += f"{token_tab3}ウィドー: {len(self.widow)}\n"
+        field_str += f"{token_tab3}山札: {len(self.deck)}\n"
+        field_str += f"{token_tab3}場: {len(self.cards)}\n"
+        field_str += f"{token_tab3}捨て札: {len(self.trash)}\n"
+
+
+        field_str += f"{pad_str}\n"
+        field_str += f"{token_tab1}Players\n"
+        for player in self.players:
+            field_str += f"{token_tab2}{player}: {player.cards}\n"
 
         field_str += f"{pad_str}\n"
         field_str += pad_str * width

@@ -35,12 +35,12 @@ def test_track(players: Callable[[list[str]], list[Player]]):
     players = players()
     field = Field(deck, players)
 
-    game = Game(players = players, deck = deck, field = field)
+    game = Game(field = field)
     game.shuffle()
     game.deal()
     game.field.set_trump(Suit.spade)
     
-    plyers = game.players
+    plyers = field.players
     field = game.field
     track = Track(players = plyers, field = field)
     winner = track.play(is_random=True, display=True)

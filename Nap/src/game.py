@@ -24,7 +24,7 @@ class Game:
     hand_num = 10
     widow_num = 4
 
-    def __init__(self, players: list[Player], field: Field, deck: Deck):
+    def __init__(self, field: Field):
         """Constructor.
         Note:
             ゲームの流れ
@@ -39,24 +39,22 @@ class Game:
                     c. 強いカードを出したプレイヤーが勝ち
                 5. プレイヤーの勝敗を決める
         """
-        self.deck = deck
-        self.players = players
         self.field = field
         
     def shuffle(self):
         """Shuffle a deck.
         """
-        self.deck.shuffle()
+        self.field.deck.shuffle()
         
     def deal(self):
         """Deal cards.
         カードを各プレイヤーに配る
         あまったカードはウィドーに置く
         """
-        for player in self.players:
-            player.take_hand(self.deck.deal(self.hand_num))
+        for player in self.field.players:
+            player.take_hand(self.field.deck.deal(self.hand_num))
 
-        self.field.set_widow(self.deck.deal(self.widow_num))
+        self.field.set_widow(self.field.deck.deal(self.widow_num))
 
     def declare(self):
         """Declare a strength.
