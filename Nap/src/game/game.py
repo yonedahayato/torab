@@ -1,15 +1,8 @@
-import random
-from typing import Any
-
-from .player import Player
-
-from .utils import (
-    Deck,
-)
-
-from .field import (
+from ..field import (
     Field,
 )
+
+from .track import Track
 
 class Game:
     """A game of Nap.
@@ -84,78 +77,3 @@ class Game:
             track = Track(self.deck, self.players, self.field)
             track.play()
             self.field.clear()
-
-class Track:
-    """1 回のゲームを管理するクラス
-    
-    Attributes:
-        field (Field): フィールド
-
-    Note:
-        このクラスでは、以下のことを行う
-        1. トラックの処理の実行
-        2. そのトラックにおける勝者の決定
-    """
-    def __init__(self, field: Field):
-        """Constructor.
-        """
-        self.field = field
-        
-    def play(self, 
-             display: bool = False, 
-             is_first: bool = False):
-        """Play a trak.
-        
-        Args:
-            display (bool): 出したカードを表示するかどうか
-            is_first (bool): 最初のプレイ(トラック)かどうか
-                最初のプレイ(トラック)かどうかで、カードの強弱が変わる可能性がある
-
-        Note:
-            トラックの流れは以下の通り
-                1. 各プレイヤーがカードを出す
-                    最初に出したカードが、切り札となる
-                2. 出されたカードの強さを比較する
-
-            最初のトラックは、特殊なカードの効果が発動しない
-        """
-        for cnt, player in enumerate(self.field.players):
-            card = player.play_card()
-            if cnt == 0:
-                self.field.trump = card.suit
-
-            self.field.put_card(player.name, card)
-            self.field.message = f"{player.name} が {card} を出した"
-
-            if display:
-                print(self.field)
-
-        print(f"\n場に出たカードは {[name + ' : ' + str(c) for name, c in self.field.cards.items()]} です")
-        print(self.field)
-        
-        winner = self.winner()
-        return winner
-        
-    def winner(self) -> Player:
-        """Decide a winner.
-        勝者を決める
-        
-        Returns:
-            Player: 勝者
-            
-        Note:
-            各プレイヤーがフィールドに出したカードの強さを比較して、勝者を決める
-        """
-        winner_card = max(list(self.field.cards.values()), 
-                          key = lambda x: (self.field.suit_strength(x.suit), x.num))
-        
-        def get_key(dictionary, value):
-            """value から key を取得する
-            """
-            for k, v in dictionary.items():
-                if str(v) == str(value):
-                    return k
-            return None
-
-        winner = get_key(self.field.cards, winner_card)
-        return winner

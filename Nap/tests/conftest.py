@@ -8,6 +8,8 @@ PROJECT_DIR = FILE_DIR.parent.absolute()
 sys.path.append(str(PROJECT_DIR))
 
 from src.player import Player
+from src.utils import Deck
+from src.field import Field
 
 @pytest.fixture
 def data_dir() -> str:
@@ -44,3 +46,19 @@ def players() -> Callable[[list[str]], list[Player]]:
         return [Player(name, cpu=True) for name in player_names] + [Player("You", cpu=False)]
 
     return _players
+
+@pytest.fixture
+def field_two_cpu_payers(players: Callable[[list[str]], list[Player]]):
+    """
+    CPU のプレイヤーが 2 人居る状態のフィールド
+    
+    Args:
+        players (Callable[[list[str]], list[Player]]): プレイヤーを作成する関数
+        
+    Returns:
+        Field: フィールド
+    """
+    deck = Deck()
+    two_players = players(player_names=["A", "B"])
+    
+    return Field(deck, two_players)
