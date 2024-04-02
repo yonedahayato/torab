@@ -1,4 +1,5 @@
 from .player import Player
+from ..utils import Suit
 
 class Charactor(Player):
     """
@@ -14,10 +15,15 @@ class Takeshi(Charactor):
     """
     トランプ学園 1年クラブ組 たけし
     
+    Attribute:
+        favorite_suit (Suit): クラブの使い手
+
     Note:
         たけしは、手札公開の際に、マークの情報をくれる
         クラブの使い手
     """
+    favorite_suit = Suit.club
+
     def __init__(self):
         super().__init__(name = "たけし", cpu = True)
 

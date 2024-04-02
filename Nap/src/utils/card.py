@@ -1,5 +1,4 @@
 from enum import IntEnum
-import random
 
 from .base import BasePicture
 
@@ -113,10 +112,10 @@ class Card(BasePicture):
             self.num = num
             self.suit = suit
         elif joker == 1:
-            self.num = 15
+            self.num = 16
             self.suit = None
         elif joker == 2:
-            self.num = 14
+            self.num = 15
             self.suit = None
         else:
             raise ValueError("ジョーカーの種類が不正です")
@@ -190,67 +189,3 @@ class Card(BasePicture):
             raise ValueError("カードの種類が不正です")
         
         return self.image_url
-    
-class Deck(BasePicture):
-    """A deck of Nap.
-    
-    デッキを管理するクラス
-    
-    Attributes:
-        cards (list[Card]): カード
-    """
-
-    def __init__(self):
-        """Constructor.
-        
-        Note:
-            デッキは、数字とスートを持つ52枚のカードとジョーカー2枚からなる、計54枚のカードからなる
-        """
-        self.cards = [Card(num, suit) for num in range(1, 14) for suit in Suit] + [Card(joker=1), Card(joker=2)]
-        print(f"{len(self.cards)} 枚のカードを使用します\n")
-
-    def __len__(self):
-        """Length.
-        デッキの枚数
-        """
-        return len(self.cards)
-    
-    def shuffle(self):
-        """Shuffle a deck.
-        """
-        random.shuffle(self.cards)
-        
-    def deal(self, num: int = 10):
-        """
-        
-        特定の枚数のカードを引く
-        
-        Args:
-            num (int): Number of cards to deal.
-            
-        Returns:
-            list[Card]: Dealed cards.
-            
-        Raises:
-            IndexError: If there is no card in a deck.
-        """
-        try:
-            return [self.cards.pop() for _ in range(num)]
-        except IndexError:
-            print("デッキにカードがありません")
-            return []
-        
-    def pull_out(self, targets: list[Card]):
-        """
-        特定のカードを引き抜く
-        
-        Args:
-            target (list[Card]): 対象のカード
-
-        Returns:
-            list[Card]: 山札から削除した対象のカード
-        """
-        for t in targets:
-            self.cards.remove(t)
-
-        return targets

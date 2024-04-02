@@ -2,7 +2,7 @@ from PIL import Image
 
 from .player import Player
 
-from .utils.card import (
+from .utils import (
     Card,
     Suit,
     Deck,
@@ -111,7 +111,7 @@ class Field(BasePicture):
         field_str += f"{token_tab1}Players\n"
         for player in self.players:
             hand = player.show_hand()
-            field_str += f"{token_tab2}{player}: {[str(card) for card in hand]}\n"
+            field_str += f"{token_tab2}{player} ({player.point}): {[str(card) for card in hand]}\n"
             
         if self.message != "":
             field_str += f"{pad_str}\n"
