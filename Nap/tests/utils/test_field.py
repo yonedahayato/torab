@@ -81,22 +81,6 @@ FIELD_STR_CASE_04 = """
 ##################################################"""
 
 @pytest.fixture
-def field_two_cpu_payers(players: Callable[[list[str]], list[Player]]):
-    """
-    CPU のプレイヤーが 2 人居る状態のフィールド
-    
-    Args:
-        players (Callable[[list[str]], list[Player]]): プレイヤーを作成する関数
-        
-    Returns:
-        Field: フィールド
-    """
-    deck = Deck()
-    two_players = players(player_names=["A", "B"])
-    
-    return Field(deck, two_players)
-
-@pytest.fixture
 def field_with_takeshi():
     """
     CPU たけしが居る状態のフィールド
