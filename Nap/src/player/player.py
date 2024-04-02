@@ -88,6 +88,7 @@ class Player:
         """
 
         self.cards = []
+        self.point = 0
         self.name = name
         self.cpu = cpu
 
@@ -107,7 +108,7 @@ class Player:
         """
         self.cards = sorted(cards)
         
-    def show_hand(self, hint: str = "no"):
+    def show_hand(self, hint: str = "no", is_force: bool = False):
         """Show hand.
         手札を開示する
         
@@ -115,6 +116,7 @@ class Player:
             hint (str): CPU が開示する際に、ヒントを持たせるかどの程度ヒントを持たせるか
                 no : ヒントなし
                 mark-{n} : マークの開示
+            is_force (bool): 強制的にカードを開示させる
 
         Return
             list[Card]: 開示する情報
@@ -125,7 +127,10 @@ class Player:
         if hint not in ["no", "mark-1"]:
             raise ValueError(f"想定していないヒントの値: {hint}")
 
-        if self.cpu and hint == "mark-1":
+        if is_force:
+            hand = self.cards
+
+        elif self.cpu and hint == "mark-1":
             hand = []
             for cnt, card in enumerate(self.cards):
                 if cnt < 1:

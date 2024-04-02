@@ -89,14 +89,15 @@ class SimpleTrack(Track):
     Attributes:
         field (Field): フィールド
         start_player_id (int): 最初にプレイをするプレイヤーの番号
+        trump (Suit): 固定する切り札
         time_lag (int): トラック内のひとつのプレイの間に時間を停止させる時間 [s]
 
     Note:
         切り札のスートは固定する
     """
-    def __init__(self, field: Field, start_player_id: int, suit: Suit, time_lag: int = 0):
+    def __init__(self, field: Field, start_player_id: int, trump: Suit, time_lag: int = 0):
         super().__init__(field, start_player_id, time_lag)
-        self.field.trump = suit
+        self.field.trump = trump
 
     def play(self, player: Player) -> Card:
         """

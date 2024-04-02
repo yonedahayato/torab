@@ -3,4 +3,9 @@ from .track import (
     SimpleTrack,
     NapTrack,
 )
-from .game import Game
+from .game import (
+    Game,
+    NapGame,
+    SimpleNapGame,
+    SimpleNapVSTakeshi
+)

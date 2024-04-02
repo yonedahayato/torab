@@ -21,6 +21,7 @@ from src.game import (
     SimpleTrack,
     NapTrack,
     Game,
+    NapGame,
 )
 
 from src.player import (
@@ -53,7 +54,7 @@ class TestSimpleTrack:
         print(field_two_cpu_payers_dealed)
         simple_track = SimpleTrack(field = field_two_cpu_payers_dealed, 
                                    start_player_id = 0, 
-                                   suit = Suit.spade)
+                                   trump = Suit.spade)
 
         for field in simple_track:
             print(field)
@@ -65,7 +66,7 @@ class TestSimpleTrack:
         print(field_two_cpu_payers_dealed)
         simple_track = SimpleTrack(field = field_two_cpu_payers_dealed, 
                                    start_player_id = 0,
-                                   suit = Suit.spade)
+                                   trump = Suit.spade)
 
         for _ in field_two_cpu_payers_dealed.players:
             field = next(simple_track)
@@ -86,7 +87,7 @@ class TestNapTrack:
         players = players()
         field = Field(deck, players)
 
-        game = Game(field = field)
+        game = NapGame(field = field)
         game.shuffle()
         game.deal()
         game.field.trump = Suit.spade
