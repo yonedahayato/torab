@@ -1,0 +1,25 @@
+packages = ["pillow"]
+
+[files]
+# pyscript のための設定
+"{FROM}" = ".."
+"{TO}" = "/home/work"
+
+# utils
+"{FROM}/src/utils/__init__.py" = "{TO}/src/utils/__init__.py"
+"{FROM}/src/utils/base.py" = "{TO}/src/utils/base.py"
+"{FROM}/src/utils/card.py" = "{TO}/src/utils/card.py"
+"{FROM}/src/utils/deck.py" = "{TO}/src/utils/deck.py"
+
+# field
+"{FROM}/src/field.py" = "{TO}/src/field.py"
+
+# player
+"{FROM}/src/player/__init__.py" = "{TO}/src/player/__init__.py"
+"{FROM}/src/player/player.py" = "{TO}/src/player/player.py"
+"{FROM}/src/player/charactor.py" = "{TO}/src/player/charactor.py"
+
+# game
+"{FROM}/src/game/__init__.py" = "{TO}/src/game/__init__.py"
+"{FROM}/src/game/track.py" = "{TO}/src/game/track.py"
+"{FROM}/src/game/game.py" = "{TO}/src/game/game.py"
