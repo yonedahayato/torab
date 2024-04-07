@@ -1,3 +1,6 @@
+from time import sleep
+import random
+
 from ..utils import (
     Suit,
     Card,
@@ -27,14 +30,26 @@ class Game:
     複数の Track を行う
     
     Attributes:
-        hand_num (int): Number of cards to deal to each player.
-        
-        field (Field): ゲームを行うためのフィールド
+        hand_num (int): Number of cards to deal to each player.        
+        time_lag (int): Track の設定
     """
     hand_num = 10
+    time_lag = 0
 
-    def __init__(self):
+    def __init__(self, 
+                 player_how_to_choose: str = "input", 
+                 first_message: str = None):
         """
+        Args:
+            player_how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+            first_message (str): フィールに最初に表示させるメッセージ
+
+        Attributes:
+            deck (Deck); ゲームを行うためのデッキ
+            players (list[Players]): ゲームを行うプレイヤー
+            field (Field): ゲームを行うためのフィールド
+
         Note:
             ゲームのための準備
                 1. フィールドの設営
@@ -42,16 +57,22 @@ class Game:
                     b. プレイヤーを着席させる
                 2. カードをシャフル
                 3. カードを配る
+                4. 切り札の決定
                 4. Track を準備
         """
         deck = self.set_deck()
-        players = self.set_player()
-
+        players = self.set_player(player_how_to_choose)
         self.field = Field(deck, players)
+
         self.shuffle()
         self.deal()
+        self.set_trump()
         self.set_track(start_player_id=0)
+
+        if first_message:
+            self.field.message = first_message
         print(self.field)
+        sleep(self.time_lag)
         
     def set_deck(self) -> Deck:
         """
@@ -60,10 +81,14 @@ class Game:
         deck = Deck()
         return deck
 
-    def set_player(self) -> list[Player]:
+    def set_player(self, how_to_choose: str = "input") -> list[Player]:
         """
         ゲームに参加させるプレイヤーを着席させる
-        
+
+        Args:
+            how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+
         Returns:
             list[Player]: ゲームに参加するプレイヤー
         """
@@ -84,6 +109,11 @@ class Game:
         for player in self.field.players:
             player.take_hand(self.field.deck.deal(self.hand_num))
     
+    def set_trump(self):
+        """
+        切り札を決定する
+        """
+        
     def set_track(self, start_player_id: int):
         """
         
@@ -95,14 +125,17 @@ class Game:
         self.track = SimpleTrack(
                         field = self.field, 
                         start_player_id = start_player_id, 
-                        trump = Suit.spade)
-        
+                        time_lag = self.time_lag)
+
     def decide_winner_in_track(self) -> Player:
         """
         ある Track における勝者を決定する
         """
         
     def add_point(self, player: Player) -> None:
+        """
+        そのゲームにおける得点の方法に従い、プレイヤーに得点を与える
+        """
         player.point += 1
 
     def play(self) -> None:
@@ -110,12 +143,17 @@ class Game:
         トラックの進行を行う
         
         Note:
-            ある Track における処理の流れ
+            a. 手札の枚数分、track を行う
+
+            b. ある Track における処理の流れ
                 1. 各プレイヤーがカードを出す (track のイテレーション)
                 2. その Track における勝者を決める
                 3. 勝者にポイントを付与
                 3. フィールドの場を綺麗にする
                 4. 次の Track の準備
+                    プレイヤーは、常に後手
+                    
+            c. ゲームにおける勝者を決定する
         """
         for track_cnt in range(self.hand_num):
             for field in self.track:
@@ -150,64 +188,15 @@ class SimpleNapGame(Game):
         deck = SimpleDeck()
         return deck
 
-    def calculate_strongness(self, card: Card) -> tuple[int, int]:
+    def set_trump(self):
         """
-        このゲームにおけるそのカードの強さを計算する
-        
-        Args:
-            card (Card): 強さを計算するカード
-            
-        Returns:
-            Tuple[int, int]: 数字の強さ, スートの強さ
+        切り札を設定する
 
         Note:
-            切り札のスートの強さ優先
-                trump (切り札) > 台札 > spade > heart > diamond > club
-            次に、数字の強さ
-                A > K > Q > J > 10 > ... > 2
-        """
+            切り札は、スペードで固定
 
-    def decide_winner_in_track(self) -> Player:
         """
-        ある Track における勝者を決定する
-        
-        Returns:
-            ある Track における勝者
-        """
-        cards_power = {name: self.calculate_strongness(card) for name, card in self.field.cards.items()}
-        winner_name, card_power = max(cards_power.items(), key=lambda x: (x[1][1], x[1][0]))
-        winner_id = list(self.field.cards.keys()).index(winner_name)
-
-        return self.field.players[winner_id]
-    
-    def decide_winner_in_game(self) -> Player:
-        """
-        各プレイヤーのポイントから勝者を決定する
-        """
-        
-        return max(self.field.players, key = lambda p: p.point)
-
-class SimpleNapVSTakeshi(SimpleNapGame):
-    """
-    たけしとのシンプルなトラックテイキングで勝負
-    """
-    def set_player(self) -> list[Player]:
-        return [Takeshi(), Player("You", cpu=False)]
-
-    def deal(self) -> None:
-        """Deal cards.
-
-        カードを各プレイヤーに配る
-        たけしには、クラブのカードを渡す
-        """
-        takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + self.hand_num)]
-
-        for player in self.field.players:
-            if player.name == "たけし": 
-                takeshi_hand = self.field.deck.pull_out(takeshi_hand)
-                player.take_hand(takeshi_hand)
-            else:
-                player.take_hand(self.field.deck.deal(self.hand_num))
+        self.field.trump = Suit.spade
 
     def calculate_strongness(self, card: Card) -> tuple[int, int]:
         """
@@ -237,6 +226,133 @@ class SimpleNapVSTakeshi(SimpleNapGame):
             suit_power = int(card.suit)
 
         return (num_power, suit_power)
+    
+    def decide_winner_in_track(self) -> Player:
+        """
+        ある Track における勝者を決定する
+        
+        Returns:
+            ある Track における勝者
+        """
+        cards_power = {name: self.calculate_strongness(card) for name, card in self.field.cards.items()}
+        winner_name, card_power = max(cards_power.items(), key=lambda x: (x[1][1], x[1][0]))
+        winner_id = list(self.field.cards.keys()).index(winner_name)
+
+        return self.field.players[winner_id]
+    
+    def decide_winner_in_game(self) -> Player:
+        """
+        各プレイヤーのポイントから勝者を決定する
+        """
+        
+        return max(self.field.players, key = lambda p: p.point)
+
+class EasyNapGame(SimpleNapGame):
+    """
+    SimpleNapGame を難易度を標準化
+    """
+    hand_num = 5
+
+    def set_trump(self):
+        """
+        切り札を設定する
+
+        Note:
+            切り札は、スペードで固定
+
+        """
+        self.field.trump = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
+
+    def set_track(self, start_player_id: int):
+        """
+        
+        ゲームで利用する Tack を設定する
+        
+        Args:
+            start_player_id (int): この Track で最初にプレイするプレイヤーの index
+            
+        Note:
+            切り札は、ランダム
+        """
+        self.track = Track(
+                        field = self.field, 
+                        start_player_id = start_player_id, 
+                        time_lag = self.time_lag)
+
+    def calculate_strongness(self, card: Card) -> tuple[int, int]:
+        """
+        このゲームにおけるそのカードの強さを計算する
+        
+        Args:
+            card (Card): 強さを計算するカード
+            
+        Returns:
+            Tuple[int, int]: 数字の強さ, スートの強さ
+
+        Note:
+            切り札のスートの強さ優先
+                trump (切り札) > 台札 > spade > heart > diamond > club
+            次に、数字の強さ
+                A > K > Q > J > 10 > ... > 2
+        """
+        if card.num == 1:
+            num_power = 14
+        else:
+            num_power = card.num
+
+        if card.suit == self.field.trump:
+            suit_power = 6
+        elif card.suit == self.track.lead_suit:
+            suit_power = 5
+        else:
+            suit_power = int(card.suit)
+
+        return (num_power, suit_power)
+
+class SimpleNapVSTakeshi(SimpleNapGame):
+    """
+    たけしとのシンプルなトラックテイキングで勝負
+    """
+    describe = \
+"""
+1. シンプルなトリックテイキングゲーム
+2. たけしと 1 vs 1 で行う
+3. 手札は 3 枚 (3 トリックの勝負)
+4. 台札はなし (スートの請求もなし)
+5. 切り札は、スペードに固定
+6. トリックの先行は、常にたけし
+"""
+    def __init__(self, player_how_to_choose: str = "input"):
+        super().__init__(player_how_to_choose = player_how_to_choose,
+                         first_message = Takeshi.lines["introduction"])
+
+    def set_player(self, how_to_choose: str = "input") -> list[Player]:
+        """
+        ゲームに参加させるプレイヤーを着席させる
+
+        Args:
+            how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+
+        Returns:
+            list[Player]: ゲームに参加するプレイヤー
+        """
+        return [Takeshi(), Player("You", cpu=False, how_to_choose=how_to_choose)]
+
+    def deal(self) -> None:
+        """Deal cards.
+
+        カードを各プレイヤーに配る
+        たけしには、クラブのカードを渡す
+        """
+        takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + self.hand_num)]
+
+        for player in self.field.players:
+            if player.name == "たけし": 
+                takeshi_hand = self.field.deck.pull_out(takeshi_hand)
+                player.take_hand(takeshi_hand)
+            else:
+                player.take_hand(self.field.deck.deal(self.hand_num))
 
 class NapGame(Game):
     """

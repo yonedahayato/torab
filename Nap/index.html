@@ -2,78 +2,43 @@
   <head>
     <meta charset="utf-8"/>
 		<!-- レスポンシブ動作対応 -->
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!-- PyScript -->
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
 
-		<!-- タイピングアニメーション -->
-		<script src="https://unpkg.com/ityped@1.0.3"></script>
+    <link rel="stylesheet" href="./asset/css/fukidasi.css">
   </head>
+
   <body>
-		<ul>
+    <ul>
 			<li><span id="info-version"></span></li>
 		</ul>
 
-		<span id="ityped"></span>
-		<ul>
-			<li>
-				<span id="info-suit"></span>
-				<button py-click="get_suit()" class="py-button">get suit</button>
-			</li>
-			<li>
-				<div id="info-card"></div>
-				<button py-click="get_card()" class="py-button">get card</button>
-			</li>
-		</ul>
+    <div id="select" style="background-color:green""></div>
 
-    <section class="pyscript">
-			<py-config>
-				[[fetch]]
-				files = ["./src/utils/card.py", "./src/utils/base.py"]
-			</py-config>
-      <py-script>
-import random
-import platform
+    <h1>VS Takeshi</h1>
+    <div class="balloon5">
+      <div class="faceicon">
+        <img src="./asset/image/charactor/takeshi/v.0.0/main.png">
+      </div>
 
-from src.utils.card import Suit, Card
+      <div class="chatting">
+        <div class="says">
+          <p id="fukidasi"></p>
+        </div>
 
-display(f"Python version: {platform.python_version()}", target="info-version")
+        <div id="describe">
+        </div>
+      </div>
+    </div>
 
-def get_suit():
-	suit = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
-	display(f"suit : {suit.mark}", target="info-suit", append=False)
+    <script type="py" src="./pyscript/main.py" config="./pyscript/pyscript.toml"></script>
+    <!-- <py-script type="py" src="./pyscript/worker.py" config="./pyscript/pyscript.toml" terminal worker> -->
+    <script type="py" src="./pyscript/worker.py" config="./pyscript/pyscript.toml" terminal></script>
 
-def get_card():
-	suit = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
-	card = Card(num=random.randint(1, 13), suit=suit)
-	display(f"card : {card}", target="info-card", append=False)
-      </py-script>
-    </section>
-
-		<script>
-			ityped.init(document.querySelector("#ityped"), {
-			  strings: ['このサイトは、Nap CLI を作成する予定です', '以下の項目については完了しております'],
-			  loop: true,
-			  disableBackTyping: false,
-			})
-
-		</script>
-
-		<!-- カーソルの点滅をコントロールする -->
-		<style>
-			.ityped-cursor {
-				opacity: 1;
-				animation: blink 0.3s infinite;
-				animation-direction: alternate;
-		}
-		
-			@keyframes blink {
-					100% {
-							opacity: 0;
-					}
-			}
-		</style>
+    <br>
+    <div id="buttons" style="background-color:green""></div>
   </body>
 </html>

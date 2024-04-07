@@ -241,3 +241,21 @@ class Field(BasePicture):
         
         if save_path:
             image.save(save_path, quality=95)
+            
+    def get_player(self, name: str) -> Player | None:
+        """
+        名前からプレイヤー情報を取得する
+        
+        Args:
+            name (str): プレイヤー名
+            
+        Returns:
+            Player | None: プレイヤー情報
+                入力された名前のプレイヤーがいなかれば、None を返す
+        """
+        
+        for player in self.players:
+            if player.name == name:
+                return player
+            
+        return None

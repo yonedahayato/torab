@@ -7,5 +7,5 @@ from .game import (
     Game,
     NapGame,
     SimpleNapGame,
-    SimpleNapVSTakeshi
+    SimpleNapVSTakeshi,
 )

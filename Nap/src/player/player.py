@@ -67,6 +67,10 @@ class Player:
         is_nap (bool): ナポレオンかどうか
         is_adjutant (bool): 副官かどうか
         is_allied (bool): 連合軍かどうか
+
+        point (int): プレイヤーが所持してる点数
+        cards (list[Card]): プレイヤーのハンド
+        
         
     Note:
         プレイヤーは、ナポレオン、副官、連合軍のいずれかである
@@ -79,27 +83,62 @@ class Player:
         CPU は、ランダムに宣言する
     """
 
-    def __init__(self, name: str = "Unknown", cpu: bool = False):
+    def __init__(self, name: str = "Unknown", cpu: bool = False, how_to_choose: str = "input"):
         """Constructor.
         
-        Args:
+        Attributes:
             name (str): プレイヤーの名前
             cpu (bool): CPU かどうか
+            how_to_choose (str): プレイヤークラスの choose_card メソッドの挙動の方法
+                input: input method を利用
+                set: 変数を格納することでカードを選択する
         """
-
-        self.cards = []
-        self.point = 0
         self.name = name
         self.cpu = cpu
+        if how_to_choose not in ["input", "set"]:
+            raise ValueError(f"プレイヤーのカードの選択方法が異常: {how_to_choose}")
+        self.how_to_choose = how_to_choose
 
         self.is_nap = False
         self.is_adjutant = False
         self.is_allied = False
 
-    def __str__(self):
+        self.point = 0
+        self.cards = []
+        self._choose_card_id = None
+
+    def __str__(self) -> str:
         """String.
+        
+        Returns:
+            str: プレイヤーの名前
         """
         return self.name
+
+    @property
+    def choose_card_id(self) -> int:
+        """
+        
+        choose_card_id の getter
+
+        Attributes:
+            choose_card_id (int): 選択するカードをあらかじめ格納するために利用する
+            
+        Returns:
+            int: choose_card_id の値
+        """
+        return self._choose_card_id
+    
+    @choose_card_id.setter
+    def choose_card_id(self, card_id) -> None:
+        """
+        
+        choose_card_id の setter
+        
+        Args:
+            card_id (int): 選択するカード
+        """
+        self._choose_card_id = card_id
 
     def take_hand(self, cards: list[Card]):
         """Take hand.
@@ -171,8 +210,34 @@ class Player:
         declear = Declear(num, suit)
 
         return declear
-    
-    def play_card(self, is_random: bool = False) -> Card:
+
+    def choose_card(self) -> Card:
+        """
+        CPU でないプレイヤーが、カードを選ぶ処理
+        
+        Returns:
+            Card: 選択したカード
+            
+        Note:
+            input を使うケース
+            set (変数) を使うケース
+                利用後は、削除 (Noneを代入)
+        """
+        if self.how_to_choose == "input":
+            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
+            try:
+                card_id = int(input("出すカードを入力してください: "))
+            except ValueError:
+                raise ValueError("カードの番号を入力してください")
+
+        elif self.how_to_choose == "set":
+            card_id = self.choose_card_id
+            self.choose_card_id = None
+
+        card = self.cards.pop(card_id)
+        return card
+
+    def play_card(self, is_random: bool = False, lead_suit: Suit = None) -> Card:
         """Play card.
         カードを出す
         
@@ -182,17 +247,22 @@ class Player:
             
         Returns:
             Card: カード
+            
+        Note:
+            ランダム or CPU ならば、ランダムにカードを選択する
+                lead_suit がない、もしくは手札に lead_suit がなければ、ランダムに選択する
         """
-        if not self.cpu:
-            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
-            try:
-                card_id = int(input("出すカードを入力してください: "))
-            except ValueError:
-                raise ValueError("カードの番号を入力してください")
+        if is_random or self.cpu:
+            
+            if lead_suit is None or lead_suit not in [c.suit for c in self.cards]:
+                cards = self.cards
+            else:
+                cards = [c for c in self.cards if c.suit == lead_suit]
+
+            card_id = random.randrange(len(cards))
             card = self.cards.pop(card_id)
 
-        elif is_random or self.cpu:
-            card = random.choice(self.cards)
-            self.cards.remove(card)
+        else:
+            card = self.choose_card()
 
         return card
