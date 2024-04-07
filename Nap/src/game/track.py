@@ -17,11 +17,8 @@ class Track:
     """1 回のゲームを管理するクラス
     
     Attributes:
-        field (Field): フィールド
-        start_player_id (int): 最初にプレイをするプレイヤーの番号
-        time_lag (int): トラック内のひとつのプレイの間に時間を停止させる時間 [s]
-
         play_cnt (int): そのトラックの中で何回プレイが行われたか
+        lead_suit (int): 台札のスート
 
     Note:
         このクラスでは、以下のことを行う
@@ -30,12 +27,17 @@ class Track:
     """
     def __init__(self, field: Field, start_player_id: int, time_lag: int = 0):
         """Constructor.
+        Attributes:
+            field (Field): フィールド
+            start_player_id (int): 最初にプレイをするプレイヤーの番号
+            time_lag (int): トラック内のひとつのプレイの間に時間を停止させる時間 [s]
         """
         self.field = field
         self.start_player_id = start_player_id
         self.time_lag = time_lag
 
         self.play_cnt = 0
+        self.lead_suit = None
 
     def __iter__(self):
         return self
@@ -75,12 +77,23 @@ class Track:
             
         Returns:
             Card: プレイをした結果、提出するカード
+            
+        Note:
+            初めに出したカードのスートを台札とする
         """
         card = player.play_card()
         if self.play_cnt == 0:
-            self.field.trump = card.suit
+            self.lead_suit = card.suit
             
         return card
+    
+    def get_next_player(self) -> Player:
+        """
+        次にプレイするプレイヤーの情報を取得する
+        """
+        player_id = (self.start_player_id + self.play_cnt) % len(self.field.players)
+        return self.field.players[player_id]
+
 
 class SimpleTrack(Track):
     """
@@ -89,19 +102,23 @@ class SimpleTrack(Track):
     Attributes:
         field (Field): フィールド
         start_player_id (int): 最初にプレイをするプレイヤーの番号
-        trump (Suit): 固定する切り札
         time_lag (int): トラック内のひとつのプレイの間に時間を停止させる時間 [s]
 
     Note:
         切り札のスートは固定する
     """
-    def __init__(self, field: Field, start_player_id: int, trump: Suit, time_lag: int = 0):
+    def __init__(self, field: Field, start_player_id: int, time_lag: int = 0):
         super().__init__(field, start_player_id, time_lag)
-        self.field.trump = trump
 
     def play(self, player: Player) -> Card:
         """
-        初めに出したスートが、切り札にしない
+        決められたプレイ処理を実行する
+        
+        Args:
+            player (Player): プレイを実行するプレイヤー
+            
+        Note:
+            初めに出したスートが、切り札にしない
         """
         card = player.play_card()
         return card

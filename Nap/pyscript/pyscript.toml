@@ -23,3 +23,7 @@ packages = ["pillow"]
 "{FROM}/src/game/__init__.py" = "{TO}/src/game/__init__.py"
 "{FROM}/src/game/track.py" = "{TO}/src/game/track.py"
 "{FROM}/src/game/game.py" = "{TO}/src/game/game.py"
+
+## pyscipt で利用する処理
+"./games.py" = "/pyscript/pyscript/games.py"
+"./button.py" = "/pyscript/pyscript/button.py"

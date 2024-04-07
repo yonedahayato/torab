@@ -93,7 +93,6 @@ class Player:
                 input: input method を利用
                 set: 変数を格納することでカードを選択する
         """
-
         self.name = name
         self.cpu = cpu
         if how_to_choose not in ["input", "set"]:
@@ -221,21 +220,24 @@ class Player:
             
         Note:
             input を使うケース
+            set (変数) を使うケース
+                利用後は、削除 (Noneを代入)
         """
-        print([f"{i}: {c}" for i, c in enumerate(self.cards)])
-        
         if self.how_to_choose == "input":
+            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
             try:
                 card_id = int(input("出すカードを入力してください: "))
             except ValueError:
                 raise ValueError("カードの番号を入力してください")
+
         elif self.how_to_choose == "set":
-            pass
+            card_id = self.choose_card_id
+            self.choose_card_id = None
 
         card = self.cards.pop(card_id)
         return card
 
-    def play_card(self, is_random: bool = False) -> Card:
+    def play_card(self, is_random: bool = False, lead_suit: Suit = None) -> Card:
         """Play card.
         カードを出す
         
@@ -248,10 +250,17 @@ class Player:
             
         Note:
             ランダム or CPU ならば、ランダムにカードを選択する
+                lead_suit がない、もしくは手札に lead_suit がなければ、ランダムに選択する
         """
         if is_random or self.cpu:
-            card = random.choice(self.cards)
-            self.cards.remove(card)
+            
+            if lead_suit is None or lead_suit not in [c.suit for c in self.cards]:
+                cards = self.cards
+            else:
+                cards = [c for c in self.cards if c.suit == lead_suit]
+
+            card_id = random.randrange(len(cards))
+            card = self.cards.pop(card_id)
 
         else:
             card = self.choose_card()

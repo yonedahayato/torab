@@ -8,19 +8,37 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
 
+    <link rel="stylesheet" href="./asset/css/fukidasi.css">
   </head>
 
   <body>
     <ul>
 			<li><span id="info-version"></span></li>
 		</ul>
-    <input type="text" id="english" placeholder="Type English here..." />
-    <button py-click="main">Start</button>
-    <div id="output"></div>
 
-    <script type="py" src="./pyscript/main.py" config="./pyscript/pyscript.toml">
-    </script>
-    <py-script type="py" src="./pyscript/worker.py" config="./pyscript/pyscript.toml" terminal worker>
-    </py-script>
+    <div id="select" style="background-color:green""></div>
+
+    <h1>VS Takeshi</h1>
+    <div class="balloon5">
+      <div class="faceicon">
+        <img src="./asset/image/charactor/takeshi/v.0.0/main.png">
+      </div>
+
+      <div class="chatting">
+        <div class="says">
+          <p id="fukidasi"></p>
+        </div>
+
+        <div id="describe">
+        </div>
+      </div>
+    </div>
+
+    <script type="py" src="./pyscript/main.py" config="./pyscript/pyscript.toml"></script>
+    <!-- <py-script type="py" src="./pyscript/worker.py" config="./pyscript/pyscript.toml" terminal worker> -->
+    <script type="py" src="./pyscript/worker.py" config="./pyscript/pyscript.toml" terminal></script>
+
+    <br>
+    <div id="buttons" style="background-color:green""></div>
   </body>
 </html>
