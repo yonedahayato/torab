@@ -14,8 +14,8 @@ def display_version() -> None:
     """
     info_version = document.querySelector("#info-version")
     with open("/home/work/src/game/__init__.py", "r") as f:
-        print(l = f.readlines())
-    info_version.innerText = sys.version
+        l = f.readlines()
+    info_version.innerText = str(l)
     
 def main():
     """
