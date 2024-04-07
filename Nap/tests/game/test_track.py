@@ -53,8 +53,7 @@ class TestSimpleTrack:
         """
         print(field_two_cpu_payers_dealed)
         simple_track = SimpleTrack(field = field_two_cpu_payers_dealed, 
-                                   start_player_id = 0, 
-                                   trump = Suit.spade)
+                                   start_player_id = 0)
 
         for field in simple_track:
             print(field)
@@ -65,8 +64,7 @@ class TestSimpleTrack:
         """
         print(field_two_cpu_payers_dealed)
         simple_track = SimpleTrack(field = field_two_cpu_payers_dealed, 
-                                   start_player_id = 0,
-                                   trump = Suit.spade)
+                                   start_player_id = 0)
 
         for _ in field_two_cpu_payers_dealed.players:
             field = next(simple_track)

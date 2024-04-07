@@ -322,7 +322,7 @@ class SimpleNapVSTakeshi(SimpleNapGame):
 5. 切り札は、スペードに固定
 6. トリックの先行は、常にたけし
 """
-    def __init__(self, player_how_to_choose: str):
+    def __init__(self, player_how_to_choose: str = "input"):
         super().__init__(player_how_to_choose = player_how_to_choose,
                          first_message = Takeshi.lines["introduction"])
 
