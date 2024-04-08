@@ -5,7 +5,7 @@ if [ $OPTION == "pyscript" ]; then
     #   Cross-Origin-Opener-Policy: same-origin
     #   Cross-Origin-Embedder-Policy: require-corp
     #   Cross-Origin-Resource-Policy: cross-origin
-    python3 ./pyscript/server.py
+    python3 ./pyscript/server/server.py
 
 else
     python3 -m http.server

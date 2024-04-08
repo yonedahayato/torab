@@ -10,7 +10,7 @@ import sys
 sys.path.append("/home/work")
 sys.path.append("/pyscript/pyscript")
 
-from button import (
+from .button import (
     Buttons,
 )
 

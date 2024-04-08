@@ -11,10 +11,8 @@ import sys
 sys.path.append("/home/work")
 sys.path.append("/pyscript/pyscript")
 
-from games import VSTakeshiBrowserGame
-from button import (
-    make_button,
-)
+from utils.games import VSTakeshiBrowserGame
+from utils.button import make_button
 
 class GameMaster:
     """
@@ -31,11 +29,21 @@ class GameMaster:
     }
 
     def __init__(self):
+        """
+        
+        Attributes:
+            titile_area (JsProxy): タイトルの情報
+        """
+        self.title_area = document.querySelector("#title")
+
         self.start()
 
-    def start(self):
+    def start(self) -> None:
         """
         ゲームの選択する画面を作成する
+        
+        Note:
+            選択すうボタンを作成する
         """
         print("ゲームを選択してください")
         self.select_area = document.querySelector("#select")
@@ -44,7 +52,15 @@ class GameMaster:
             button = make_button(value = game_name, func_name="game.select")
             self.select_area.appendChild(button)
             self.buttons.append(button)
-            
+
+    def restart(self) -> None:
+        """
+        ゲームを選択する画面を整え、再度ゲームを選択させる
+        """
+        self.title_area.textContent = "Nap CLI"
+        self.start()
+        self.describe_area.removeChild(self.ul_tag)
+
     def describe(self, game_name: str, text: str):
         """
         ゲームの説明をする
@@ -61,7 +77,6 @@ class GameMaster:
                 タイトルを変更
                 ルールの説明を表示
         """
-        self.title_area = document.querySelector("#title")
         self.title_area.textContent = game_name
 
         self.describe_area = document.querySelector("#describe")
@@ -113,7 +128,7 @@ class GameMaster:
         self.game.go(event)
 
         if self.game.is_finish:
-            self.start()
+            self.restart()
 
     def run(self, event: JsProxy) -> None:
         """
@@ -125,6 +140,6 @@ class GameMaster:
         self.game.run(event)
 
         if self.game.is_finish:
-            self.start()
+            self.restart()
 
 game = GameMaster()

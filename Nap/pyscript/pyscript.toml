@@ -25,5 +25,5 @@ packages = ["pillow"]
 "{FROM}/src/game/game.py" = "{TO}/src/game/game.py"
 
 ## pyscipt で利用する処理
-"./games.py" = "/pyscript/pyscript/games.py"
-"./button.py" = "/pyscript/pyscript/button.py"
+"./utils/games.py" = "/pyscript/pyscript/utils/games.py"
+"./utils/button.py" = "/pyscript/pyscript/utils/button.py"
