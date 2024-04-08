@@ -1,7 +1,10 @@
+import io
 from pathlib import Path
+import pytest
 import sys
 from typing import Callable
-import pytest
+
+from _pytest.monkeypatch import MonkeyPatch
 
 FILE_DIR = Path(__file__).parent.absolute()
 PROJECT_DIR = FILE_DIR.parent.parent.absolute()
@@ -62,7 +65,7 @@ FIELD_STR_CASE_03 = """
 #\tPlayers
 #\t\tA (0): ['?', '?', '?']
 #\t\tB (0): ['?', '?', '?']
-#\t\tYou (0): ['4 ♠', '5 ♠', '6 ♠']
+#\t\tYou (0): ['♠-4', '♠-5', '♠-6']
 #
 ##################################################"""
 
@@ -75,8 +78,8 @@ FIELD_STR_CASE_04 = """
 #\t\t\t切り札: ♠
 #
 #\tPlayers
-#\t\tたけし (0): ['? ♥', '?', '?']
-#\t\tYou (0): ['4 ♠', '5 ♠', '6 ♠']
+#\t\tたけし (0): ['♥-?', '?', '?']
+#\t\tYou (0): ['♠-4', '♠-5', '♠-6']
 #
 ##################################################"""
 
@@ -197,10 +200,17 @@ class TestField:
         print(field_with_takeshi)
         assert str(field_with_takeshi) == FIELD_STR_CASE_04
 
-    def test_put_card(self, field_with_takeshi: Field) -> None:
+    def test_put_card(self, 
+                      field_with_takeshi: Field,
+                      monkeypatch: MonkeyPatch) -> None:
         """
         プレイヤーがカードを置く処理のテスト
+        
+        Args:
+            field_with_takeshi (Field): たけしが待機しているフィールド
+            monkeypatch (MonkeyPatch): pytest tool
         """
+        monkeypatch.setattr('sys.stdin', io.StringIO("0\n"))
         for player in field_with_takeshi.players:
             card = player.play_card()
             field_with_takeshi.put_card(player.name, card)
