@@ -173,7 +173,7 @@ class Player:
             hand = []
             for cnt, card in enumerate(self.cards):
                 if cnt < 1:
-                    hand.append(f"? {card.suit.mark}")
+                    hand.append(f"{card.suit.mark}-?")
                 else:
                     hand.append("?")
 

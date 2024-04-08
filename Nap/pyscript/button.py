@@ -3,6 +3,14 @@ html 上にボタンを作成したり、削除したりする処理
 """
 from pyodide.ffi import JsProxy
 from pyscript import document
+import sys
+
+sys.path.append("/home/work")
+
+from src.utils import (
+    Card,
+)
+
 
 def make_button(value: str, 
                 func_name: str = "game.run", 
@@ -23,12 +31,18 @@ def make_button(value: str,
     if text is None:
         text = value
 
-    button.textContent = text
+    if type(text) is str:
+        button.textContent = text
+    else:
+        button.appendChild(text)
+
     button.value = value
     button.id = value
     button.style = "width:100px;height:50px"
     button.setAttribute("py-click", func_name)
-    button.setAttribute("accesskey", text[0].lower())
+    button.setAttribute("type", "button")
+    button.setAttribute("class", "button")
+
     return button
 
 class Buttons:
@@ -45,6 +59,28 @@ class Buttons:
         """
         self.buttons_area = document.querySelector(id_name)
         self.buttons = []
+        
+    def make_card(self, cards: list[Card], func_name: str = "game.run"):
+        """
+        カードの画像をボタンとして作成する
+        <input 
+            type="image"
+            py-click="game.run"
+            value="0"
+            class="card_button"
+            src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png" />
+        """
+        for cnt, card in enumerate(cards):
+            input_tag = document.createElement('input')
+
+            input_tag.setAttribute("type", "image")
+            input_tag.setAttribute("py-click", func_name)
+            input_tag.value = str(cnt)
+            input_tag.setAttribute("src", card.image_url)
+            input_tag.setAttribute("class", "card_button")
+
+            self.buttons_area.appendChild(input_tag)
+            self.buttons.append(input_tag)
 
     def make(self, 
              card_num: int = 1,

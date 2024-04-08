@@ -158,8 +158,19 @@ class Card(BasePicture):
         """String.
         カードの文字列表現
         """
+        if str(self.num) == "1":
+            num = "A"
+        elif str(self.num) == "13":
+            num = "K"
+        elif str(self.num) == "12":
+            num = "Q"
+        elif str(self.num) == "11":
+            num = "J"
+        else:
+            num = self.num
+
         if self.joker == 0:
-            return f"{self.num} {self.suit.mark}"
+            return f"{self.suit.mark}-{num}"
         elif self.joker == 1:
             return "Joker (strong)"
         elif self.joker == 2:

@@ -45,25 +45,39 @@ class GameMaster:
             self.select_area.appendChild(button)
             self.buttons.append(button)
             
-    def describe(self, text: str):
+    def describe(self, game_name: str, text: str):
         """
         ゲームの説明をする
         
         Args:
+            game_name: ゲーム名
             text(str): ゲームの説明
             
         Attributes:
             describe_area (JsProxy): 説明を挿入するエリア
+            
+        Note:
+            処理の流れ
+                タイトルを変更
+                ルールの説明を表示
         """
+        self.title_area = document.querySelector("#title")
+        self.title_area.textContent = game_name
+
         self.describe_area = document.querySelector("#describe")
-        self.p_list = []
+
+        self.ul_tag = document.createElement('ul')
+        self.ul_tag.setAttribute("class", "note")
+
+        self.li_list = []
         for text_line in text.split("\n"):
             if text_line == "":
                 continue
-            p = document.createElement('p')
-            p.textContent = text_line
-            self.describe_area.appendChild(p)
-            self.p_list.append(p)
+            li = document.createElement('li')
+            li.textContent = text_line
+            self.ul_tag.appendChild(li)
+            self.li_list.append(li)
+        self.describe_area.appendChild(self.ul_tag)
 
     def select(self, event) -> None:
         """
@@ -80,13 +94,13 @@ class GameMaster:
 
         # ゲーム決定
         self.game = game_class()
-        
-        # ゲームの説明を表示
-        self.describe(game_class.describe)
+
+        # ゲームのタイトルと説明を表示
+        self.describe(game_name, game_class.describe)
 
         # button を削除
         for b in self.buttons:
-            self.select_area.removeChild(b)            
+            self.select_area.removeChild(b)
         self.select_area = []
 
     def go(self, event: JsProxy) -> None:
@@ -97,14 +111,19 @@ class GameMaster:
             event (JsProxy): メッセージの確認後のイベントのため、情報としては何もない
         """
         self.game.go(event)
+
         if self.game.is_finish:
             self.start()
 
     def run(self, event: JsProxy) -> None:
         """
         ゲームを実行する
+        
+        Args:
+           event (JsProxy): ゲームを動かすための情報を含んでいる 
         """
         self.game.run(event)
+
         if self.game.is_finish:
             self.start()
 

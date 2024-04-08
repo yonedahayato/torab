@@ -34,7 +34,7 @@ class TestDeck(unittest.TestCase):
         """
         deck = Deck()
         deck.cards = deck.cards[:5]
-        assert str(deck) == str(['1 ♠', '1 ♥', '1 ♦', '1 ♣', '2 ♠'])
+        assert str(deck) == str(['♠-A', '♥-A', '♦-A', '♣-A', '♠-2'])
 
         target = Card(num = 1, suit = Suit.spade)
         deck.pull_out([target])

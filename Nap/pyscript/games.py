@@ -184,7 +184,8 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
             # 次の処理は。run (= プレイヤーのプレイ)
             print("出すカードを入力してください")
             print([f"{i}: {c}" for i, c in enumerate(next_player.cards)])
-            self.card_buttons.make(card_num = len(next_player.cards))
+            # self.card_buttons.make(card_num = len(next_player.cards))
+            self.card_buttons.make_card(cards = next_player.cards)
             return
 
         # CPU のプレイ
