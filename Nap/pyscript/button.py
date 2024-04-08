@@ -61,9 +61,15 @@ class Buttons:
             func_name (str): 実行する関数名
             
         """
+        is_value_none = value is None
+        is_text_none = text is None
+
         for i in range(card_num):
-            if value is None:
+            if is_value_none:
                 value = str(i)
+            if is_text_none:
+                text = str(i)
+
             button = make_button(value, text = text, func_name = func_name)
             self.buttons_area.appendChild(button)
             self.buttons.append(button)

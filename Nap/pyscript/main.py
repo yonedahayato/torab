@@ -13,9 +13,7 @@ def display_version() -> None:
     python の version を表示する
     """
     info_version = document.querySelector("#info-version")
-    with open("/home/work/src/game/__init__.py", "r") as f:
-        l = f.readlines()
-    info_version.innerText = str(l)
+    info_version.innerText = sys.version
     
 def main():
     """

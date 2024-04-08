@@ -204,7 +204,6 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
         self.go_buttons.delete()
 
         next_action = event.target.getAttribute('value')
-        print(next_action)
         
         if len(self.lines) == 1:
             # 最後のおしゃべり
