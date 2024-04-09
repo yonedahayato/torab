@@ -11,7 +11,10 @@ import sys
 sys.path.append("/home/work")
 sys.path.append("/pyscript/pyscript")
 
-from utils.games import VSTakeshiBrowserGame
+from utils.games import (
+    VSTakeshiBrowserGame,
+    VSTakeshiLv2BrowerGame,
+)
 from utils.button import make_button
 
 class GameMaster:
@@ -25,7 +28,8 @@ class GameMaster:
         ゲームの選択などを行う
     """
     games = {
-        "VS Takeshi LV.1": VSTakeshiBrowserGame
+        "VS Takeshi Lv.1": VSTakeshiBrowserGame,
+        "VS Takeshi Lv.2": VSTakeshiLv2BrowerGame,
     }
 
     def __init__(self):

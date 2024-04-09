@@ -210,11 +210,62 @@ class Player:
         declear = Declear(num, suit)
 
         return declear
+    
+    def check_cards_can_submit(self, lead_suit: Suit = None) -> list[Card]:
+        """
+        CPU でないプレイヤーが、カードを確認する
+        
+        Args:
+            lead_suit (Suit): 台札のスート
+            
+        Returns:
+            list[Card]: 出せるカード
+        """
+        if lead_suit is None:
+            # リードがなければ、何も表示しない
+            cards_can_submit = self.cards
+        elif lead_suit not in [c.suit for c in self.cards]:
+            print("どのカードでも出せます。")
+            cards_can_submit = self.cards
+        else:
+            cards_can_submit = [c for c in self.cards if c.suit == lead_suit]
+            cards_can_submit_text = [f"{i}: {c}" for i, c in enumerate(self.cards) if c.suit == lead_suit]
+            print(f"出せるカードは、{cards_can_submit_text} です")
 
-    def choose_card(self) -> Card:
+        print("カードを選らんでください。")
+        print([f"{i}: {c}" for i, c in enumerate(self.cards)])
+
+        return cards_can_submit
+
+    def input_card(self, lead_suit: Suit):
+        """
+        標準入力を利用して、カードを選択する
+        """
+        cards_can_submit = self.check_cardcheck_card(lead_suit = lead_suit)
+
+        try:
+            card_id = int(input("出すカードの番号: "))
+        except ValueError:
+            print("\nカードの番号を入力してください。")
+            card_id = self.input_card(lead_suit = lead_suit)
+            
+        if len(self.cards) <= card_id:
+            print("\n入力の範囲を超えています。")
+            card_id = self.input_card(lead_suit = lead_suit)
+            
+        if str(self.cards[card_id]) not in [str(c) for c in cards_can_submit]:
+            print("\nそのカードは出せません。")
+            card_id = self.input_card(lead_suit = lead_suit)
+
+        return card_id
+
+    def choose_card(self, lead_suit: Suit) -> Card:
         """
         CPU でないプレイヤーが、カードを選ぶ処理
         
+        Args:
+            lead_suit (Suit): 台札のスート
+
         Returns:
             Card: 選択したカード
             
@@ -223,18 +274,16 @@ class Player:
             set (変数) を使うケース
                 利用後は、削除 (Noneを代入)
         """
-        if self.how_to_choose == "input":
-            print([f"{i}: {c}" for i, c in enumerate(self.cards)])
-            try:
-                card_id = int(input("出すカードを入力してください: "))
-            except ValueError:
-                raise ValueError("カードの番号を入力してください")
 
+        if self.how_to_choose == "input":
+            card_id = self.input_card(lead_suit = lead_suit)
+            
         elif self.how_to_choose == "set":
             card_id = self.choose_card_id
             self.choose_card_id = None
 
         card = self.cards.pop(card_id)
+
         return card
 
     def play_card(self, is_random: bool = False, lead_suit: Suit = None) -> Card:
@@ -263,6 +312,6 @@ class Player:
             card = self.cards.pop(card_id)
 
         else:
-            card = self.choose_card()
+            card = self.choose_card(lead_suit)
 
         return card
