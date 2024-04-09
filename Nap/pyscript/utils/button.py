@@ -60,9 +60,16 @@ class Buttons:
         self.buttons_area = document.querySelector(id_name)
         self.buttons = []
         
-    def make_card(self, cards: list[Card], func_name: str = "game.run"):
+    def make_card(self, cards: list[Card], func_name: str = "game.run", disable: list[bool] = None):
         """
         カードの画像をボタンとして作成する
+        
+        Args:
+            cards
+            func_name
+            disable (list[bool]): どのカードをクリックできないようにするかどうか
+
+        Note:
         <input 
             type="image"
             py-click="game.run"
@@ -78,6 +85,10 @@ class Buttons:
             input_tag.value = str(cnt)
             input_tag.setAttribute("src", card.image_url)
             input_tag.setAttribute("class", "card_button")
+
+            if disable is not None:
+                if disable[cnt]:
+                    input_tag.setAttribute("style", "pointer-events: none;")
 
             self.buttons_area.appendChild(input_tag)
             self.buttons.append(input_tag)

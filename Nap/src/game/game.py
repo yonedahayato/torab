@@ -61,13 +61,14 @@ class Game:
                 4. Track を準備
         """
         deck = self.set_deck()
-        players = self.set_player(player_how_to_choose)
+        players = self._set_player(player_how_to_choose)
         self.field = Field(deck, players)
 
         self.shuffle()
         self.deal()
-        self.set_trump()
-        self.set_track(start_player_id=0)
+        self._set_trump()
+        self.track_cnt = 0
+        self.set_track(start_player_id = 0)
 
         if first_message:
             self.field.message = first_message
@@ -81,7 +82,7 @@ class Game:
         deck = Deck()
         return deck
 
-    def set_player(self, how_to_choose: str = "input") -> list[Player]:
+    def _set_player(self, how_to_choose: str = "input") -> list[Player]:
         """
         ゲームに参加させるプレイヤーを着席させる
 
@@ -109,12 +110,25 @@ class Game:
         for player in self.field.players:
             player.take_hand(self.field.deck.deal(self.hand_num))
     
-    def set_trump(self):
+    def _set_trump(self):
         """
         切り札を決定する
         """
+        raise NotImplementedError
+    
+    def get_start_player_id(self) -> int:
+        """
+        次のトラックを始めるべきプレイヤーの id を取得する
         
-    def set_track(self, start_player_id: int):
+        Returns:
+            int: 次のトラックを始めるべきプレイヤーの id
+            
+        Note:
+            常にたけしが先行
+        """
+        return 0
+
+    def set_track(self, start_player_id: int = 0):
         """
         
         ゲームで利用する Tack を設定する
@@ -131,7 +145,8 @@ class Game:
         """
         ある Track における勝者を決定する
         """
-        
+        raise NotImplementedError
+
     def add_point(self, player: Player) -> None:
         """
         そのゲームにおける得点の方法に従い、プレイヤーに得点を与える
@@ -151,19 +166,22 @@ class Game:
                 3. 勝者にポイントを付与
                 3. フィールドの場を綺麗にする
                 4. 次の Track の準備
-                    プレイヤーは、常に後手
                     
             c. ゲームにおける勝者を決定する
         """
         for track_cnt in range(self.hand_num):
             for field in self.track:
                 print(field)
+
             winner = self.decide_winner_in_track()
             self.add_point(winner)
 
-            print(field)
             self.field.clear()
-            self.set_track(start_player_id = 0)
+            print(field)
+
+            self.track_cnt += 1
+            start_player_id = self.get_start_player_id()
+            self.set_track()
             
         winner = self.decide_winner_in_game()
         field.message = f"このゲームの勝者は、{winner} です"
@@ -188,7 +206,7 @@ class SimpleNapGame(Game):
         deck = SimpleDeck()
         return deck
 
-    def set_trump(self):
+    def _set_trump(self):
         """
         切り札を設定する
 
@@ -236,7 +254,8 @@ class SimpleNapGame(Game):
         """
         cards_power = {name: self.calculate_strongness(card) for name, card in self.field.cards.items()}
         winner_name, card_power = max(cards_power.items(), key=lambda x: (x[1][1], x[1][0]))
-        winner_id = list(self.field.cards.keys()).index(winner_name)
+        winner_id = [player.name for player in self.field.players].index(winner_name)
+        self.winner_id_in_track = winner_id
 
         return self.field.players[winner_id]
     
@@ -249,30 +268,73 @@ class SimpleNapGame(Game):
 
 class EasyNapGame(SimpleNapGame):
     """
-    SimpleNapGame を難易度を標準化
+    SimpleNapGame の難易度を標準化
+    
+    Attributes:
+        decribe (str): ゲームの説明
+        hand (int): 手札の枚数
     """
+    describe = \
+"""
+- 手札は 5 枚 (5 トリックの勝負)
+- 台札あり (スートの請求もあり)
+- 切り札は、ランダム
+- 最初のトリックの先行は、ランダム / その後は前のトリックの勝者
+- ジョーカーなしの 52 枚のカード
+"""
     hand_num = 5
 
-    def set_trump(self):
+    def __init__(self, 
+                 player_how_to_choose: str = "input", 
+                 first_message: str = None):
+        """
+        Args:
+            player_how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+            first_message (str): フィールに最初に表示させるメッセージ
+        """
+        super().__init__(player_how_to_choose, first_message)
+        self.field.is_use_lead = True
+
+    def _set_trump(self):
         """
         切り札を設定する
 
         Note:
-            切り札は、スペードで固定
+            切り札は、ランダム
 
         """
         self.field.trump = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
 
-    def set_track(self, start_player_id: int):
+    def get_start_player_id(self) -> int:
+        """
+        次のトラックを始めるべきプレイヤーの id を取得する
+        
+        Returns:
+            int: 次のトラックを始めるべきプレイヤーの id
+
+        Note:
+            最初のトリックの先行は、ランダム / その後は前のトリックの勝者
+        """
+        if self.track_cnt == 0:
+            start_player_id = random.randint(0, len(self.field.players))
+
+        else:
+            start_player_id = self.winner_id_in_track
+
+        return start_player_id
+
+    def set_track(self, start_player_id: int = None):
         """
         
         ゲームで利用する Tack を設定する
         
         Args:
             start_player_id (int): この Track で最初にプレイするプレイヤーの index
-            
+
         Note:
-            切り札は、ランダム
+            最初のトラックは、ランダム
+            次の Track を始めるプレイヤーは、前の Track の勝者            
         """
         self.track = Track(
                         field = self.field, 
@@ -302,57 +364,12 @@ class EasyNapGame(SimpleNapGame):
 
         if card.suit == self.field.trump:
             suit_power = 6
-        elif card.suit == self.track.lead_suit:
+        elif card.suit == self.field.lead:
             suit_power = 5
         else:
             suit_power = int(card.suit)
 
         return (num_power, suit_power)
-
-class SimpleNapVSTakeshi(SimpleNapGame):
-    """
-    たけしとのシンプルなトラックテイキングで勝負
-    """
-    describe = \
-"""
-1. シンプルなトリックテイキングゲーム
-2. たけしと 1 vs 1 で行う
-3. 手札は 3 枚 (3 トリックの勝負)
-4. 台札はなし (スートの請求もなし)
-5. 切り札は、スペードに固定
-6. トリックの先行は、常にたけし
-"""
-    def __init__(self, player_how_to_choose: str = "input"):
-        super().__init__(player_how_to_choose = player_how_to_choose,
-                         first_message = Takeshi.lines["introduction"])
-
-    def set_player(self, how_to_choose: str = "input") -> list[Player]:
-        """
-        ゲームに参加させるプレイヤーを着席させる
-
-        Args:
-            how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
-                Player class 参照
-
-        Returns:
-            list[Player]: ゲームに参加するプレイヤー
-        """
-        return [Takeshi(), Player("You", cpu=False, how_to_choose=how_to_choose)]
-
-    def deal(self) -> None:
-        """Deal cards.
-
-        カードを各プレイヤーに配る
-        たけしには、クラブのカードを渡す
-        """
-        takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + self.hand_num)]
-
-        for player in self.field.players:
-            if player.name == "たけし": 
-                takeshi_hand = self.field.deck.pull_out(takeshi_hand)
-                player.take_hand(takeshi_hand)
-            else:
-                player.take_hand(self.field.deck.deal(self.hand_num))
 
 class NapGame(Game):
     """

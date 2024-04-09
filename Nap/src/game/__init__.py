@@ -7,5 +7,9 @@ from .game import (
     Game,
     NapGame,
     SimpleNapGame,
+)
+
+from .vs_series import (
     SimpleNapVSTakeshi,
+    EasyNapVSTakeshi,
 )

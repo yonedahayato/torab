@@ -19,17 +19,6 @@ class Field(BasePicture):
         color (str): 背景色
         image_size (list[int]): 画像サイズ
 
-        # ゲームに関する変数
-        widow (list[Card]): ウィドー
-        cards (dict{Player: Card}): プレイヤーが出したカード
-        trash (list[Card]): 捨て札
-        trump (Suit): 切り札
-        
-        # その他
-        deck (Deck): トランプ
-        players (list[Player]): プレイヤー
-        message (str): プレイヤーへ情報を提示する際に使用する
-
     Note:
         フィールには、以下の要素がある
         1. ウィドー (widow)
@@ -37,6 +26,7 @@ class Field(BasePicture):
         3. 出し終わったカード (trash)
         4. 切り札 (trump)
             切り札とは、ナポレオンが宣言した強いスートのこと
+        5. 台札 (lead)
     """
 
     color = "green"
@@ -45,23 +35,31 @@ class Field(BasePicture):
     def __init__(self, deck: Deck, players: list[Player]):
         """
         Args:
-            deck (Deck): xxx
+            deck (Deck): ゲームに利用するデッキ
+            players list[Player]: ゲームに参加するプレイヤー
             
+        Attributes:
+            cards (dict{Player: Card}): プレイヤーが出したカード
+            trash (list[Card]): 捨て札
+
         Note:
             カードとプレイヤーがいなければ、そこはフィールドではない
         """
         super().__init__()
-        self._widow = []
-        self._trump = None
         self.cards = {}
         self.trash = []
 
         self.deck = deck
         self.players = players
+
+        self._widow = []
+        self._trump = None
         self._message = ""
+        self._is_use_lead = False
 
     def __str__(self, width: int = 50, pad_str: str = "#") -> str:
-        """Show a field.
+        """
+        フィールドの表示
         
         Args:
             width (int): 文字列で表現するときの幅
@@ -106,6 +104,8 @@ class Field(BasePicture):
                 field_str += f"{token_tab4}{n}: {str(c)}\n"
         if self.trump:
             field_str += f"{token_tab3}切り札: {self.trump.mark}\n"
+        if self.is_use_lead and self.lead is not None:
+            field_str += f"{token_tab3}台札: {self.lead.mark}\n"
 
         field_str += f"{pad_str}\n"
         field_str += f"{token_tab1}Players\n"
@@ -134,6 +134,9 @@ class Field(BasePicture):
     @trump.setter
     def trump(self, trump: Suit) -> None:
         """切り札の setter
+
+        Attributes:
+            trump (Suit): 切り札
         """
         self._trump = trump
 
@@ -146,6 +149,9 @@ class Field(BasePicture):
     @widow.setter
     def widow(self, widow: list[Card]) -> None:
         """ウィドーの setter
+        
+        Attribute:
+            widow (list[Card]): ウィドー
         """
         self._widow = widow
     
@@ -156,17 +162,37 @@ class Field(BasePicture):
         return self._message
     
     @message.setter
-    def message(self, message) -> None:
+    def message(self, message: str) -> None:
         """メッセージの setter
+
+        Attributes
+            message (str): プレイヤーへ情報を提示する際に使用する
         """
         self._message = message
 
     @property
-    def lead(self) -> Suit:
-        """台札
-        一番最初に出されたカードのスート
+    def lead(self) -> Suit | None:
         """
-        return list(self.cards.values())[0].suit
+        台札 (あるトラックで、一番最初に出されたカード)のスート
+        """
+        if len(self.cards) == 0:
+            return None
+        else:
+            return list(self.cards.values())[0].suit
+    
+    @property
+    def is_use_lead(self) -> bool:
+        """is_use_lead の getter
+        """
+        return self._is_use_lead
+    
+    @is_use_lead.setter
+    def is_use_lead(self, value: bool):
+        """
+        Attributes:
+            is_use_lead (bool): 台札を利用するかどうか
+        """
+        self._is_use_lead = value
 
     def put_card(self, name: str, card: Card):
         """Put a card.

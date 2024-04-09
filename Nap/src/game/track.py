@@ -27,10 +27,14 @@ class Track:
     """
     def __init__(self, field: Field, start_player_id: int, time_lag: int = 0):
         """Constructor.
+
         Attributes:
             field (Field): フィールド
             start_player_id (int): 最初にプレイをするプレイヤーの番号
             time_lag (int): トラック内のひとつのプレイの間に時間を停止させる時間 [s]
+
+        Note:
+            初めに出したカードのスートを台札とする
         """
         self.field = field
         self.start_player_id = start_player_id
@@ -79,11 +83,9 @@ class Track:
             Card: プレイをした結果、提出するカード
             
         Note:
-            初めに出したカードのスートを台札とする
+            台札の情報をプレイヤーに教える
         """
-        card = player.play_card()
-        if self.play_cnt == 0:
-            self.lead_suit = card.suit
+        card = player.play_card(lead_suit=self.field.lead)
             
         return card
     
@@ -93,7 +95,6 @@ class Track:
         """
         player_id = (self.start_player_id + self.play_cnt) % len(self.field.players)
         return self.field.players[player_id]
-
 
 class SimpleTrack(Track):
     """
@@ -118,9 +119,10 @@ class SimpleTrack(Track):
             player (Player): プレイを実行するプレイヤー
             
         Note:
-            初めに出したスートが、切り札にしない
+            プレイヤー達のプレイに、台札は影響しない
         """
         card = player.play_card()
+
         return card
 
 class NapTrack(Track):

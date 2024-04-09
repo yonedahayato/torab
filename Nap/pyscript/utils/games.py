@@ -14,8 +14,11 @@ from .button import (
     Buttons,
 )
 
+from src.player import Player
+
 from src.game import (
     SimpleNapVSTakeshi,
+    EasyNapVSTakeshi,
 )
 
 def say(content: str) -> None:
@@ -144,10 +147,12 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
             次の処理は、play_cpu
         """
         self.field.clear()
-        self.set_track(start_player_id = 0)
+
+        self.track_cnt += 1
+        start_player_id = self.get_start_player_id()
+        self.set_track(start_player_id = start_player_id)
 
         self.play_cnt = 0
-        self.track_cnt += 1
 
         self.field.message = "次の Track です"
         print(self.field)
@@ -163,6 +168,16 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
         print(self.field)
         
         self.is_finish = True
+
+    def play_player(self, player: Player) -> None:
+        """
+        プレイヤーへ操作を行わせるための前処理
+        
+        Args:
+            player (Player): プレイヤーのクラス
+        """
+        _ = player.check_cards_can_submit()
+        self.card_buttons.make_card(cards = player.cards)
 
     def play_cpu(self) -> None:
         """
@@ -182,10 +197,7 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
         next_player = self.track.get_next_player()
         if not next_player.cpu:
             # 次の処理は。run (= プレイヤーのプレイ)
-            print("出すカードを入力してください")
-            print([f"{i}: {c}" for i, c in enumerate(next_player.cards)])
-            # self.card_buttons.make(card_num = len(next_player.cards))
-            self.card_buttons.make_card(cards = next_player.cards)
+            self.play_player(next_player)
             return
 
         # CPU のプレイ
@@ -262,3 +274,27 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 
         # CPU のプレイ
         self.play_cpu()
+        
+class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
+    """
+    """
+    def __init__(self):
+        super().__init__()
+        
+    def play_player(self, player: Player) -> None:
+        """
+        プレイヤーへ操作を行わせるための前処理
+        
+        Args:
+            player (Player): プレイヤーのクラス
+            
+        Note:
+            出せないカードは、クリックできないようにする
+        """
+        cards_can_submit = player.check_cards_can_submit(lead_suit = self.field.lead)
+        cards_can_submit = [str(c) for c in cards_can_submit]
+        disable = [str(hand) not in cards_can_submit for hand in player.cards]
+        self.card_buttons.make_card(cards = player.cards, disable = disable)
+        
+    def deal(self) -> None:
+        EasyNapVSTakeshi.deal(self)
