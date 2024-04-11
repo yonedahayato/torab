@@ -278,6 +278,7 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
     """
     """
+    describe = EasyNapVSTakeshi.describe
     def __init__(self):
         super().__init__()
         
