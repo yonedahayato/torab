@@ -59,7 +59,6 @@ class SimpleNapVSTakeshi(VSTakeshi, SimpleNapGame):
         カードを各プレイヤーに配る
         たけしには、クラブのカードを渡す
         """
-        print("SimpleNapVSTakeshi/ deal")
         takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + self.hand_num)]
 
         for player in self.field.players:
@@ -96,7 +95,6 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
         カードを各プレイヤーに配る
         たけしには、クラブのカードを多く渡す
         """
-        print("EasyNapVSTakeshi / deal")
         club_card_num = 3
         takeshi_hand_club = [Card(num = n, suit = Suit.club) for n in range(1, 1 + club_card_num)]
 

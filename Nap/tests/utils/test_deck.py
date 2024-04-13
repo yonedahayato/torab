@@ -1,6 +1,6 @@
 from pathlib import Path
+import pytest
 import sys
-import unittest
 
 filedir = Path(__file__).parent.absolute()
 parentdir = filedir.parent.absolute()
@@ -12,21 +12,38 @@ from src.utils import (
     Deck,
 )
 
-class TestDeck(unittest.TestCase):
-    """Deck class test.
+class TestDeck:
     """
-    def test_init_deck(self):
-        """Test deck.
+    Deck class のテスト
+    """
+    def test_init(self):
+        """
+        Deck class の init のテスト
+        """
+        deck = Deck()
+
+    def test_len(self):
+        """
+        len のテスト
+        """
+
+        deck = Deck()
+        assert len(deck) == 54
+        
+    def test_shuffle(self):
+        """
+        shuffle のテスト
         """
         deck = Deck()
         deck.shuffle()
-        assert len(deck) == 54
-
-        print(deck.cards[0].image_url)
-        print(deck.cards[0].suit)
         
+    def test_deal(self):
+        """
+        deal のテスト
+        """
+        deck = Deck()        
         hand = deck.deal(10)
-        print([str(card) for card in hand])
+        assert len(hand) == 10
         
     def test_pull_out(self):
         """
@@ -38,14 +55,7 @@ class TestDeck(unittest.TestCase):
 
         target = Card(num = 1, suit = Suit.spade)
         deck.pull_out([target])
-        # assert str(deck) == str(['1 ♥', '1 ♦', '1 ♣', '2 ♠'])
+        assert str(deck) == str(['♥-A', '♦-A', '♣-A', '♠-2'])
 
-        # cards = deck.deal(num = 1)
-        print(deck)
-        # print(cards[0])
-
-        deck.pull_out([target])
-        print(deck)
-
-if __name__ == '__main__':
-    unittest.main()
+        with pytest.raises(ValueError):
+            deck.pull_out([target])

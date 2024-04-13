@@ -6,35 +6,47 @@ from .card import (
     Card,
 )
 
+from .logger import Logger
+logger = Logger()
+print = logger.log_print
+
 class Deck(BasePicture):
-    """A deck of Nap.
-    
-    デッキを管理するクラス
-    
-    Attributes:
-        cards (list[Card]): カード
+    """
+    デッキを管理するクラス    
     """
 
     def __init__(self):
-        """Constructor.
-        
+        """
+        Attributes:
+            cards (list[Card]): カード
+
         Note:
             デッキは、数字とスートを持つ52枚のカードとジョーカー2枚からなる、計54枚のカードからなる
         """
         self.cards = [Card(num, suit) for num in range(1, 14) for suit in Suit] + [Card(joker=1), Card(joker=2)]
         print(f"{len(self.cards)} 枚のカードを使用します\n")
 
-    def __len__(self):
-        """Length.
+    def __len__(self) -> int:
+        """
         デッキの枚数
+        
+        Returns:
+            int: 現在のデッキの枚数
         """
         return len(self.cards)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        デッキの状態を表示
+        
+        Returns:
+            str: デッキの状態
+        """
         return str([str(c) for c in self.cards])
 
-    def shuffle(self):
-        """Shuffle a deck.
+    def shuffle(self) -> None:
+        """
+        デッキをシャッフルする
         """
         random.shuffle(self.cards)
         
@@ -79,7 +91,7 @@ class Deck(BasePicture):
         deleted_cards = []
         for target_card in targets:
             if str(target_card) not in [str(c) for c in self.cards]:
-                continue
+                raise ValueError("削除するカードがありません")
 
             target_id = [str(c) for c in self.cards].index(str(target_card))
             del self.cards[target_id]

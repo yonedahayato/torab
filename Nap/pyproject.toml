@@ -9,7 +9,8 @@ readme = "README.md"
 python = "3.11.5"
 pytest = "^8.1.1"
 pillow = "^10.2.0"
-pytest-httpserver = "^1.0.10"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.3"
 
 [build-system]
 requires = ["poetry-core"]

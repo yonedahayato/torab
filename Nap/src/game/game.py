@@ -181,8 +181,8 @@ class Game:
 
             self.track_cnt += 1
             start_player_id = self.get_start_player_id()
-            self.set_track()
-            
+            self.set_track(start_player_id = start_player_id)
+
         winner = self.decide_winner_in_game()
         field.message = f"このゲームの勝者は、{winner} です"
         print(field)

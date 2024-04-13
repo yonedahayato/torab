@@ -7,3 +7,5 @@ from .deck import (
     Deck,
     SimpleDeck,
 )
+
+from .logger import Logger
