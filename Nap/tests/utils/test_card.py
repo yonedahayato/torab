@@ -54,3 +54,29 @@ class TestCard:
         """
         with pytest.raises(ValueError):
             error_card = weak_joker = Card(num = 14)
+
+def test_card_equality():
+    card1 = Card(num = 1, suit = Suit.spade)
+    card2 = Card(num = 1, suit = Suit.spade)
+    card3 = Card(num = 2, suit = Suit.heart)
+    assert card1 == card2
+    assert card1 != card3
+
+def test_card_comparison():
+    card1 = Card(num=1, suit=Suit.spade)
+    card2 = Card(num=2, suit=Suit.spade)
+    card3 = Card(num=1, suit=Suit.heart)
+    assert card1 < card2
+    assert card3 < card2
+
+def test_card_to_string():
+    card1 = Card(num = 1, suit = Suit.spade)
+    card2 = Card(num = 13, suit = Suit.heart)
+    assert str(card1) == "♠-A"
+    assert str(card2) == "♥-K"
+
+def test_card_is_joker():
+    card1 = Card(joker = 1)
+    card2 = Card(num = 1, suit = Suit.spade)
+    assert card1.is_joker()
+    assert not card2.is_joker()

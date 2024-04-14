@@ -8,7 +8,7 @@ from pyscript import document
 import sys
 
 sys.path.append("/home/work")
-sys.path.append("/pyscript/pyscript")
+sys.path.append("/pyscript/pyscript/src")
 
 from .button import (
     Buttons,

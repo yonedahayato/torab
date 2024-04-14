@@ -20,7 +20,6 @@ class HTTPServer(SuperHTTPServer):
         finally:
             self.server_close()
 
-
 @pytest.fixture()
 def http_server():
     host, port = '127.0.0.1', 8888

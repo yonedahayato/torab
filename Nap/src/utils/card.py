@@ -195,3 +195,12 @@ class Card(BasePicture):
             self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num + (13 * 3)}.png"
         else:
             raise ValueError("カードの種類が不正です")
+        
+    def is_joker(self) -> bool:
+        """
+        このカードがジョーカーかどうかを出力する
+        
+        Returns:
+            bool : このカードがジョーカーかどうか
+        """
+        return self.joker in [1, 2]
