@@ -59,7 +59,6 @@ class SimpleNapVSTakeshi(VSTakeshi, SimpleNapGame):
         カードを各プレイヤーに配る
         たけしには、クラブのカードを渡す
         """
-        print("SimpleNapVSTakeshi/ deal")
         takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + self.hand_num)]
 
         for player in self.field.players:
@@ -78,13 +77,13 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
     """
     describe = \
 """
-1. x シンプルなトリックテイキングゲーム
-2. x たけしと 1 vs 1 で行う
-3. x 手札は 5 枚 (5 トリックの勝負)
+1. シンプルなトリックテイキングゲーム
+2. たけしと 1 vs 1 で行う
+3. 手札は 5 枚 (5 トリックの勝負)
 4. 台札あり (スートの請求もあり)
-5. x 切り札は、ランダム
-6. x 最初のトリックの先行は、ランダム / その後は前のトリックの勝者
-7. x ジョーカーなしの 52 枚のカード
+5. 切り札は、ランダム
+6. 最初のトリックの先行は、ランダム / その後は前のトリックの勝者
+7. ジョーカーなしの 52 枚のカード
 """
     def __init__(self, player_how_to_choose: str = "input", first_message: str = None):
         super().__init__(player_how_to_choose = player_how_to_choose,
@@ -96,7 +95,6 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
         カードを各プレイヤーに配る
         たけしには、クラブのカードを多く渡す
         """
-        print("EasyNapVSTakeshi / deal")
         club_card_num = 3
         takeshi_hand_club = [Card(num = n, suit = Suit.club) for n in range(1, 1 + club_card_num)]
 

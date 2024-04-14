@@ -8,7 +8,7 @@ from pyscript import document
 import sys
 
 sys.path.append("/home/work")
-sys.path.append("/pyscript/pyscript")
+sys.path.append("/pyscript/pyscript/src")
 
 from .button import (
     Buttons,
@@ -278,6 +278,7 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
     """
     """
+    describe = EasyNapVSTakeshi.describe
     def __init__(self):
         super().__init__()
         

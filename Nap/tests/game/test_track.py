@@ -8,7 +8,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 FILEDIR = Path(__file__).parent.absolute()
 PROJECT_DIR = FILEDIR.parent.parent.absolute()
-print(PROJECT_DIR)
 sys.path.append(str(PROJECT_DIR))
 
 from src.utils import (

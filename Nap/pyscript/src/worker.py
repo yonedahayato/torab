@@ -9,7 +9,7 @@ from pyodide.ffi import JsProxy
 import sys
 
 sys.path.append("/home/work")
-sys.path.append("/pyscript/pyscript")
+sys.path.append("/pyscript/pyscript/src")
 
 from utils.games import (
     VSTakeshiBrowserGame,

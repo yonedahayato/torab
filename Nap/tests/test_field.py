@@ -83,6 +83,45 @@ FIELD_STR_CASE_04 = """
 #
 ##################################################"""
 
+FIELD_STR_CASE_05 = """
+##################################################
+#
+#\t\t\t山札: 48
+#\t\t\t捨て札: 0
+#\t\t\t場:
+#\t\t\t\tたけし: {card}
+#\t\t\t切り札: ♠
+#
+#\tPlayers
+#\t\tたけし (0): ['♥-?', '?']
+#\t\tYou (0): ['♠-4', '♠-5', '♠-6']
+#
+#\tMessage
+#\t\t{player_name} が {card} を出した
+#
+#
+##################################################"""
+
+FIELD_STR_CASE_06 = """
+##################################################
+#
+#\t\t\t山札: 48
+#\t\t\t捨て札: 0
+#\t\t\t場:
+#\t\t\t\tたけし: {card_01}
+#\t\t\t\tYou: {card}
+#\t\t\t切り札: ♠
+#
+#\tPlayers
+#\t\tたけし (0): ['♥-?', '?']
+#\t\tYou (0): {hand}
+#
+#\tMessage
+#\t\t{player_name} が {card} を出した
+#
+#
+##################################################"""
+
 @pytest.fixture
 def field_with_takeshi():
     """
@@ -131,7 +170,6 @@ class TestField:
                 カードとプレイヤーが集まり、フィールドができている状態
         """
 
-        print(str(field_two_cpu_payers))
         assert str(field_two_cpu_payers) == FIELD_STR_CASE_01
         
     def test_set_trump(selfself, field_two_cpu_payers: Field) -> None:
@@ -148,7 +186,6 @@ class TestField:
         """
         field_two_cpu_payers.deck.shuffle()
         field_two_cpu_payers.trump = Suit.spade
-        print(field_two_cpu_payers)
         assert str(field_two_cpu_payers) == FIELD_STR_CASE_02
         
     def test_str_deal_status(self, field_two_cpu_payers: Field, hand_num: int = 3) -> None:
@@ -183,7 +220,6 @@ class TestField:
                 my_hand = field_two_cpu_payers.deck.pull_out(my_hand)
                 player.take_hand(my_hand)
 
-        print(field_two_cpu_payers)
         assert str(field_two_cpu_payers) == FIELD_STR_CASE_03
 
     def test_str_with_takeshi(self, field_with_takeshi: Field) -> None:
@@ -197,7 +233,6 @@ class TestField:
             確認する状態
                 各プレイヤーにカードが分配できている状態
         """
-        print(field_with_takeshi)
         assert str(field_with_takeshi) == FIELD_STR_CASE_04
 
     def test_put_card(self, 
@@ -209,13 +244,26 @@ class TestField:
         Args:
             field_with_takeshi (Field): たけしが待機しているフィールド
             monkeypatch (MonkeyPatch): pytest tool
+                player のカードの提出時に、標準入力を利用
         """
         monkeypatch.setattr('sys.stdin', io.StringIO("0\n"))
-        for player in field_with_takeshi.players:
+
+        for cnt, player in enumerate(field_with_takeshi.players):
             card = player.play_card()
             field_with_takeshi.put_card(player.name, card)
             field_with_takeshi.message = f"{player.name} が {card} を出した"
-            print(field_with_takeshi)
+            
+            if cnt == 0:
+                card_tmp = card
+                expected = FIELD_STR_CASE_05.format(card = str(card), 
+                                                    player_name = str(player.name))
+                assert str(field_with_takeshi) == expected
+            elif cnt == 1:
+                expected = FIELD_STR_CASE_06.format(card = str(card),
+                                                    card_01 = str(card_tmp),
+                                                    hand = [str(c) for c in player.cards],
+                                                    player_name = str(player.name))
+                assert str(field_with_takeshi) == expected
 
     def test_image_outout(self, data_dir: str, players: Callable[[list[str]], list[Player]]) -> None:
         """

@@ -70,8 +70,7 @@ class Player:
 
         point (int): プレイヤーが所持してる点数
         cards (list[Card]): プレイヤーのハンド
-        
-        
+
     Note:
         プレイヤーは、ナポレオン、副官、連合軍のいずれかである
 
@@ -140,14 +139,16 @@ class Player:
         """
         self._choose_card_id = card_id
 
-    def take_hand(self, cards: list[Card]):
-        """Take hand.
+    def take_hand(self, cards: list[Card]) -> None:
+        """
+        カードを受け取る
+
         Args:
             cards (list): List of cards.
         """
         self.cards = sorted(cards)
         
-    def show_hand(self, hint: str = "no", is_force: bool = False):
+    def show_hand(self, hint: str = "no", is_force: bool = False) -> list[Card]:
         """Show hand.
         手札を開示する
         
@@ -241,7 +242,7 @@ class Player:
         """
         標準入力を利用して、カードを選択する
         """
-        cards_can_submit = self.check_cardcheck_card(lead_suit = lead_suit)
+        cards_can_submit = self.check_cards_can_submit(lead_suit = lead_suit)
 
         try:
             card_id = int(input("出すカードの番号: "))

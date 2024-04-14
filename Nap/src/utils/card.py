@@ -3,7 +3,7 @@ from enum import IntEnum
 from .base import BasePicture
 
 class Suit(IntEnum):
-    """Suit class.
+    """
     スートクラス
 
     Note:
@@ -18,6 +18,10 @@ class Suit(IntEnum):
     diamond = 2
     club = 1
 
+    def __init__(self, value: int):
+        self._value_ = value
+        self._set_info(value)
+
     @property
     def mark(self) -> str:
         """
@@ -26,59 +30,49 @@ class Suit(IntEnum):
         Returns:
             str: マークの文字
         """
-        self.set_info()
         return self.__mark
-    
-    @mark.setter
-    def mark(self, value) -> None:
-        """
-        スートのマークを格納する.
-        
-        Args:
-            value: マークの情報
-        """
-        self.__mark = value
     
     @property
     def image_url(self) -> str:
         """
         スートの画像のURLを出力する
+        
+        Returns:
+            str: スートの画像のURL
         """
         
         return self.__image_url
-    
-    @image_url.setter
-    def image_url(self, value):
-        """
-        スートの画像のURLを格納する
-        """
-        
-        self.__image_url = value
 
-    def set_info(self) -> None:
+    def _set_info(self, value: int) -> None:
         """
         スートに応じて情報を取得する
+        
+        Args:
+            value (int): IntEnum class の値
 
         Raises:
             ValueError: マークが異常の場合
+            
+        Note:
+            URL は、このプロジェクトのために作成したスートの画像
         """
-        if self == Suit.spade:
-            self.mark = "♠"
-            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vShkEbM-bF8ZdFUUVDTsFPtamISa-TgR2_v26Bzf6f-ugqmt3Ry8Ncj59t3TIEK_Lumr4OoH5WSr7lG/pub?w=596&h=596"
-        elif self == Suit.heart:
-            self.mark = "♥"
-            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vS4Y024nBwRGYfrQkJsvh0bsQhNiM8g-_-DMSY_tNslQ6b5noqpYZrQ2fnTQJ7bZiLhXjObDzGGJ1gk/pub?w=596&h=596"
-        elif self == Suit.diamond:
-            self.mark = "♦"
-            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vQWHrseqkqz3Yb2On0NewQYzXvtNDxx99aKRHUw36S8XUn2AZ5hhohswUfiQH2bO18CzdF2gVJb_kPw/pub?w=596&h=596"
-        elif self == Suit.club:
-            self.mark = "♣"
-            self.image_url = "https://docs.google.com/drawings/d/e/2PACX-1vRhDX5xCJqqutdXbcfSZxunVzpktaaXClS-0245bLmYFYA5QyDqPyjMfhUFNW73h26kai7TJbAlRRsl/pub?w=596&h=596"
+        if value == 4:
+            self.__mark = "♠"
+            self.__image_url = "https://docs.google.com/drawings/d/e/2PACX-1vShkEbM-bF8ZdFUUVDTsFPtamISa-TgR2_v26Bzf6f-ugqmt3Ry8Ncj59t3TIEK_Lumr4OoH5WSr7lG/pub?w=596&h=596"
+        elif value == 3:
+            self.__mark = "♥"
+            self.__image_url = "https://docs.google.com/drawings/d/e/2PACX-1vS4Y024nBwRGYfrQkJsvh0bsQhNiM8g-_-DMSY_tNslQ6b5noqpYZrQ2fnTQJ7bZiLhXjObDzGGJ1gk/pub?w=596&h=596"
+        elif value == 2:
+            self.__mark = "♦"
+            self.__image_url = "https://docs.google.com/drawings/d/e/2PACX-1vQWHrseqkqz3Yb2On0NewQYzXvtNDxx99aKRHUw36S8XUn2AZ5hhohswUfiQH2bO18CzdF2gVJb_kPw/pub?w=596&h=596"
+        elif value == 1:
+            self.__mark = "♣"
+            self.__image_url = "https://docs.google.com/drawings/d/e/2PACX-1vRhDX5xCJqqutdXbcfSZxunVzpktaaXClS-0245bLmYFYA5QyDqPyjMfhUFNW73h26kai7TJbAlRRsl/pub?w=596&h=596"
         else:
             raise ValueError("スートが不正です")
 
 class Card(BasePicture):
-    """Card class.
+    """
     カードクラス
     スートの比較はしない
 
@@ -106,9 +100,15 @@ class Card(BasePicture):
                 0: 通常のカード
                 1: 強いジョーカー
                 2: 弱いジョーカー
+                
+        Raises:
+            ValueError: 数字の数が異常
+            ValueError: ジョーカーの種類が不正です
         """
 
         if joker == 0:
+            if int(num) > 13:
+                raise ValueError("数字の数が異常")
             self.num = num
             self.suit = suit
         elif joker == 1:
@@ -121,7 +121,7 @@ class Card(BasePicture):
             raise ValueError("ジョーカーの種類が不正です")
         self.joker = joker
         
-        self.set_url()
+        self._set_url()
 
     def __eq__(self, other) -> bool:
         """Equal.
@@ -176,12 +176,9 @@ class Card(BasePicture):
         elif self.joker == 2:
             return "Joker (weak)"
         
-    def set_url(self) -> str:
-        """Set a url.
+    def _set_url(self):
+        """
         カードの画像のURLを設定する
-        
-        Returns:
-            str: カードの画像のURL
         """
 
         if self.joker == 1:
@@ -199,4 +196,11 @@ class Card(BasePicture):
         else:
             raise ValueError("カードの種類が不正です")
         
-        return self.image_url
+    def is_joker(self) -> bool:
+        """
+        このカードがジョーカーかどうかを出力する
+        
+        Returns:
+            bool : このカードがジョーカーかどうか
+        """
+        return self.joker in [1, 2]
