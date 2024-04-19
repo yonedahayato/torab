@@ -1,4 +1,5 @@
 from enum import IntEnum
+from pydantic import BaseModel, Field
 
 from .base import BasePicture
 
@@ -71,17 +72,19 @@ class Suit(IntEnum):
         else:
             raise ValueError("スートが不正です")
 
-class Card(BasePicture):
+class Card(BaseModel, BasePicture):
     """
     カードクラス
     スートの比較はしない
 
     Attributes:
         num (int): カードの数字
+            1 ~ 13, 15, 16
         suit (Suit): カードのスート
         joer (int): ジョーカーかどうか
+            0, 1, 2
         image_url (str): カードの画像のURL
-        
+
     Note:
         カードの種類は、以下の通り
         1. 数字とスートを持つ通常のカード : 52枚
@@ -89,10 +92,14 @@ class Card(BasePicture):
             a. 強いジョーカー : 1枚
             b. 弱いジョーカー : 1枚
     """
+    num: int = Field(default = 2, ge = 1, le = 16)
+    suit: Suit | None = Suit.club
+    joker: int = Field(default = 0, ge = 0, le = 2)
+    image_url: str | None = None
 
-    def __init__(self, num: int = 2, suit: Suit = Suit.club, joker: int = 0) -> None:
-        """Constructor.
-        
+    def __init__(self, num: int = 2, suit: Suit = Suit.club, joker: int = 0):
+        """
+
         Args:
             num (int): カードの数字
             suit (Suit): カードのスート
@@ -109,18 +116,14 @@ class Card(BasePicture):
         if joker == 0:
             if int(num) > 13:
                 raise ValueError("数字の数が異常")
-            self.num = num
-            self.suit = suit
         elif joker == 1:
-            self.num = 16
-            self.suit = None
+            num = 16
+            suit = None
         elif joker == 2:
-            self.num = 15
-            self.suit = None
-        else:
-            raise ValueError("ジョーカーの種類が不正です")
-        self.joker = joker
+            num = 15
+            suit = None
         
+        super().__init__(num = num, suit = suit, joker = joker)
         self._set_url()
 
     def __eq__(self, other) -> bool:
@@ -179,6 +182,9 @@ class Card(BasePicture):
     def _set_url(self):
         """
         カードの画像のURLを設定する
+        
+        Attributes:
+            image_url (str): カードの画像のURL
         """
 
         if self.joker == 1:
