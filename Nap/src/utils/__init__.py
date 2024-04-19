@@ -8,4 +8,5 @@ from .deck import (
     SimpleDeck,
 )
 
+from .base import BasePicture
 from .logger import Logger

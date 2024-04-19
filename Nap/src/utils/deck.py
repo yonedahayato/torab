@@ -1,4 +1,5 @@
 import random
+from pydantic import BaseModel, Field
 
 from .base import BasePicture
 from .card import (
@@ -7,23 +8,24 @@ from .card import (
 )
 
 from .logger import Logger
+
 logger = Logger()
 print = logger.log_print
 
-class Deck(BasePicture):
+class Deck(BaseModel, BasePicture):
     """
     デッキを管理するクラス    
+
+    Attributes:
+        cards (list[Card]): カード
+
+    Note:
+        デッキは、数字とスートを持つ52枚のカードとジョーカー2枚からなる、計54枚のカードからなる
     """
+    cards: list[Card] = [Card(num, suit) for num in range(1, 14) for suit in Suit] + [Card(joker=1), Card(joker=2)]
 
     def __init__(self):
-        """
-        Attributes:
-            cards (list[Card]): カード
-
-        Note:
-            デッキは、数字とスートを持つ52枚のカードとジョーカー2枚からなる、計54枚のカードからなる
-        """
-        self.cards = [Card(num, suit) for num in range(1, 14) for suit in Suit] + [Card(joker=1), Card(joker=2)]
+        super().__init__()
         print(f"{len(self.cards)} 枚のカードを使用します\n")
 
     def __len__(self) -> int:
@@ -105,13 +107,8 @@ class SimpleDeck(Deck):
 
     Attributes:
         cards (list[Card]): カード
+
+    Note:
+        Simple Deck は、数字とスートを持つ52枚のカードからなる
     """
-
-    def __init__(self):
-        """Constructor.
-
-        Note:
-            デッキは、数字とスートを持つ52枚のカードからなる
-        """
-        self.cards = [Card(num, suit) for num in range(1, 14) for suit in Suit]
-        print(f"{len(self.cards)} 枚のカードを使用します\n")
+    cards: list[Card] = [Card(num, suit) for num in range(1, 14) for suit in Suit]

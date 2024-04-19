@@ -113,12 +113,13 @@ class Card(BaseModel, BasePicture):
             ValueError: ジョーカーの種類が不正です
         """
 
-        if joker == 0:
-            if int(num) > 13:
-                raise ValueError("数字の数が異常")
-        elif joker == 1:
+        if joker == 0 and int(num) > 13:
+            raise ValueError("数字の数が異常")
+
+        if joker == 1:
             num = 16
             suit = None
+
         elif joker == 2:
             num = 15
             suit = None
