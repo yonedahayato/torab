@@ -1,5 +1,5 @@
 import random
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from .base import BasePicture
 from .card import (

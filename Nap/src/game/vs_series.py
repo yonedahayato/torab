@@ -51,7 +51,7 @@ class SimpleNapVSTakeshi(VSTakeshi, SimpleNapGame):
 """
     def __init__(self, player_how_to_choose: str = "input"):
         super().__init__(player_how_to_choose = player_how_to_choose,
-                         first_message = Takeshi.lines["introduction"])
+                         first_message = Takeshi.talk(theme = "introduction"))
 
     def deal(self) -> None:
         """Deal cards.
@@ -87,7 +87,7 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
 """
     def __init__(self, player_how_to_choose: str = "input", first_message: str = None):
         super().__init__(player_how_to_choose = player_how_to_choose,
-                         first_message = Takeshi.lines["introduction"])
+                         first_message = Takeshi.talk(theme = "introduction"))
 
     def deal(self) -> None:
         """Deal cards.

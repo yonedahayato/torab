@@ -1,11 +1,14 @@
+import random
+from typing import ClassVar
+
 from .player import Player
 from ..utils import Suit
-import random
 
 class Charactor(Player):
     """
     キャラクターのクラス
     """
+    @classmethod
     def talk(self, theme: str):
         """
         キャラクターのセリフを出力する
@@ -28,8 +31,8 @@ class Takeshi(Charactor):
         たけしは、手札公開の際に、マークの情報をくれる
         クラブの使い手
     """
-    favorite_suit = Suit.club
-    lines = {
+    favorite_suit: ClassVar[Suit] = Suit.club
+    lines: ClassVar[dict[str, str]] = {
         "introduction": "俺の名前は、たけし！",
         "favorite": "好きなスートは、クラブさ！",
         "rule": "ハンデとして手札のスートを一枚だけ教えてやるよ！",
@@ -49,15 +52,16 @@ class Takeshi(Charactor):
         """
         return super().show_hand(hint="mark-1")
     
-    def talk(self, theme: str) -> str:
+    @classmethod
+    def talk(cls, theme: str) -> str:
         """
         話してくれる
         
         Args:
             theme (str): トークテーマ
         """
-        if theme in self.lines.key():
-            lines = self.lines.get(theme)
+        if theme in cls.lines.keys():
+            lines = cls.lines.get(theme)
         else:
             lines = random.choice(list(dict.values()))
         return lines

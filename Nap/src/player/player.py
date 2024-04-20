@@ -1,69 +1,29 @@
+from pydantic import BaseModel, Field
+import random
+from typing import Literal
+
 from ..utils import (
     Suit,
     Card,
+    Logger,
 )
 
-import random
+from .declear import Declear
 
-class Declear:
-    """Declear class.
-    宣言クラス
-    
-    Note:
-        宣言は、ナポレオンになりたいプレイヤーが行う
-        宣言の強さは、(ゲーム内で獲得できるであろう)枚数と(切り札となる)スートの強さで決まる
-        ナポレオンになりたくないプレイヤーは、宣言を行わない (pass を宣言する)
+logger = Logger()
+print = logger.log_print
+
+class Player(BaseModel):
     """
-    def __init__(self, num: int = 13, suit: Suit = Suit.club) -> None:
-        """Constructor.
-        
-        宣言ができるのは、13 以上の数字のみ
-        
-        Args:
-            num (int): カードの数字
-            suit (Suit): カードのスート
-        """
-        if num < 13:
-            raise ValueError("宣言ができるのは、13 以上の数字のみ")
-
-        self.num = num
-        self.suit = suit
-
-    def __eq__(self, other):
-        """Equal.
-        宣言の強さが同じかどうか
-        """
-        return self.num == other.num and self.suit == other.suit
-    
-    def __gt__(self, other):
-        """Greater than.
-        宣言の強さが他の宣言より強いかどうか
-        """
-        return self.num > other.num or (self.num == other.num and self.suit > other.suit)
-    
-    def __ge__(self, other):
-        """Greater than or equal.
-        宣言の強さが他の宣言以上かどうか
-        """
-        return self.num > other.num or (self.num == other.num and self.suit >= other.suit)
-    
-    def __lt__(self, other):
-        """Less than.
-        宣言の強さが他の宣言より弱いかどうか
-        """
-        return self.num < other.num or (self.num == other.num and self.suit < other.suit)
-    
-    def __le__(self, other):
-        """Less than or equal.
-        宣言の強さが他の宣言以下かどうか
-        """
-        return self.num < other.num or (self.num == other.num and self.suit <= other.suit)
-
-class Player:
-    """Player class.
     プレイヤークラス
 
     Attributes:
+        name (str): プレイヤーの名前
+        cpu (bool): CPU かどうか
+        how_to_choose (str): プレイヤークラスの choose_card メソッドの挙動の方法
+            input: input method を利用
+            set: 変数を格納することでカードを選択する
+
         is_nap (bool): ナポレオンかどうか
         is_adjutant (bool): 副官かどうか
         is_allied (bool): 連合軍かどうか
@@ -82,29 +42,28 @@ class Player:
         CPU は、ランダムに宣言する
     """
 
+    name: str = "Unknown"
+    cpu: bool = False
+    how_to_choose: Literal["input", "set"] = "input"
+
+    is_nap: bool = False
+    is_adjutant: bool = False
+    is_allied: bool = False
+
+    point: int = 0
+    cards: list[Card] = []
+    _choose_card_id: int | None = None
+
     def __init__(self, name: str = "Unknown", cpu: bool = False, how_to_choose: str = "input"):
-        """Constructor.
-        
-        Attributes:
+        """
+        Args:
             name (str): プレイヤーの名前
             cpu (bool): CPU かどうか
             how_to_choose (str): プレイヤークラスの choose_card メソッドの挙動の方法
                 input: input method を利用
                 set: 変数を格納することでカードを選択する
         """
-        self.name = name
-        self.cpu = cpu
-        if how_to_choose not in ["input", "set"]:
-            raise ValueError(f"プレイヤーのカードの選択方法が異常: {how_to_choose}")
-        self.how_to_choose = how_to_choose
-
-        self.is_nap = False
-        self.is_adjutant = False
-        self.is_allied = False
-
-        self.point = 0
-        self.cards = []
-        self._choose_card_id = None
+        super().__init__(name = name, cpu = cpu, how_to_choose = how_to_choose)
 
     def __str__(self) -> str:
         """String.

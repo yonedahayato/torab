@@ -20,6 +20,7 @@ packages = [
 
 # player
 "{FROM}/src/player/__init__.py" = "{TO}/src/player/__init__.py"
+"{FROM}/src/player/declear.py" = "{TO}/src/player/declear.py"
 "{FROM}/src/player/player.py" = "{TO}/src/player/player.py"
 "{FROM}/src/player/charactor.py" = "{TO}/src/player/charactor.py"
 
