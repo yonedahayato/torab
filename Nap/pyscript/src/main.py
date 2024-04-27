@@ -4,14 +4,20 @@ main() を実行しているため、他の python file からの参照は非推
 """
 
 from pyscript import document
+import pydantic
 import sys
 
 def display_version() -> None:
     """
     python の version を表示する
     """
-    info_version = document.querySelector("#info-version")
-    info_version.innerText = sys.version
+    versions = {
+        "#info-version": sys.version,
+        "#pydantic-version": f"pydantic: {pydantic.__version__}"
+    }
+    for tag_id, version_text in versions.items():
+        info_version = document.querySelector(tag_id)
+        info_version.innerText = version_text
     
 def main():
     """

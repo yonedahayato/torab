@@ -1,4 +1,5 @@
 from PIL import Image
+from pydantic import BaseModel
 
 from .player import Player
 
@@ -6,15 +7,31 @@ from .utils import (
     Card,
     Suit,
     Deck,
+    Logger,
+    BasePicture,
 )
-from .utils.base import BasePicture
 
-class Field(BasePicture):
-    """A field of Nap.
+logger = Logger()
+print = logger.log_print
+
+class Field(BaseModel, BasePicture):
+    """
     
     ゲームのフィールドを管理するクラス
-    
+
     Attributes:
+        deck (Deck): ゲームに利用するデッキ
+        players list[Player]: ゲームに参加するプレイヤー
+
+        cards (dict{Player: Card}): プレイヤーが出したカード
+            基本トラックごとに整理される
+        trash (list[Card]): 捨て札
+
+        _trump (Suit): 切り札
+        _widow (list[Card]): ウィドー
+        _message (str): プレイヤーへ情報を提示する際に使用する
+        _is_use_lead (bool): 台札を利用するかどうか
+
         # 描画のための設定
         color (str): 背景色
         image_size (list[int]): 画像サイズ
@@ -29,33 +46,30 @@ class Field(BasePicture):
         5. 台札 (lead)
     """
 
-    color = "green"
-    image_size = [150, 100]
+    deck: Deck
+    players: list[Player]
+
+    cards: dict[Player, Card] = {}
+    trash: list[Card] = []
+
+    _trump: Suit | None = None
+    _widow: list[Card] = []
+    _message: str = ""
+    _is_use_lead: bool = False
+
+    color: str = "green"
+    image_size: tuple[int, int] = (150, 100)
     
     def __init__(self, deck: Deck, players: list[Player]):
         """
         Args:
             deck (Deck): ゲームに利用するデッキ
             players list[Player]: ゲームに参加するプレイヤー
-            
-        Attributes:
-            cards (dict{Player: Card}): プレイヤーが出したカード
-            trash (list[Card]): 捨て札
 
         Note:
             カードとプレイヤーがいなければ、そこはフィールドではない
         """
-        super().__init__()
-        self.cards = {}
-        self.trash = []
-
-        self.deck = deck
-        self.players = players
-
-        self._widow = []
-        self._trump = None
-        self._message = ""
-        self._is_use_lead = False
+        super().__init__(deck = deck, players = players)
 
     def __str__(self, width: int = 50, pad_str: str = "#") -> str:
         """
@@ -127,46 +141,53 @@ class Field(BasePicture):
 
     @property
     def trump(self) -> Suit:
-        """切り札の getter
+        """
+        切り札の getter
         """
         return self._trump
     
     @trump.setter
     def trump(self, trump: Suit) -> None:
-        """切り札の setter
+        """
+        切り札の setter
 
         Attributes:
-            trump (Suit): 切り札
+            _trump (Suit): 切り札
         """
+        print("trump setter")
         self._trump = trump
 
     @property
     def widow(self) -> list[Card]:
-        """ウィドーの getter
+        """
+        ウィドーの getter
         """
         return self._widow
     
     @widow.setter
     def widow(self, widow: list[Card]) -> None:
-        """ウィドーの setter
+        """
+        ウィドーの setter
         
         Attribute:
-            widow (list[Card]): ウィドー
+            _widow (list[Card]): ウィドー
         """
         self._widow = widow
     
     @property
-    def message(self):
-        """メッセージの getter
+    def message(self) -> str:
+        """
+        メッセージの getter
         """
         return self._message
     
     @message.setter
     def message(self, message: str) -> None:
-        """メッセージの setter
+        """
+        メッセージの setter
 
         Attributes
-            message (str): プレイヤーへ情報を提示する際に使用する
+            _message (str): プレイヤーへ情報を提示する際に使用する
         """
         self._message = message
 
@@ -182,21 +203,23 @@ class Field(BasePicture):
     
     @property
     def is_use_lead(self) -> bool:
-        """is_use_lead の getter
+        """
+        is_use_lead の getter
         """
         return self._is_use_lead
     
     @is_use_lead.setter
-    def is_use_lead(self, value: bool):
+    def is_use_lead(self, value: bool) -> None:
         """
+        is_use_lead の setter
+
         Attributes:
-            is_use_lead (bool): 台札を利用するかどうか
+            _is_use_lead (bool): 台札を利用するかどうか
         """
         self._is_use_lead = value
 
-    def put_card(self, name: str, card: Card):
-        """Put a card.
-        
+    def put_card(self, name: str, card: Card) -> None:
+        """
         プレイヤーのカードを受け取る
         
         Args:

@@ -1,7 +1,4 @@
-packages = [
-    "pillow", 
-    "pydantic"
-]
+packages = ["pillow","pydantic==1.10.7"]
 
 [files]
 # pyscript のための設定
