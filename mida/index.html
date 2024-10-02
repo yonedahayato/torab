@@ -1,1 +1,72 @@
-# 画像編集
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyScript 画像サイズ変換</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+    <h1>画像サイズ変換ツール</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <br><br>
+    <label for="widthInput">新しい幅:</label>
+    <input type="number" id="widthInput" min="1">
+    <br>
+    <label for="heightInput">新しい高さ:</label>
+    <input type="number" id="heightInput" min="1">
+    <br><br>
+    <button py-click="resize_image()">サイズ変更</button>
+    <br><br>
+    <img id="outputImage" alt="変換後の画像">
+
+    <py-script>
+import js
+from pyodide.ffi import create_proxy
+from PIL import Image
+import io
+import base64
+
+def resize_image():
+    # 入力画像の取得
+    file_input = js.document.getElementById('imageInput')
+    file = file_input.files[0]
+    
+    if not file:
+        print("画像をアップロードしてください。")
+        return
+    
+    # 新しいサイズの取得
+    new_width = int(js.document.getElementById('widthInput').value)
+    new_height = int(js.document.getElementById('heightInput').value)
+    
+    if new_width <= 0 or new_height <= 0:
+        print("幅と高さは正の整数を入力してください。")
+        return
+    
+    # FileReaderを使用してファイルを読み込む
+    reader = js.FileReader.new()
+    reader.readAsArrayBuffer(file)
+    
+    def on_load(event):
+        buffer = event.target.result
+        image = Image.open(io.BytesIO(buffer))
+        
+        # 画像のリサイズ
+        resized_image = image.resize((new_width, new_height))
+        
+        # 画像をbase64エンコードされた文字列に変換
+        buffered = io.BytesIO()
+        resized_image.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        
+        # 出力画像を表示
+        output_image = js.document.getElementById('outputImage')
+        output_image.src = f"data:image/png;base64,{img_str}"
+    
+    reader.onload = create_proxy(on_load)
+
+    </py-script>
+</body>
+</html>
