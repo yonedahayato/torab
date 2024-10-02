@@ -2,26 +2,30 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PyScript 画像サイズ変換</title>
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <!-- レスポンシブ動作対応 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.4.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.4.1/core.js"></script>
+
 </head>
 <body>
     <h1>画像サイズ変換ツール</h1>
     <input type="file" id="imageInput" accept="image/*">
     <br><br>
     <label for="widthInput">新しい幅:</label>
-    <input type="number" id="widthInput" min="1">
+    <input type="number" id="widthInput" min="1" value="100">
     <br>
     <label for="heightInput">新しい高さ:</label>
-    <input type="number" id="heightInput" min="1">
+    <input type="number" id="heightInput" min="1" value="100">
     <br><br>
-    <button py-click="resize_image()">サイズ変更</button>
+    <button py-click="resize_image">サイズ変更</button>
     <br><br>
     <img id="outputImage" alt="変換後の画像">
 
-    <py-config src="./pyscript.toml"></py-config>
-    <py-script src="./main.py"></py-script>
+    <script type="py" src="./main.py" config="./pyscript.toml"></script>
 </body>
 </html>
