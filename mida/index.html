@@ -16,25 +16,46 @@
     <h1>画像枠埋めツール</h1>
 
     <details>
-        <summary>Release Notes : v.0.0</summary>
+        <summary>Release Notes : v.0.1</summary>
         <ul>
-            <li>v.0.1 (予定) : 変換後の画像の表示サイズを見やすくして、ダウンロードボタンを追加する</li>
+            <li>v.0.2 : 変換後の画像のサイズを割合を選択できる</li>
+            <li>v.0.1 : 変換後の画像の表示サイズを見やすくなり、ダウンロードボタンを追加</li>
             <li>v.0.0 : 画像枠埋めツールのリリース</li>
         </ul>
-    </details>
+    </details><br><br>
   
     <input type="file" id="imageInput" accept="image/*">
     <br><br>
+
     <label for="widthInput">新しい幅:</label>
     <input type="number" id="widthInput" min="1" value="100">
     <br>
+
     <label for="heightInput">新しい高さ:</label>
     <input type="number" id="heightInput" min="1" value="100">
     <br><br>
-    <button py-click="resize_image">サイズ変更</button>
-    <br><br>
-    <img id="outputImage" alt="変換後の画像">
 
+    <select id="size_aspect" size="1">
+        <option value='{"w":1,"h":1}'>インスタ(1:1)</option>
+        <option value='{"w":16,"h":9}'>横長(9:16)</option>
+        <option value='{"w":9,"h":16}'>縦長(16:9)</option>
+    </select>
+    <br><br>
+
+    <button py-click="run">サイズ変更</button>
+    <br><br>
+
+    <img id="outputImage" alt="変換後の画像" width="300"><br><br>
+    <button id="downloadButton">ダウンロード</button>
+    <script>
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            const outputImage = document.getElementById('outputImage');
+            const link = document.createElement('a');
+            link.href = outputImage.src;
+            link.download = 'resized_image.png';
+            link.click();
+        });
+    </script>
     <script type="py" src="./main.py" config="./pyscript.toml"></script>
 </body>
 </html>
