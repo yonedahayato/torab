@@ -20,15 +20,17 @@ def run(event: pyodide.ffi.JsProxy):
         return
     
     # 新しいサイズの取得
-    new_width = int(js.document.getElementById('widthInput').value)
-    new_height = int(js.document.getElementById('heightInput').value)
+    # new_width = int(js.document.getElementById('widthInput').value)
+    # new_height = int(js.document.getElementById('heightInput').value)
+    # if new_width <= 0 or new_height <= 0:
+    #     print("幅と高さは正の整数を入力してください。")
+    #     return
     
     size_aspect = js.document.getElementById("size_aspect").value
     size_aspect = json.loads(size_aspect)
     aspect = size_aspect["h"] / size_aspect["w"]
-    if new_width <= 0 or new_height <= 0:
-        print("幅と高さは正の整数を入力してください。")
-        return
+
+    upper_rate = int(js.document.getElementById('upperRate').value)
     
     # FileReaderを使用してファイルを読み込む
     reader = js.FileReader.new()
@@ -49,7 +51,7 @@ def run(event: pyodide.ffi.JsProxy):
 
         # 画像処理
         # new_image = image.resize((new_width, new_height))
-        new_image = padding(image, (0, 0, 0), aspect)
+        new_image = padding(image, (0, 0, 0), aspect, upper_rate)
 
         # 画像をbase64エンコードされた文字列に変換
         buffered = io.BytesIO()
@@ -62,7 +64,7 @@ def run(event: pyodide.ffi.JsProxy):
     
     reader.onload = create_proxy(on_load)
 
-def padding(pil_img, background_color, aspect):
+def padding(pil_img, background_color, aspect, upper_rate):
     """
     枠を埋める処理
     """
@@ -75,7 +77,8 @@ def padding(pil_img, background_color, aspect):
         return pil_img
     elif target_height > height:
         result = Image.new(pil_img.mode, (width, target_height), background_color)
-        result.paste(pil_img, (0, (target_height - height) // 2))
+        pad_size = int((target_height - height) * upper_rate / 10)
+        result.paste(pil_img, (0, pad_size))
         return result
     else:
         result = Image.new(pil_img.mode, (target_width, height), background_color)

@@ -27,20 +27,26 @@
     <input type="file" id="imageInput" accept="image/*">
     <br><br>
 
-    <label for="widthInput">新しい幅:</label>
+    <!-- <label for="widthInput">新しい幅:</label>
     <input type="number" id="widthInput" min="1" value="100">
     <br>
 
     <label for="heightInput">新しい高さ:</label>
     <input type="number" id="heightInput" min="1" value="100">
-    <br><br>
+    <br><br> -->
 
     <select id="size_aspect" size="1">
         <option value='{"w":1,"h":1}'>インスタ(1:1)</option>
         <option value='{"w":16,"h":9}'>横長(9:16)</option>
         <option value='{"w":9,"h":16}'>縦長(16:9)</option>
+        <option value='{"w":9,"h":16,"duble":"{"w":16h,"h":9}"}'>横長(9:16) -> 縦長(16:9)</option>
     </select>
     <br><br>
+
+    <p>上 : 下</p>
+    <input type="range" id="upperRate" name="rangeInput" min="1" max="9" step="1" onchange="updateTextInput(this.value);"><br>
+    <input type="text" id="RateDisplay" value="">
+    <br><br><br>
 
     <button py-click="run">サイズ変更</button>
     <br><br>
@@ -55,6 +61,11 @@
             link.download = 'resized_image.png';
             link.click();
         });
+
+        function updateTextInput(val) {
+            display_value = val + " : " + (10 - val);
+            document.getElementById('RateDisplay').value=display_value; 
+        };
     </script>
     <script type="py" src="./main.py" config="./pyscript.toml"></script>
 </body>
