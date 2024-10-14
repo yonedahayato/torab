@@ -24,7 +24,7 @@
         </ul>
     </details><br><br>
   
-    <input type="file" id="imageInput" accept="image/*">
+    <input type="file" id="imageInput" accept="image/*" multiple>
     <br><br>
 
     <!-- <label for="widthInput">新しい幅:</label>
@@ -52,7 +52,13 @@
     <br><br>
 
     <img id="outputImage" alt="変換後の画像" width="300"><br><br>
-    <button id="downloadButton">ダウンロード</button>
+
+    <details>
+        <summary>output images</summary>
+        <div id="imageContainer"></div>
+
+    </details><br><br>
+
     <script>
         document.getElementById('downloadButton').addEventListener('click', function() {
             const outputImage = document.getElementById('outputImage');
@@ -66,6 +72,7 @@
             display_value = val + " : " + (10 - val);
             document.getElementById('RateDisplay').value=display_value; 
         };
+
     </script>
     <script type="py" src="./main.py" config="./pyscript.toml"></script>
 </body>
