@@ -371,6 +371,73 @@ class EasyNapGame(SimpleNapGame):
 
         return (num_power, suit_power)
 
+class NapGame(SimpleNapGame):
+    """
+    ナップのゲームの進行を管理する
+
+    Attributes:
+        decribe (str): ゲームの説明
+        hand (int): 手札の枚数
+    """
+    describe = \
+"""
+- 手札は 5 枚 (5 トリックの勝負)
+- ビットを行いデクレアラーを決定する
+- 台札あり (スートの請求もあり)
+- 切り札は、最初のトラックのリードのスート
+- 最初のトリックの先行は、デクレアラー / その後は前のトリックの勝者
+- ジョーカーなしの 52 枚のカード
+"""
+    hand_num = 5
+
+    def __init__(self, 
+                 player_how_to_choose: str = "input", 
+                 first_message: str = None):
+        """
+        Args:
+            player_how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+            first_message (str): フィールに最初に表示させるメッセージ
+        """
+        super().__init__(player_how_to_choose, first_message)
+        self.field.is_use_lead = True
+
+    def _set_trump(self):
+        """
+        切り札を決定する
+
+        Note:
+            切り札は、最初のトラックのリードのスート
+        """
+        pass
+
+    def get_start_player_id(self) -> int:
+        """
+        次のトラックを始めるべきプレイヤーの id を取得する
+        
+        Returns:
+            int: 次のトラックを始めるべきプレイヤーの id
+
+        Note:
+            最初のトリックの先行は、ティクレアラー / その後は前のトリックの勝者
+        """
+        if self.track_cnt == 0:
+            raise NotImplementedError
+
+        else:
+            start_player_id = self.winner_id_in_track
+
+        return start_player_id
+
+    def decide_winner_in_game(self) -> Player:
+        """
+        各プレイヤーのポイントから勝者を決定する
+
+        Note:
+            ディクレアラーが宣言を達成できたかどうか
+        """
+        raise NotImplementedError
+
 class NapoleonGame(Game):
     """
     ナポレオンのゲームの進行を管理する
