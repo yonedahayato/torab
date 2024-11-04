@@ -46,8 +46,10 @@ class SimpleNapVSTakeshi(VSTakeshi, SimpleNapGame):
 3. 手札は 3 枚 (3 トリックの勝負)
 4. 台札はなし (スートの請求もなし)
 5. 切り札は、スペードに固定
-6. トリックの先行は、常にたけし
-7. ジョーカーなしの 52 枚のカード
+6. スートの強さ優先 (spade > heart > diamond > club)
+7. 次に数字の強さ優先
+8. トリックの先行は、常にたけし
+9. ジョーカーなしの 52 枚のカード
 """
     def __init__(self, player_how_to_choose: str = "input"):
         super().__init__(player_how_to_choose = player_how_to_choose,
