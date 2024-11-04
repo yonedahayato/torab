@@ -8,6 +8,7 @@ from ..utils import (
 from ..player import (
     Player,
     Takeshi,
+    Shizuka,
 )
 
 from .game import (
@@ -127,7 +128,40 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
         """
         self.field.trump = [Suit.spade, Suit.heart, Suit.diamond][random.randint(0, 2)]
 
-class VSTakeshi:
+class VSShizuka(VSBase):
     """
-    たけしと戦う上で共有の処理
+    しずかと戦う上で共有の処理
     """
+    def _set_player(self, how_to_choose: str = "input") -> list[Player]:
+        """
+        ゲームに参加させるプレイヤーを着席させる
+
+        Args:
+            how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
+                Player class 参照
+
+        Returns:
+            list[Player]: ゲームに参加するプレイヤー
+        """
+        return [Shizuka(), Player("You", cpu=False, how_to_choose=how_to_choose)]
+
+class EasyNapVSShizuka(VSShizuka, EasyNapGame):
+    """
+    しずかとの初戦 (Takeshi Lv.1)
+
+    Attributes:
+        describe (str): ゲームの説明
+    """
+    describe = \
+"""
+1. シンプルなトリックテイキングゲーム
+2. たけしとしずかと 1 vs 1 vs 1で行う
+3. 手札は 5 枚 (5 トリックの勝負)
+4. 台札あり (スートの請求もあり)
+5. 切り札は、ランダム
+6. 最初のトリックの先行は、ランダム / その後は前のトリックの勝者
+7. ジョーカーなしの 52 枚のカード
+"""
+    def __init__(self, player_how_to_choose: str = "input", first_message: str = None):
+        super().__init__(player_how_to_choose = player_how_to_choose,
+                         first_message = "私も混ぜてもらえる？")

@@ -317,7 +317,7 @@ class EasyNapGame(SimpleNapGame):
             最初のトリックの先行は、ランダム / その後は前のトリックの勝者
         """
         if self.track_cnt == 0:
-            start_player_id = random.randint(0, len(self.field.players))
+            start_player_id = random.randint(0, len(self.field.players)-1)
 
         else:
             start_player_id = self.winner_id_in_track
@@ -371,7 +371,7 @@ class EasyNapGame(SimpleNapGame):
 
         return (num_power, suit_power)
 
-class NapGame(Game):
+class NapoleonGame(Game):
     """
     ナポレオンのゲームの進行を管理する
 

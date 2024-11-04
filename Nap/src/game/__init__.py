@@ -5,8 +5,9 @@ from .track import (
 )
 from .game import (
     Game,
-    NapGame,
     SimpleNapGame,
+    EasyNapGame,
+    NapoleonGame,
 )
 
 from .vs_series import (

@@ -1,9 +1,6 @@
-import io
 from pathlib import Path
 import pytest
 import sys
-
-from _pytest.monkeypatch import MonkeyPatch
 
 FILE_DIR = Path(__file__).parent.absolute()
 PROJECT_DIR = FILE_DIR.parent.parent.absolute()
@@ -15,96 +12,107 @@ from src.utils import (
 )
 
 from src.game import (
-    SimpleNapVSTakeshi,
-    EasyNapVSTakeshi,
+    Game,
+    SimpleNapGame,
+    EasyNapGame,
 )
 
-ENDING = """##################################################
-#
-#\t\t\t山札: 42
-#\t\t\t捨て札: 10
-#\t\t\t場: 0
-#\t\t\t切り札: {trump}
-#
-#\tPlayers
-#\t\tたけし ({point_01}): []
-#\t\tYou ({point_02}): []
-#
-#\tMessage
-#\t\tこのゲームの勝者は、{winner} です
-#
-#
-##################################################
-"""
+from src.player import (
+    Player,
+)
 
-@pytest.fixture()
-def hand_fixed_on_easy_nap_vs_takeshi() -> EasyNapVSTakeshi:
+class TestGame:
     """
-    EasyNapVSTakeshi のゲームにて、プレイヤーの手札を固定したフィールを作成する
-    """
-    game = EasyNapVSTakeshi()
-    takeshi_hand = [Card(num = n, suit = Suit.club) for n in range(1, 1 + game.hand_num)]
-    player_hand = [Card(num = n, suit = Suit.spade) for n in range(1, 1 + game.hand_num)]
-
-    for player in game.field.players:
-        if str(player) == "たけし":
-            player.take_hand(takeshi_hand)
-        else:
-            player.take_hand(player_hand)
-            
-    return game
-
-class TestSimpleNapVSTakeshi:
-    """
-    SimpleGameVSTakeshi class のテスト
-    """
-    def test_play(self, monkeypatch: MonkeyPatch):
-        """
-        ゲームの実行のテスト
-
-        Args:
-            monkeypatch (MonkeyPatch): pytest tool
-        """
-        monkeypatch.setattr('sys.stdin', io.StringIO("0\n0\n0\n"))
-        game = SimpleNapVSTakeshi()
-        game.play()
-        
-class TestEasyNapVSTakeshi:
-    """
-    EasyGameVSTakeshi class のテスト
-
-    Args:
-        monkeypatch (MonkeyPatch): pytest tool
+    Game クラスのテスト
     """
     def test_init(self):
         """
-        クラスのインスタンスのテスト
+        Game クラスのインスタンスのテスト
 
-        Args:
-            monkeypatch (MonkeyPatch): pytest tool
+        Note:
+            _set_trump メソッドが実装されていないため、NotImplementedError が発生する
         """
-        game = EasyNapVSTakeshi()
+        with pytest.raises(NotImplementedError):
+            game = Game()
 
-    def test_play(self, 
-                  monkeypatch: MonkeyPatch, 
-                  capsys,
-                  hand_fixed_on_easy_nap_vs_takeshi: EasyNapVSTakeshi):
+class TestSimpleNapGame:
+    """
+    SimpleNapGame class のテスト
+    """
+    def test_init(self):
         """
-        ゲームの実行のテスト
-
-        Args:
-            monkeypatch (MonkeyPatch): pytest tool
+        SimpleNapGame クラスのインスタンスのテスト
         """
-        monkeypatch.setattr('sys.stdin', io.StringIO("0\n0\n0\n0\n0\n"))
-        game = hand_fixed_on_easy_nap_vs_takeshi
-        game.play()
+        game = SimpleNapGame()
+        assert game.hand_num == 3
+        assert game.field.trump == Suit.spade
 
-        captured = capsys.readouterr()
+    def test_calculate_strongness(self):
+        """
+        calculate_strongness メソッドのテスト
+        """
+        game = SimpleNapGame()
+        assert game.calculate_strongness(Card(num=1, suit=Suit.spade)) == (14, 6)
+        assert game.calculate_strongness(Card(num=10, suit=Suit.heart)) == (10, 3)
+        assert game.calculate_strongness(Card(num=2, suit=Suit.club)) == (2, 1)
+
+    def test_decide_winner_in_track(self):
+        """
+        decide_winner_in_track メソッドのテスト
+        """
+        game = SimpleNapGame()
+        game.field.cards = {
+            "Boss": Card(num=1, suit=Suit.spade),
+            "You": Card(num=10, suit=Suit.heart),
+        }
+        winner = game.decide_winner_in_track()
+        assert winner.name == "Boss"
+
+    def test_decide_winner_in_game(self):
+        """
+        decide_winner_in_game メソッドのテスト
+        """
+        game = SimpleNapGame()
+        game.field.players = [
+            Player("Boss"),
+            Player("You"),
+        ]
+        game.field.players[0].point = 1
+        game.field.players[1].point = 2
 
         winner = game.decide_winner_in_game()
-        expected = ENDING.format(trump = game.field.trump.mark,
-                                 winner = str(winner),
-                                 point_01 = game.field.players[0].point,
-                                 point_02 = game.field.players[1].point)
+        assert winner.name == "You"
 
-        assert captured.out.split("\n\n")[-1] == expected
+class TestEasyNapGame:
+    """
+    EasyNapGame class のテスト
+    """
+    def test_init(self):
+        """
+        EasyNapGame クラスのインスタンスのテスト
+        """
+        game = EasyNapGame()
+        assert game.hand_num == 5
+        assert game.field.is_use_lead is True
+        assert game.field.trump in [Suit.spade, Suit.heart, Suit.diamond, Suit.club]
+
+    def test_get_start_player_id(self):
+        """
+        get_start_player_id メソッドのテスト
+        """
+        game = EasyNapGame()
+        assert game.get_start_player_id() in [0, 1]
+        game.track_cnt = 1
+        game.winner_id_in_track = 0
+        assert game.get_start_player_id() == 0
+
+    def test_calculate_strongness(self):
+        """
+        calculate_strongness メソッドのテスト
+        """
+        game = EasyNapGame()
+        game.field.trump = Suit.spade
+        game.field.cards = {"Boss": Card(num=10, suit=Suit.heart)}
+        assert game.calculate_strongness(Card(num=1, suit=Suit.spade)) == (14, 6)
+        assert game.calculate_strongness(Card(num=10, suit=Suit.heart)) == (10, 5)
+        assert game.calculate_strongness(Card(num=2, suit=Suit.club)) == (2, 1)

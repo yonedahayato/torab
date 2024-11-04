@@ -55,6 +55,13 @@ class TestCard:
         with pytest.raises(ValueError):
             error_card = weak_joker = Card(num = 14)
 
+    def test_get_num_str(self):
+        """
+        get_num_str のテスト
+        """
+        spade_1 = Card(1, Suit.spade)
+        assert spade_1.get_num_str() == "A"
+
 def test_card_equality():
     card1 = Card(num = 1, suit = Suit.spade)
     card2 = Card(num = 1, suit = Suit.spade)

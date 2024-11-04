@@ -4,4 +4,5 @@ from .player import Player
 
 from .charactor import (
     Takeshi,
+    Shizuka,
 )

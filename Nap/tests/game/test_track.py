@@ -23,7 +23,7 @@ from src.game import (
     SimpleTrack,
     NapTrack,
     Game,
-    NapGame,
+    NapoleonGame,
 )
 
 from src.player import (
@@ -108,7 +108,7 @@ class TestNapTrack:
         players = players()
         field = Field(deck, players)
 
-        game = NapGame(field = field)
+        game = NapoleonGame(field = field)
         game.shuffle()
         game.deal()
         game.field.trump = Suit.spade

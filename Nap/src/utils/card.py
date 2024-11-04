@@ -162,16 +162,7 @@ class Card(BaseModel, BasePicture):
         """String.
         カードの文字列表現
         """
-        if str(self.num) == "1":
-            num = "A"
-        elif str(self.num) == "13":
-            num = "K"
-        elif str(self.num) == "12":
-            num = "Q"
-        elif str(self.num) == "11":
-            num = "J"
-        else:
-            num = self.num
+        num = self.get_num_str()
 
         if self.joker == 0:
             return f"{self.suit.mark}-{num}"
@@ -211,3 +202,20 @@ class Card(BaseModel, BasePicture):
             bool : このカードがジョーカーかどうか
         """
         return self.joker in [1, 2]
+    
+    def get_num_str(self):
+        """
+        数字を表す文字列を返す
+        """
+        if str(self.num) == "1":
+            num = "A"
+        elif str(self.num) == "13":
+            num = "K"
+        elif str(self.num) == "12":
+            num = "Q"
+        elif str(self.num) == "11":
+            num = "J"
+        else:
+            num = self.num
+
+        return num

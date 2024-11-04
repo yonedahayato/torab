@@ -109,6 +109,7 @@ class Player:
             hint (str): CPU が開示する際に、ヒントを持たせるかどの程度ヒントを持たせるか
                 no : ヒントなし
                 mark-{n} : マークの開示
+                num-{n} : 数字の開示
             is_force (bool): 強制的にカードを開示させる
 
         Return
@@ -117,7 +118,7 @@ class Player:
         Note:
             (基本的に) CPU は、カードの種類までは開示しない
         """
-        if hint not in ["no", "mark-1"]:
+        if hint not in ["no", "mark-1", "num-1"]:
             raise ValueError(f"想定していないヒントの値: {hint}")
 
         if is_force:
@@ -128,6 +129,14 @@ class Player:
             for cnt, card in enumerate(self.cards):
                 if cnt < 1:
                     hand.append(f"{card.suit.mark}-?")
+                else:
+                    hand.append("?")
+
+        elif self.cpu and hint == "num-1":
+            hand = []
+            for cnt, card in enumerate(self.cards):
+                if cnt < 1:
+                    hand.append(f"?-{card.get_num_str()}")
                 else:
                     hand.append("?")
 
