@@ -15,7 +15,16 @@ from .game import (
     EasyNapGame,
 )
 
-class VSTakeshi:
+class VSBase:
+    """
+    VS シリーズの共通の処理
+    """
+    def _set_player(self):
+        """
+        """
+        raise NotImplementedError()
+
+class VSTakeshi(VSBase):
     """
     たけしと戦う上で共有の処理
     """
@@ -117,3 +126,8 @@ class EasyNapVSTakeshi(VSTakeshi, EasyNapGame):
 
         """
         self.field.trump = [Suit.spade, Suit.heart, Suit.diamond][random.randint(0, 2)]
+
+class VSTakeshi:
+    """
+    たけしと戦う上で共有の処理
+    """

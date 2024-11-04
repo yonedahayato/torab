@@ -10,6 +10,7 @@ from .game import (
 )
 
 from .vs_series import (
+    VSBase,
     SimpleNapVSTakeshi,
     EasyNapVSTakeshi,
 )
