@@ -17,6 +17,10 @@ from ..player import (
     Player,
 )
 
+from ..bid import (
+    NapBid,
+)
+
 from .track import (
     Track,
     SimpleTrack,
@@ -43,11 +47,9 @@ class Game:
         Args:
             player_how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
                 Player class 参照
-            first_message (str): フィールに最初に表示させるメッセージ
+            first_message (str): フィールドに最初に表示させるメッセージ
 
         Attributes:
-            deck (Deck); ゲームを行うためのデッキ
-            players (list[Players]): ゲームを行うプレイヤー
             field (Field): ゲームを行うためのフィールド
 
         Note:
@@ -58,7 +60,7 @@ class Game:
                 2. カードをシャフル
                 3. カードを配る
                 4. 切り札の決定
-                4. Track を準備
+                5. Track を準備
         """
         deck = self.set_deck()
         players = self._set_player(player_how_to_choose)
@@ -397,8 +399,35 @@ class NapGame(SimpleNapGame):
         Args:
             player_how_to_choose (str): CPU でないプレイヤーがどのようにカードを選択するか
                 Player class 参照
-            first_message (str): フィールに最初に表示させるメッセージ
+            first_message (str): フィールドに最初に表示させるメッセージ
+
+        Attributes:
+            field (Field): ゲームを行うためのフィールド
+
+        Note:
+            ゲームのための準備
+                1. フィールドの設営
+                    a. カードを準備する
+                    b. プレイヤーを着席させる
+                2. カードをシャフル
+                3. カードを配る
+                4. Bid を行い、ディクレアラーの決定
+                5. Track を準備
         """
+        deck = self.set_deck()
+        players = self._set_player(player_how_to_choose)
+        self.field = Field(deck, players)
+        self.shuffle()
+        self.deal()
+        bid = NapBid(self.field)
+        declarer = bid.play()
+        self.track_cnt = 0
+        self.set_track(start_player_id = declarer)
+
+        if first_message:
+            self.field.message = first_message
+        print(self.field)
+        sleep(self.time_lag)
         super().__init__(player_how_to_choose, first_message)
         self.field.is_use_lead = True
 
@@ -409,7 +438,7 @@ class NapGame(SimpleNapGame):
         Note:
             切り札は、最初のトラックのリードのスート
         """
-        pass
+        raise Exception("切り札の決定方法の実装")
 
     def get_start_player_id(self) -> int:
         """
@@ -437,6 +466,44 @@ class NapGame(SimpleNapGame):
             ディクレアラーが宣言を達成できたかどうか
         """
         raise NotImplementedError
+
+    def play(self) -> None:
+        """
+        トラックの進行を行う
+        
+        Note:
+            a. 手札の枚数分、track を行う
+
+            b. ある Track における処理の流れ
+                1. 各プレイヤーがカードを出す (track のイテレーション)
+                    最初の Track のリードで、切り札が決定
+                2. その Track における勝者を決める
+                3. 勝者にポイントを付与
+                3. フィールドの場を綺麗にする
+                4. 次の Track の準備
+                    
+            c. ゲームにおける勝者を決定する
+        """
+        for track_cnt in range(self.hand_num):
+            for take_cnt, field in enumerate(self.track):
+                if take_cnt == 0 and track_cnt == 0:
+                    self._set_trump()
+
+                print(field)
+
+            winner = self.decide_winner_in_track()
+            self.add_point(winner)
+
+            self.field.clear()
+            print(field)
+
+            self.track_cnt += 1
+            start_player_id = self.get_start_player_id()
+            self.set_track(start_player_id = start_player_id)
+
+        winner = self.decide_winner_in_game()
+        field.message = f"このゲームの勝者は、{winner} です"
+        print(field)
 
 class NapoleonGame(Game):
     """
