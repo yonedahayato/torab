@@ -411,18 +411,15 @@ class NapGame(SimpleNapGame):
                     b. プレイヤーを着席させる
                 2. カードをシャフル
                 3. カードを配る
-                4. Bid を行い、ディクレアラーの決定
-                5. Track を準備
+                4. Bid の準備
         """
         deck = self.set_deck()
         players = self._set_player(player_how_to_choose)
         self.field = Field(deck, players)
         self.shuffle()
         self.deal()
-        bid = NapBid(self.field)
-        declarer = bid.play()
+        self.bid_manager = NapBid(self.field)
         self.track_cnt = 0
-        self.set_track(start_player_id = declarer)
 
         if first_message:
             self.field.message = first_message
@@ -467,9 +464,21 @@ class NapGame(SimpleNapGame):
         """
         raise NotImplementedError
 
+    def bid(self):
+        """
+        ビッドを実行し、完了したら、track を始める準備を行う
+        """
+        for field in self.bid_manager:
+            print(field)
+
+        if self.bid_manager.invalid:
+            raise Exception("この試合は無効")
+        start_player_id = self.field.players.get(self.bid_manager.declarer)
+        self.set_track(start_player_id = start_player_id)
+
     def play(self) -> None:
         """
-        トラックの進行を行う
+        ゲームの進行を行う
         
         Note:
             a. 手札の枚数分、track を行う

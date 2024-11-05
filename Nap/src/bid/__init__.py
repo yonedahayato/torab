@@ -1,3 +1,4 @@
 from .bid import (
-    NapBid
+    NapBid,
+    NapDeclaration,
 )

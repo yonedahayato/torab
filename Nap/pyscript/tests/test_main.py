@@ -22,7 +22,7 @@ def test_display_version(http_server: HTTPServer):
     html = driver.page_source
 
     soup = BeautifulSoup(html, "html.parser")
-    target_id = "info-version"
+    target_id = "python-version"
     target_element = soup.find(id=target_id)
 
     if target_element:
