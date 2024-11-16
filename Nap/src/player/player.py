@@ -35,7 +35,10 @@ class Player:
         CPU は、ランダムに宣言する
     """
 
-    def __init__(self, name: str = "Unknown", cpu: bool = False, how_to_choose: str = "input"):
+    def __init__(self, 
+                 name: str = "Unknown", 
+                 cpu: bool = False, 
+                 how_to_choose: str = "input"):
         """Constructor.
         
         Attributes:
@@ -58,6 +61,10 @@ class Player:
         self.point = 0
         self.cards = []
         self._choose_card_id = None
+        self._choose_declare_id = None
+
+    def __repr__(self):
+        return f"Player(name={self.name})"
 
     def __str__(self) -> str:
         """String.
@@ -82,7 +89,9 @@ class Player:
         return self._choose_card_id
     
     @choose_card_id.setter
-    def choose_card_id(self, card_id) -> None:
+    def choose_card_id(self,
+                       card_id: int,
+                    ) -> None:
         """
         
         choose_card_id の setter
@@ -92,7 +101,9 @@ class Player:
         """
         self._choose_card_id = card_id
 
-    def take_hand(self, cards: list[Card]) -> None:
+    def take_hand(self, 
+                  cards: list[Card]
+                ) -> None:
         """
         カードを受け取る
 
@@ -101,7 +112,10 @@ class Player:
         """
         self.cards = sorted(cards)
         
-    def show_hand(self, hint: str = "no", is_force: bool = False) -> list[Card]:
+    def show_hand(self, 
+                  hint: str = "no", 
+                  is_force: bool = False
+                ) -> list[Card]:
         """Show hand.
         手札を開示する
         
@@ -147,34 +161,10 @@ class Player:
             hand = self.cards
 
         return hand
-
-    def declare(self, strong_declear: Declear, is_random: bool = False) -> Declear:
-        """Declare.
-        宣言する
-        
-        Args:
-            strong_declear (Declear): 一番強い宣言
-            is_random (bool): ランダムに宣言するかどうか
-
-        Returns:
-            Declear: 宣言
-            
-        Raises:
-            ValueError: 宣言が弱い
-        """
-
-        if is_random:
-            num = random.randint(13, 20)
-            suit = random.choice([Suit.spade, Suit.heart, Suit.diamond, Suit.club])
-        else:
-            num = int(input("宣言する数字を入力してください: "))
-            suit = int(input("宣言するスートを入力してください: "))
-            
-        declear = Declear(num, suit)
-
-        return declear
     
-    def check_cards_can_submit(self, lead_suit: Suit = None) -> list[Card]:
+    def check_cards_can_submit(self, 
+                               lead_suit: Suit = None
+                            ) -> list[Card]:
         """
         CPU でないプレイヤーが、カードを確認する
         
@@ -195,7 +185,7 @@ class Player:
             cards_can_submit_text = [f"{i}: {c}" for i, c in enumerate(self.cards) if c.suit == lead_suit]
             print(f"出せるカードは、{cards_can_submit_text} です")
 
-        print("カードを選らんでください。")
+        print("カードを選んでください。")
         print([f"{i}: {c}" for i, c in enumerate(self.cards)])
 
         return cards_can_submit
@@ -203,6 +193,9 @@ class Player:
     def input_card(self, lead_suit: Suit):
         """
         標準入力を利用して、カードを選択する
+
+        Args:
+            lead_suit (Suit): 要求されているスート
         """
         cards_can_submit = self.check_cards_can_submit(lead_suit = lead_suit)
 
@@ -221,6 +214,28 @@ class Player:
             card_id = self.input_card(lead_suit = lead_suit)
 
         return card_id
+    
+    def input_declare(self, declarable_list: list) -> int:
+        """
+        標準入力を利用して、宣言を行う
+
+        Args:
+            declarable_list (list): 宣言可能な宣言の一覧
+
+        Returns:
+            int: 選択された宣言のid
+        """
+        print("宣言を選んでください")
+        for d_id, declare in enumerate(declarable_list):
+            print(f"{d_id}: {declare}")
+
+        try:
+            declare_id = int(input("宣言の番号: "))
+        except ValueError:
+            print("\n宣言の番号を入力してください。")
+            declare_id = self.input_declare(declarable_list)
+
+        return declare_id
 
     def choose_card(self, lead_suit: Suit) -> Card:
         """
@@ -249,7 +264,35 @@ class Player:
 
         return card
 
-    def play_card(self, is_random: bool = False, lead_suit: Suit = None) -> Card:
+    def choose_declare(self, declarable_list: list) -> any:
+        """
+        CPU でないプレイヤーが、宣言を行う処理
+
+        Args:
+            declarable_list (list): 宣言可能な宣言の一覧
+
+        Returns:
+            Declare: 選択された宣言
+            
+        Note:
+            input を使うケース
+            set (変数) を使うケース
+                利用後は、削除 (Noneを代入)
+        """
+        if self.how_to_choose == "input":
+            declare_id = self.input_declare(declarable_list=declarable_list)
+            
+        elif self.how_to_choose == "set":
+            declare_id = self.choose_declare_id
+            self.choose_declare_id = None
+
+        declare = declarable_list[declare_id]
+
+        return declare
+
+    def play_card(self, 
+                  is_random: bool = False, 
+                  lead_suit: Suit = None) -> Card:
         """Play card.
         カードを出す
         
@@ -278,3 +321,29 @@ class Player:
             card = self.choose_card(lead_suit)
 
         return card
+
+    def declare(self, 
+                declarable_list: list,
+                is_random: bool = False,
+            ) -> any:
+        """Declare.
+        宣言する
+        
+        Args:
+            declarable_list (list): 宣言可能な一覧
+            is_random (bool): ランダムに宣言するかどうか
+
+        Returns:
+            Declear: 宣言
+
+        Note:
+            ランダム or CPU ならば、ランダムに宣言を行う
+        """
+
+        if is_random or self.cpu:
+            declear = random.choice(declarable_list)
+
+        else:
+            declear = self.choose_declare(declarable_list)
+
+        return declear

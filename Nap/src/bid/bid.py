@@ -10,7 +10,39 @@ from ..field import (
     Field,
 )
 
-class NapDeclaration:
+class BaseDeclaration:
+    def __eq__(self, other) -> bool:
+        """Equal.
+        宣言の強さが同じかどうか
+        
+        """
+        return self.d_value == other.d_value
+    
+    def __gt__(self, other) -> bool:
+        """Greater than.
+        宣言の強さが他の宣言より強いかどうか
+        """
+        return self.d_value > other.d_value
+    
+    def __ge__(self, other) -> bool:
+        """Greater than or equal.
+        宣言の強さが他の宣言以上かどうか
+        """
+        return self.d_value >= other.d_value
+    
+    def __lt__(self, other) -> bool:
+        """Less than.
+        宣言の強さが他の宣言より弱いかどうか
+        """
+        return self.d_value < other.d_value
+    
+    def __le__(self, other) -> bool:
+        """Less than or equal.
+        宣言の強さが他の宣言以下かどうか
+        """
+        return self.d_value <= other.d_value
+
+class NapDeclaration(BaseDeclaration):
     """
     ナップのゲームにおける宣言
     """
@@ -31,6 +63,7 @@ class NapDeclaration:
             raise ValueError(f"NapDeclaration において、異常なビッド: {name}")
         
         self.name = name
+        self.d_value = self.table.query(f"name == '{name}'")["d_value"].values[0]
 
     def __repr__(self):
         return f"NapDeclaration(name={self.name})"
@@ -46,6 +79,15 @@ class NapDeclaration:
         宣言を一度でもしたかどうか
         """
         return self.name != "no_declare"
+    
+    def get_declarable_list(self) -> list[any]:
+        """
+        自身のディクレアに対してコールできるディクレアの一覧を返す
+        """
+        declarable_list = [NapDeclaration("pass")]
+        declarable_list += [NapDeclaration(d) for d in self.table.query(f"d_value > {self.d_value}")["name"].values]
+
+        return declarable_list
 
 class NapBid:
     """
@@ -60,7 +102,7 @@ class NapBid:
         """
         self.field = field
         print(self.field)
-        self.declarations = {p.name: NapDeclaration("no_declare") for p in self.field.players}
+        self.declarations = {p: NapDeclaration("no_declare") for p in self.field.players}
         print(self.declarations)
 
         self.start_bit_player_id = random.randint(0, len(self.field.players)-1)
@@ -72,7 +114,7 @@ class NapBid:
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> Field:
         """
         プレイヤー 1分のビッドの処理
 
@@ -86,28 +128,55 @@ class NapBid:
         if self.is_finish_flag:
             raise StopIteration
 
+        if self.bid_cnt == 0:
+            self.best_declaration = NapDeclaration("no_declare")
+
         player_id = (self.start_bit_player_id + self.bid_cnt) % len(self.field.players)
         player = self.field.players[player_id]
-        declaration = self.declarations.get(player.name)
+        declaration = self.declarations.get(player)
 
-        if not declaration.is_pass():
-            declarable_list = declaration.get_declarable_list()
+        if declaration.is_pass():
+            """
+            前の宣言がパスであれば、宣言できない
+            """
+            self.field.message = f"{player} はすでにパスを宣言しているので、これ以上の宣言はできない"
+
+            # closing
+            self.bid_cnt += 1
+            return self.field
+
+        # 選択できる宣言は、最も強い宣言よりも強い宣言
+        declarable_list = self.best_declaration.get_declarable_list()
+
+        if len(declarable_list) == 1:
+            """
+            選択できる宣言がなければ、パス扱いとなる
+            """
+            new_declaration = NapDeclaration(name = "pass")
+            self.field.message = f"{player} は {new_declaration} しか宣言できない"
+
+        else:
             new_declaration = self.bid(player, declarable_list)
-            self.declarations[player.name] = new_declaration
+            self.declarations[player] = new_declaration
+            self.field.message = f"{player} が {new_declaration} を宣言した"
+
+        if not new_declaration.is_pass():
+            self.best_declaration = new_declaration
 
         if self.is_finish():
             self.is_finish_flag = True
-            self.declarer = player
+            self.field.message += f"\n{self.declarer} の{self.best_declaration}宣言が有効です"
 
         if self.is_everyone_pass():
             self.is_finish_flag = True
             self.invalid = True
+            self.field.message += "\n全員のプレイヤーがパスを行いました"
 
         # closing
         self.bid_cnt += 1
         return self.field
     
-    def is_everyone_pass(self):
+    def is_everyone_pass(self) -> bool:
         """
         全員パスをしている状態かどうか
         """
@@ -118,7 +187,7 @@ class NapBid:
 
         return pass_cnt == len(self.declarations)
 
-    def is_finish(self):
+    def is_finish(self)  -> bool:
         """
         終わったかどうかの判定を行う
 
@@ -136,9 +205,18 @@ class NapBid:
         return pass_cnt == (len(self.declarations) - 1) and \
                declared_cnt == (len(self.declarations))
     
-    def bid(self, player: Player):
+    def bid(self, 
+            player: Player, 
+            declarable_list: list[NapDeclaration]) -> NapDeclaration:
         """
+        プレイヤーの宣言の処理
         """
-        card = player.play_card()
-            
-        return card
+        declaration = player.declare(declarable_list)
+        return declaration
+    
+    def declarer(self) -> Player:
+        """
+        宣言の情報から、最も強い宣言をしたプレイヤーを返す
+        """
+        return max(self.declarations, key=self.declarations.get)
+

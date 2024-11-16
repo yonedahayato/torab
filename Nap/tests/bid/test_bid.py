@@ -34,7 +34,44 @@ class TestNapDeclaration:
         with pytest.raises(ValueError) as e:
             dec = NapDeclaration("xx")
         assert str(e.value) == "NapDeclaration において、異常なビッド: xx"
-
+    def test_init_nap_declaration(self):
+        """
+        NapDeclaration の初期化のテスト
+        """
+        dec = NapDeclaration("two")
+        assert dec.name == "two"
+        assert dec.d_value == 1
+    
+    def test_is_pass(self):
+        """
+        パスをしたかどうかの判定のテスト
+        """
+        dec = NapDeclaration("pass")
+        assert dec.is_pass()
+        dec = NapDeclaration("two")
+        assert not dec.is_pass()
+    
+    def test_is_declared(self):
+        """
+        宣言を一度でもしたかどうかの判定のテスト
+        """
+        dec = NapDeclaration("no_declare")
+        assert not dec.is_declared()
+        dec = NapDeclaration("two")
+        assert dec.is_declared()
+    
+    def test_get_declarable_list(self):
+        """
+        自身のディクレアに対してコールできるディクレアの一覧を返すテスト
+        """
+        dec = NapDeclaration("two")
+        declarable_list = dec.get_declarable_list()
+        assert len(declarable_list) == 5
+        assert declarable_list[0].name == "three"
+        assert declarable_list[1].name == "misere"
+        assert declarable_list[2].name == "four"
+        assert declarable_list[3].name == "nap"
+        assert declarable_list[4].name == "wellington"
 
 class TestNapBid:
     """
@@ -58,3 +95,11 @@ class TestNapBid:
             player.take_hand(field.deck.deal(hand_num))
 
         nap_bid = NapBid(field)
+        for field_tmp in nap_bid:
+            print(field_tmp)
+        # assert nap_bid.is_finish_flag
+        # assert nap_bid.declarer.name == "Alice"
+        # assert nap_bid.invalid == False
+
+    def test_nap_bid_everyone_pass(self):
+        """"""
