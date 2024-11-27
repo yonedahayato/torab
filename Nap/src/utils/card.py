@@ -1,7 +1,10 @@
 from enum import IntEnum
+from pathlib import Path
 from pydantic import BaseModel, Field
 
 from .base import BasePicture
+
+BASE_DIR = Path(__file__).parents[2]
 
 class Suit(IntEnum):
     """
@@ -84,6 +87,7 @@ class Card(BaseModel, BasePicture):
         joer (int): ジョーカーかどうか
             0, 1, 2
         image_url (str): カードの画像のURL
+        image_path (Path): カードの画像のパス
 
     Note:
         カードの種類は、以下の通り
@@ -96,6 +100,7 @@ class Card(BaseModel, BasePicture):
     suit: Suit | None = Suit.club
     joker: int = Field(default = 0, ge = 0, le = 2)
     image_url: str | None = None
+    image_path: Path | None = None
 
     def __init__(self, num: int = 2, suit: Suit = Suit.club, joker: int = 0):
         """
@@ -126,6 +131,7 @@ class Card(BaseModel, BasePicture):
         
         super().__init__(num = num, suit = suit, joker = joker)
         self._set_url()
+        self._set_image_path()
 
     def __eq__(self, other) -> bool:
         """Equal.
@@ -193,6 +199,40 @@ class Card(BaseModel, BasePicture):
             self.image_url = f"https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust{self.num + (13 * 3)}.png"
         else:
             raise ValueError("カードの種類が不正です")
+        
+    def _set_image_path(self):
+        """
+        画像のパスを設定する
+
+        Note:
+            Nap/index.html から参照できるパスを
+        """
+        # base_path = BASE_DIR / "asset/image/cards/png"
+        base_path = Path("./asset/image/cards/png")
+
+        if self.joker == 1:
+            card_name = "black_joker.png"
+            self.image_path = base_path / card_name
+            return
+        elif self.joker == 2:
+            card_name = "red_joker.png"
+            self.image_path = base_path / card_name
+            return
+
+        if self.num == 1:
+            card_name = "ace"
+        elif self.num == 11:
+            card_name = "jack"
+        elif self.num == 12:
+            card_name = "queen"
+        elif self.num == 13:
+            card_name = "king"
+        else:
+            card_name = str(self.num)
+
+        card_name += f"_of_{self.suit.name}s.png"
+
+        self.image_path = base_path / card_name
         
     def is_joker(self) -> bool:
         """

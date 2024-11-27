@@ -157,20 +157,22 @@ class NapBid:
 
         else:
             new_declaration = self.bid(player, declarable_list)
-            self.declarations[player] = new_declaration
             self.field.message = f"{player} が {new_declaration} を宣言した"
+
+        self.declarations[player] = new_declaration
 
         if not new_declaration.is_pass():
             self.best_declaration = new_declaration
+            self.declarer = player
 
         if self.is_finish():
             self.is_finish_flag = True
-            self.field.message += f"\n{self.declarer} の{self.best_declaration}宣言が有効です"
+            # self.field.message += f"{self.declarer} の{str(self.best_declaration)}宣言が有効です"
 
         if self.is_everyone_pass():
             self.is_finish_flag = True
             self.invalid = True
-            self.field.message += "\n全員のプレイヤーがパスを行いました"
+            # self.field.message += "全員のプレイヤーがパスを行いました"
 
         # closing
         self.bid_cnt += 1
@@ -213,10 +215,3 @@ class NapBid:
         """
         declaration = player.declare(declarable_list)
         return declaration
-    
-    def declarer(self) -> Player:
-        """
-        宣言の情報から、最も強い宣言をしたプレイヤーを返す
-        """
-        return max(self.declarations, key=self.declarations.get)
-

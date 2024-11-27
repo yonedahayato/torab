@@ -87,3 +87,7 @@ def test_card_is_joker():
     card2 = Card(num = 1, suit = Suit.spade)
     assert card1.is_joker()
     assert not card2.is_joker()
+
+def test_card_path():
+    card = Card(num=1, suit=Suit.heart)
+    assert card.image_path.exists()

@@ -473,7 +473,10 @@ class NapGame(SimpleNapGame):
 
         if self.bid_manager.invalid:
             raise Exception("この試合は無効")
+        
+        field.message = f"{self.bid_manager.declarer} の {str(self.bid_manager.best_declaration)} が有効です"
         start_player_id = self.field.players.get(self.bid_manager.declarer)
+
         self.set_track(start_player_id = start_player_id)
 
     def play(self) -> None:

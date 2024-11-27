@@ -70,12 +70,14 @@ class Buttons:
             disable (list[bool]): どのカードをクリックできないようにするかどうか
 
         Note:
-        <input 
-            type="image"
-            py-click="game.run"
-            value="0"
-            class="card_button"
-            src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png" />
+            <input 
+                type="image"
+                py-click="game.run"
+                value="0"
+                class="card_button"
+                src="https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust3.png" />
+
+            src は、image_url が無効になっていたため image_path に変更
         """
         for cnt, card in enumerate(cards):
             input_tag = document.createElement('input')
@@ -83,7 +85,7 @@ class Buttons:
             input_tag.setAttribute("type", "image")
             input_tag.setAttribute("py-click", func_name)
             input_tag.value = str(cnt)
-            input_tag.setAttribute("src", card.image_url)
+            input_tag.setAttribute("src", str(card.image_path))
             input_tag.setAttribute("class", "card_button")
 
             if disable is not None:
