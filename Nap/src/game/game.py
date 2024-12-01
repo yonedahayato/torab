@@ -264,6 +264,9 @@ class SimpleNapGame(Game):
     def decide_winner_in_game(self) -> Player:
         """
         各プレイヤーのポイントから勝者を決定する
+
+        Note:
+            ポイントが同点であった場合、プレイ順が早い方が優先的に勝利となる
         """
         
         return max(self.field.players, key = lambda p: p.point)
@@ -373,7 +376,7 @@ class EasyNapGame(SimpleNapGame):
 
         return (num_power, suit_power)
 
-class NapGame(SimpleNapGame):
+class NapGame(EasyNapGame):
     """
     ナップのゲームの進行を管理する
 

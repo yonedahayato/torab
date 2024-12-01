@@ -14,4 +14,5 @@ from .vs_series import (
     VSBase,
     SimpleNapVSTakeshi,
     EasyNapVSTakeshi,
+    EasyNapVSShizuka,
 )

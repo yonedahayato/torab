@@ -143,7 +143,7 @@ class VSShizuka(VSBase):
         Returns:
             list[Player]: ゲームに参加するプレイヤー
         """
-        return [Shizuka(), Player("You", cpu=False, how_to_choose=how_to_choose)]
+        return [Shizuka(), Takeshi(), Player("You", cpu=False, how_to_choose=how_to_choose)]
 
 class EasyNapVSShizuka(VSShizuka, EasyNapGame):
     """
@@ -162,6 +162,16 @@ class EasyNapVSShizuka(VSShizuka, EasyNapGame):
 6. 最初のトリックの先行は、ランダム / その後は前のトリックの勝者
 7. ジョーカーなしの 52 枚のカード
 """
-    def __init__(self, player_how_to_choose: str = "input", first_message: str = None):
+    def __init__(self, player_how_to_choose: str = "input", first_message: str = "私も混ぜてもらえる？"):
         super().__init__(player_how_to_choose = player_how_to_choose,
-                         first_message = "私も混ぜてもらえる？")
+                         first_message = first_message)
+
+    def _set_trump(self):
+        """
+        切り札を設定する
+
+        Note:
+            切り札は、ランダム
+
+        """
+        self.field.trump = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]

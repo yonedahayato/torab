@@ -19,9 +19,10 @@ from src.player import Player
 from src.game import (
     SimpleNapVSTakeshi,
     EasyNapVSTakeshi,
+    EasyNapVSShizuka,
 )
 
-def say(content: str) -> None:
+def say(content: str, charactor_name: str = "takeshi") -> None:
     """
     吹き出しを利用して、喋る
     
@@ -31,7 +32,11 @@ def say(content: str) -> None:
     fukidasi_area = document.querySelector("#fukidasi")
     fukidasi_area.textContent = content
 
-class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
+    charactor_area = document.querySelector("#charactor")
+
+    charactor_area.src = f"./asset/image/charactor/{charactor_name}/v.0.0/main.png"
+
+class BrowserGameBase:
     """
     ゲームクラスをブラウザーで実行するためのクラス
     """
@@ -55,7 +60,6 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 
             次の処理は、talk
         """
-        super().__init__(player_how_to_choose = "set")
         self.track_cnt = 0
         self.play_cnt = 0
         self.is_finish = False
@@ -70,22 +74,8 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
     def set_lines(self) -> None:
         """
         セリフを設定する
-        
-        Attributes:
-            lines (list[str]): セリフ集
-            
-        Note:
-            最初に表示させておきたいセリフを取得し、表示させる
-            その後喋る内容も設置する
         """
-        takeshi = self.field.get_player(name = "たけし")
-        
-        say(takeshi.lines["introduction"])
-        self.lines = [
-            "おまえ、トランプ強いんだってな",
-            "ちょっくら、つきあってくれよい!"]
-        
-        self.lines_in_play = [line for thema, line in takeshi.lines.items() if thema != "introduction"]
+        raise ImportError("set_lines を実装してください")
 
     def talk(self, is_in_play: bool = False):
         """
@@ -96,12 +86,22 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
         """
         if is_in_play:
             message = random.choice(self.lines_in_play)
+            if isinstance(message, list):
+                message, charactor_name = message
+                say(content = message, charactor_name=charactor_name)
+            else:
+                say(content = message)
+
         else:
             message = self.lines.pop(0)
+            if isinstance(message, list):
+                message, charactor_name = message
+                say(content = message, charactor_name=charactor_name)
+            else:
+                say(content = message)
+
             self.field.message = message
             print(self.field)
-
-        say(content = message)
 
     def make_go_buttons(self, next_action: str) -> None:
         """
@@ -196,7 +196,7 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 
         next_player = self.track.get_next_player()
         if not next_player.cpu:
-            # 次の処理は。run (= プレイヤーのプレイ)
+            # 次の処理は run (= プレイヤーのプレイ)
             self.play_player(next_player)
             return
 
@@ -274,6 +274,34 @@ class VSTakeshiBrowserGame(SimpleNapVSTakeshi):
 
         # CPU のプレイ
         self.play_cpu()
+
+class VSTakeshiBrowserGame(BrowserGameBase, SimpleNapVSTakeshi):
+    """
+    SimpleNapVSTakeshiをブラウザーで実行するためのクラス
+    """
+    def __init__(self):
+        SimpleNapVSTakeshi.__init__(self, player_how_to_choose = "set")
+        BrowserGameBase.__init__(self)
+
+    def set_lines(self) -> None:
+        """
+        セリフを設定する
+        
+        Attributes:
+            lines (list[str]): セリフ集
+            
+        Note:
+            最初に表示させておきたいセリフを取得し、表示させる
+            その後喋る内容も設置する
+        """
+        takeshi = self.field.get_player(name = "たけし")
+        
+        say(takeshi.lines["introduction"])
+        self.lines = [
+            "おまえ、トランプ強いんだってな",
+            "ちょっくら、つきあってくれよい!"]
+        
+        self.lines_in_play = [line for thema, line in takeshi.lines.items() if thema != "introduction"]
         
 class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
     """
@@ -290,6 +318,7 @@ class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
             player (Player): プレイヤーのクラス
             
         Note:
+            EasyNapVSTakeshi は台札によるスートの請求がある
             出せないカードは、クリックできないようにする
         """
         cards_can_submit = player.check_cards_can_submit(lead_suit = self.field.lead)
@@ -298,4 +327,55 @@ class VSTakeshiLv2BrowerGame(VSTakeshiBrowserGame, EasyNapVSTakeshi):
         self.card_buttons.make_card(cards = player.cards, disable = disable)
         
     def deal(self) -> None:
+        """
+        EasyNapVSTakesiのゲーム内容に準じたカードの配り方があるため、それを実行
+        """
         EasyNapVSTakeshi.deal(self)
+
+class VSShizukaBrowserGame(BrowserGameBase, EasyNapVSShizuka):
+    """
+    SimpleNapVSTakeshiをブラウザーで実行するためのクラス
+    """
+    def __init__(self):
+        self.first_message = "私も混ぜてもらえる？"
+        EasyNapVSShizuka.__init__(self, player_how_to_choose = "set", first_message = self.first_message)
+        BrowserGameBase.__init__(self)
+
+    def set_lines(self) -> None:
+        """
+        セリフを設定する
+        
+        Attributes:
+            lines (list[str]): セリフ集
+            
+        Note:
+            最初に表示させておきたいセリフを取得し、表示させる
+            その後喋る内容も設置する
+        """
+        takeshi = self.field.get_player(name = "たけし")
+        shizuka = self.field.get_player(name = "しずか")
+        
+        say(self.first_message, charactor_name="shizuka")
+        self.lines = [
+            ["あなた達、トランプできるの？", "shizuka"],
+            ["こいつなんだ!?生意気だな", "takeshi"],
+            ]
+        
+        self.lines_in_play = [[line, "takeshi"] for thema, line in takeshi.lines.items() if thema != "introduction"]
+        self.lines_in_play += [[line, "shizuka"] for thema, line in shizuka.lines.items() if thema != "introduction"]
+
+    def play_player(self, player: Player) -> None:
+        """
+        プレイヤーへ操作を行わせるための前処理
+        
+        Args:
+            player (Player): プレイヤーのクラス
+            
+        Note:
+            EasyNapVSTakeshi は台札によるスートの請求がある
+            出せないカードは、クリックできないようにする
+        """
+        cards_can_submit = player.check_cards_can_submit(lead_suit = self.field.lead)
+        cards_can_submit = [str(c) for c in cards_can_submit]
+        disable = [str(hand) not in cards_can_submit for hand in player.cards]
+        self.card_buttons.make_card(cards = player.cards, disable = disable)

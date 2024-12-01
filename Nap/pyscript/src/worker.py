@@ -14,6 +14,7 @@ sys.path.append("/pyscript/pyscript/src")
 from utils.games import (
     VSTakeshiBrowserGame,
     VSTakeshiLv2BrowerGame,
+    VSShizukaBrowserGame,
 )
 from utils.button import make_button
 
@@ -30,6 +31,7 @@ class GameMaster:
     games = {
         "VS Takeshi Lv.1": VSTakeshiBrowserGame,
         "VS Takeshi Lv.2": VSTakeshiLv2BrowerGame,
+        "VS Shizuka Lv.1": VSShizukaBrowserGame,
     }
 
     def __init__(self):

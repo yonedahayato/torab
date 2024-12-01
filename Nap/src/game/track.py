@@ -57,6 +57,9 @@ class Track:
                 3. play_cnt をインクルーメントする
         """
         if self.play_cnt >= len(self.field.players):
+            """
+            プレイヤーの人数よりトラックでプレイされた回数が多ければ、そのトラックは終了
+            """
             raise StopIteration
 
         player_id = (self.start_player_id + self.play_cnt) % len(self.field.players)

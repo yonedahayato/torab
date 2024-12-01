@@ -307,6 +307,8 @@ class Player:
             ランダム or CPU ならば、ランダムにカードを選択する
                 lead_suit がない、もしくは手札に lead_suit がなければ、ランダムに選択する
         """
+        print(f"play_card: {lead_suit}")
+
         if is_random or self.cpu:
             
             if lead_suit is None or lead_suit not in [c.suit for c in self.cards]:

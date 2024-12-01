@@ -25,40 +25,6 @@ from src.bid import (
     NapDeclaration,
 )
 
-class PassBitPlayer(Player):
-    """
-    ビットにて必ずパスを宣言するプレイヤー
-    """
-    def declare(self, 
-                declarable_list: list,
-                is_random: bool = False,
-            ) -> any:
-        """Declare.
-        宣言する
-        
-        Args:
-            declarable_list (list): 宣言可能な一覧
-            is_random (bool): ランダムに宣言するかどうか
-
-        Returns:
-            Declear: 宣言
-
-        Note:
-            ランダム or CPU ならば、ランダムに宣言を行う
-        """
-
-        return NapDeclaration("pass")
-
-@pytest.fixture
-def pass_bit_players() -> Player:
-    """
-    必ずパスをするプレイヤー達を準備する
-    """
-    alice = PassBitPlayer(name = "alice", cpu = True)
-    bob = PassBitPlayer(name = "bob", cpu = True)
-
-    return alice, bob
-
 class TestNapDeclaration:
     """
     NapDeclaration class のテスト
@@ -70,6 +36,7 @@ class TestNapDeclaration:
         with pytest.raises(ValueError) as e:
             dec = NapDeclaration("xx")
         assert str(e.value) == "NapDeclaration において、異常なビッド: xx"
+
     def test_init_nap_declaration(self):
         """
         NapDeclaration の初期化のテスト
@@ -115,7 +82,7 @@ class TestNapBid:
     NapBid class のテスト
     """
     def test_nap_bid(self,
-                     pass_bit_players,
+                     field_with_cpu_players,
                      monkeypatch: MonkeyPatch):
         """
         NapBid class の実行のテスト
@@ -123,14 +90,7 @@ class TestNapBid:
         """
         monkeypatch.setattr('sys.stdin', io.StringIO("1\n"))
 
-        alice, bob = pass_bit_players
-        deck = SimpleDeck()
-        players = [
-            alice,
-            bob,
-            Player("You", cpu=False)
-        ]
-        field = Field(deck, players)
+        field = field_with_cpu_players()
         field.deck.shuffle()
 
         hand_num = 5
@@ -153,14 +113,8 @@ class TestNapBid:
         """
         monkeypatch.setattr('sys.stdin', io.StringIO("0\n"))
 
-        alice, bob = pass_bit_players
+        players = pass_bit_players(player_names = ["alice", "bob"])
         deck = SimpleDeck()
-        players = [
-            alice,
-            bob,
-            Player("You", cpu=False)
-        ]
-
         field = Field(deck, players)
         field.deck.shuffle()
 

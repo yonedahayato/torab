@@ -30,21 +30,6 @@ from src.player import (
     Player,
 )
 
-@pytest.fixture
-def field_two_cpu_payers_dealed(field_two_cpu_payers: Field):
-    """
-    CPU が二人居り、カードが配り終えた状態のフィールド
-    
-    Returns:
-        Field: フィールド
-    """
-    field_two_cpu_payers.deck.shuffle()
-    for player in field_two_cpu_payers.players:
-        hand = field_two_cpu_payers.deck.deal(num = 3)
-        player.take_hand(hand)
-        
-    return field_two_cpu_payers
-
 class TestSimpleTrack:
     """
     SimpleTrack のテスト
