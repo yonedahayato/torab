@@ -14,6 +14,7 @@ from ..player import (
 from .game import (
     SimpleNapGame,
     EasyNapGame,
+    NapGame,
 )
 
 class VSBase:
@@ -175,3 +176,26 @@ class EasyNapVSShizuka(VSShizuka, EasyNapGame):
 
         """
         self.field.trump = [Suit.spade, Suit.heart, Suit.diamond, Suit.club][random.randint(0, 3)]
+
+class NapVSShizuka(VSShizuka, NapGame):
+    """
+    しずかとたけいとのNap (Takeshi Lv.2)
+
+    Attributes:
+        describe (str): ゲームの説明
+    """
+    describe = \
+"""
+1. Napを行う
+2. たけしとしずかと 1 vs 1 vs 1で行う
+3. 手札は 5 枚 (5 トリックの勝負)
+4. bid について
+5. トラックについて
+-> a. 台札あり (スートの請求もあり)
+-> b. 切り札は、デクレアラーの最初のスート
+-> c. 最初のトリックの先行は、デクレアラー / その後は前のトリックの勝者
+6. ジョーカーなしの 52 枚のカード
+"""
+    def __init__(self, player_how_to_choose: str = "input", first_message: str = "次はNapで勝負しましょう"):
+        super().__init__(player_how_to_choose = player_how_to_choose,
+                         first_message = first_message)

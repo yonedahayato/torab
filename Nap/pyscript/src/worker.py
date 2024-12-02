@@ -15,6 +15,7 @@ from utils.games import (
     VSTakeshiBrowserGame,
     VSTakeshiLv2BrowerGame,
     VSShizukaBrowserGame,
+    VSShizukaLv2BrowserGame,
 )
 from utils.button import make_button
 
@@ -32,6 +33,7 @@ class GameMaster:
         "VS Takeshi Lv.1": VSTakeshiBrowserGame,
         "VS Takeshi Lv.2": VSTakeshiLv2BrowerGame,
         "VS Shizuka Lv.1": VSShizukaBrowserGame,
+        "VS Shizuka Lv.2": VSShizukaLv2BrowserGame,
     }
 
     def __init__(self):

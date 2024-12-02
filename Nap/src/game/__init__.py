@@ -7,6 +7,7 @@ from .game import (
     Game,
     SimpleNapGame,
     EasyNapGame,
+    NapGame,
     NapoleonGame,
 )
 
@@ -15,4 +16,5 @@ from .vs_series import (
     SimpleNapVSTakeshi,
     EasyNapVSTakeshi,
     EasyNapVSShizuka,
+    NapVSShizuka,
 )

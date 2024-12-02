@@ -68,6 +68,9 @@ class NapDeclaration(BaseDeclaration):
     def __repr__(self):
         return f"NapDeclaration(name={self.name})"
     
+    def __str__(self):
+        return str(self.name)
+    
     def is_pass(self):
         """
         パスをしたかどうか
@@ -88,6 +91,39 @@ class NapDeclaration(BaseDeclaration):
         declarable_list += [NapDeclaration(d) for d in self.table.query(f"d_value > {self.d_value}")["name"].values]
 
         return declarable_list
+    
+    def is_achieved(self, point: int) -> bool:
+        """
+        宣言が達成されているかどうか
+
+        Args:
+            point (int): 実際に獲得したポイント
+        """
+        if self.name == "two" and point >= 2:
+            return True
+        
+        if self.name == "three" and point >= 3:
+            return True
+        
+        if self.name == "misere" and point == 0:
+            return True
+        
+        if self.name == "four" and point >= 4:
+            return True
+        
+        if self.name in ["nap", "wellington"] and point == 5:
+            return True
+
+        return False
+    
+    def get_point(self, is_achieved: bool) -> int:
+        if is_achieved:
+            point = int(self.table.query(f"name == '{self.name}'")["success_point"].values[0])
+
+        else:
+            point = int(self.table.query(f"name == '{self.name}'")["failure_point_point"].values[0])
+
+        return point
 
 class NapBid:
     """
@@ -101,9 +137,8 @@ class NapBid:
             最初に宣言するプレイヤーはランダム            
         """
         self.field = field
-        print(self.field)
         self.declarations = {p: NapDeclaration("no_declare") for p in self.field.players}
-        print(self.declarations)
+        self.best_declaration = NapDeclaration("no_declare")
 
         self.start_bit_player_id = random.randint(0, len(self.field.players)-1)
         self.is_finish_flag = False
@@ -153,11 +188,11 @@ class NapBid:
             選択できる宣言がなければ、パス扱いとなる
             """
             new_declaration = NapDeclaration(name = "pass")
-            self.field.message = f"{player} は {new_declaration} しか宣言できない"
+            self.field.message = f"{player} は {str(new_declaration)} しか宣言できない"
 
         else:
             new_declaration = self.bid(player, declarable_list)
-            self.field.message = f"{player} が {new_declaration} を宣言した"
+            self.field.message = f"{player} が {str(new_declaration)} を宣言した"
 
         self.declarations[player] = new_declaration
 
@@ -177,6 +212,13 @@ class NapBid:
         # closing
         self.bid_cnt += 1
         return self.field
+    
+    def __str__(self):
+        """
+        bid の状態を表現する
+        """
+        return str(self.declarations)
+
     
     def is_everyone_pass(self) -> bool:
         """
@@ -215,3 +257,10 @@ class NapBid:
         """
         declaration = player.declare(declarable_list)
         return declaration
+    
+    def get_next_player(self) -> Player:
+        """
+        次にビッドするプレイヤーの情報を取得する
+        """
+        player_id = (self.start_bit_player_id + self.bid_cnt) % len(self.field.players)
+        return self.field.players[player_id]

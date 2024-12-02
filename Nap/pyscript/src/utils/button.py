@@ -95,6 +95,17 @@ class Buttons:
             self.buttons_area.appendChild(input_tag)
             self.buttons.append(input_tag)
 
+    def make_declarations(self, declarations: list):
+        """
+        宣言をボタンとして作成する
+        """
+        for d_cnt, declaration in enumerate(declarations):
+            value = d_cnt
+            text = str(declaration)
+            button = make_button(value, text = text, func_name = "game.run")
+            self.buttons_area.appendChild(button)
+            self.buttons.append(button)
+
     def make(self, 
              card_num: int = 1,
              value: str = None,

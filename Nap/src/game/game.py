@@ -428,17 +428,17 @@ class NapGame(EasyNapGame):
             self.field.message = first_message
         print(self.field)
         sleep(self.time_lag)
-        super().__init__(player_how_to_choose, first_message)
+        # super().__init__(player_how_to_choose, first_message)
         self.field.is_use_lead = True
 
-    def _set_trump(self):
+    def _set_trump(self, suit: Suit):
         """
         切り札を決定する
 
         Note:
             切り札は、最初のトラックのリードのスート
         """
-        raise Exception("切り札の決定方法の実装")
+        self.field.trump = suit
 
     def get_start_player_id(self) -> int:
         """
@@ -451,7 +451,7 @@ class NapGame(EasyNapGame):
             最初のトリックの先行は、ティクレアラー / その後は前のトリックの勝者
         """
         if self.track_cnt == 0:
-            raise NotImplementedError
+            start_player_id = self.field.players.index(self.bid_manager.declarer)
 
         else:
             start_player_id = self.winner_id_in_track
@@ -465,6 +465,9 @@ class NapGame(EasyNapGame):
         Note:
             ディクレアラーが宣言を達成できたかどうか
         """
+        declarer_id = self.field.players.index(self.bid_manager.declarer)
+        declarer_point = self.field.players[declarer_id].point
+        print(declarer_point)
         raise NotImplementedError
 
     def bid(self):
@@ -478,8 +481,9 @@ class NapGame(EasyNapGame):
             raise Exception("この試合は無効")
         
         field.message = f"{self.bid_manager.declarer} の {str(self.bid_manager.best_declaration)} が有効です"
-        start_player_id = self.field.players.get(self.bid_manager.declarer)
 
+        # start_player_id = self.field.players.index(self.bid_manager.declarer)
+        start_player_id = self.get_start_player_id()
         self.set_track(start_player_id = start_player_id)
 
     def play(self) -> None:
@@ -502,7 +506,9 @@ class NapGame(EasyNapGame):
         for track_cnt in range(self.hand_num):
             for take_cnt, field in enumerate(self.track):
                 if take_cnt == 0 and track_cnt == 0:
-                    self._set_trump()
+                    card = self.field.cards[self.bid_manager.declarer]
+                    #切り札は、最初のトラックのリードのスート
+                    self._set_trump(card.suit)
 
                 print(field)
 
