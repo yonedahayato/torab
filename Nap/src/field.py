@@ -113,7 +113,7 @@ class Field(BasePicture):
         field_str += f"{token_tab1}Players\n"
         for player in self.players:
             hand = player.show_hand()
-            if self.declaration != "":
+            if self.declaration != "" and (str(self.declarer) == str(player)):
                 field_str += f"{token_tab2}{player} [{self.declaration}] ({player.point}): {[str(card) for card in hand]}\n"
             else:
                 field_str += f"{token_tab2}{player} ({player.point}): {[str(card) for card in hand]}\n"
@@ -181,7 +181,7 @@ class Field(BasePicture):
         """
         return self._declarer
     
-    @declaration.setter
+    @declarer.setter
     def declarer(self, declarer: str) -> None:
         """ディクレアラーの setter
 

@@ -162,7 +162,7 @@ class Game:
         winner = self.decide_winner_in_track()
         self.add_point(winner)
 
-        self.field.message = f"Track {self.track_cnt} を {winner} がとりました"
+        self.field.message = f"Track {self.track_cnt+1} を {winner} がとりました"
         print(self.field)
 
     def next_track(self) -> None:
