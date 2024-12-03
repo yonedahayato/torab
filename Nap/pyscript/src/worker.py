@@ -19,6 +19,17 @@ from utils.games import (
 )
 from utils.button import make_button
 
+class FeildArea:
+    """
+    テストに利用する
+    フィールドの情報を格納する
+    """
+    def __init__(self):
+        self.feild_area = document.querySelector("#feild")
+
+    def set(self, feild: str):
+        self.feild_area.textContent = feild
+
 class GameMaster:
     """
     ゲームマスター
@@ -41,8 +52,10 @@ class GameMaster:
         
         Attributes:
             titile_area (JsProxy): タイトルの情報
+            feild_area (JsProxy): フィールドの情報
         """
         self.title_area = document.querySelector("#title")
+        self.feild_area = document.querySelector("#feild")
 
         self.start()
 
@@ -51,7 +64,7 @@ class GameMaster:
         ゲームの選択する画面を作成する
         
         Note:
-            選択すうボタンを作成する
+            選択するボタンを作成する
         """
         print("ゲームを選択してください")
         self.select_area = document.querySelector("#select")
@@ -117,6 +130,7 @@ class GameMaster:
 
         # ゲーム決定
         self.game = game_class()
+        self.feild_area.textContent = str(self.game.field)
 
         # ゲームのタイトルと説明を表示
         self.describe(game_name, game_class.describe)
@@ -134,6 +148,7 @@ class GameMaster:
             event (JsProxy): メッセージの確認後のイベントのため、情報としては何もない
         """
         self.game.go(event)
+        self.feild_area.textContent = str(self.game.field)
 
         if self.game.is_finish:
             self.restart()
@@ -146,6 +161,7 @@ class GameMaster:
            event (JsProxy): ゲームを動かすための情報を含んでいる 
         """
         self.game.run(event)
+        self.feild_area.textContent = str(self.game.field)
 
         if self.game.is_finish:
             self.restart()

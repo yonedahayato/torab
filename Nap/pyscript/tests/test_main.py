@@ -6,20 +6,14 @@ Note:
 """
 
 from bs4 import BeautifulSoup
-from http.server import HTTPServer
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 
-def test_display_version(http_server: HTTPServer):
-    url = http_server
+def test_display_version(html: str):
+    """
+    pyscript で表示した情報を確認する
 
-    driver = webdriver.Chrome()
-    driver.get(url)
-    wait = WebDriverWait(driver=driver, timeout=10)
-    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[py-click]")))
-    html = driver.page_source
+    Args:
+        http_server (HTTPServer): テストサーバ
+    """
 
     soup = BeautifulSoup(html, "html.parser")
     target_id = "python-version"
@@ -31,4 +25,4 @@ def test_display_version(http_server: HTTPServer):
         assert "3.11.3" in target_text
 
     else:
-        raise Exception(f"ID '{target_id}' が見つかりませんでした。")        
+        raise Exception(f"ID '{target_id}' が見つかりませんでした。")
