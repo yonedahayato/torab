@@ -128,51 +128,34 @@ class BrowserGameBase:
         print(self.field)
         self.play_cnt += 1
 
-    def close_track(self):
+    def close_track_on_browser(self) -> None:
         """
         トラックの終了処理
         
         Note:
             次の処理は、next_track
         """
-        winner = self.decide_winner_in_track()
-        self.add_point(winner)
-
-        self.field.message = f"Track {self.track_cnt} を {winner} がとりました"
-        print(self.field)
-
+        self.close_track()
         self.make_go_buttons(next_action = "next_track")
 
-    def next_track(self) -> None:
+    def next_track_on_browser(self) -> None:
         """
         新しいトラックの準備
         
         Note:
             次の処理は、play_cpu
         """
-
-        # 場のカードをリセット
-        self.field.clear()
-
-        self.track_cnt += 1
-        start_player_id = self.get_start_player_id()
-        self.set_track(start_player_id = start_player_id)
+        # 次のトラックの準備
+        self.next_track()
 
         self.play_cnt = 0
-
-        self.field.message = "次の Track です"
-        print(self.field)
-
         self.make_go_buttons(next_action = "play_cpu")
         
-    def close_game(self) -> None:
+    def close_game_on_browser(self) -> None:
         """
         ゲームを終了させる
         """
-        winner = self.decide_winner_in_game()
-        self.field.message = f"このゲームの勝者は、{winner} です"
-        print(self.field)
-        
+        self.close_game()        
         self.is_finish = True
 
     def play_player(self, player: Player) -> None:
@@ -198,12 +181,12 @@ class BrowserGameBase:
         if self.play_cnt == len(self.field.players):
             # 全てのプレイヤーが、プレイし終わっていたら、
             # その tack が終了しているとして、新しいトラックを作成する
-            self.close_track()
+            self.close_track_on_browser()
             return
 
         if self.track_cnt == self.hand_num:
             # すべてのトラックが終了したら、ゲームを終了させる手続きに入る
-            self.close_game()
+            self.close_game_on_browser()
             return
 
         next_player = self.track.get_next_player()
@@ -252,7 +235,7 @@ class BrowserGameBase:
         if next_action == "play_cpu":
             self.play_cpu()
         elif next_action == "next_track":
-            self.next_track()
+            self.next_track_on_browser()
         elif next_action == "talk":
             # しゃべることがないのに、トークはできない
             raise Exception(f"next action が異常: {next_action} / 喋れない")
@@ -271,11 +254,11 @@ class BrowserGameBase:
         if self.play_cnt == len(self.field.players):
             # 全てのプレイヤーが、プレイし終わっていたら、
             # その tack が終了しているとして、新しいトラックを作成する
-            self.close_track()
+            self.close_track_on_browser()
 
         if self.track_cnt == self.hand_num:
             # すべてのトラックが終了したら、ゲームを終了させる手続きに入る
-            self.close_game()
+            self.close_game_on_browser()
             return
 
         # プレイヤーのプレイ
@@ -314,27 +297,15 @@ class BrowserGameWithBid(BrowserGameBase):
         print(self.field)
         self.bid_cnt += 1
 
-    def close_bid(self):
+    def close_bid_on_browser(self):
         """
         bidの終了処理
         
         Note:
             次の処理は、next_track
-            Game class でいうところの bid method
         """
-        if self.bid_manager.invalid:
-            raise Exception("この試合は無効")
+        self.close_bid()
 
-        self.declarer = self.bid_manager.declarer
-        self.best_declaration = self.bid_manager.best_declaration
-
-        self.field.message = f"{self.declarer} の {self.best_declaration} が有効です"
-        print(self.field)
-
-        start_player_id = self.get_start_player_id()
-        self.set_track(start_player_id = start_player_id)
-
-        # self.make_go_buttons(next_action = "next_track")
         self.make_go_buttons(next_action = "play_cpu")
         self.is_bid_close = True
 
@@ -373,11 +344,10 @@ class BrowserGameWithBid(BrowserGameBase):
         """
         if self.bid_manager.is_finish():
             # ビッドが終了している場合
-            self.close_bid()
+            self.close_bid_on_browser()
             return
 
         next_bid_player = self.bid_manager.get_next_player()
-        print(next_bid_player)
         if not next_bid_player.cpu:
             # 次の処理は run (= プレイヤーのビッド)
             self.bid_player(next_bid_player)
@@ -408,6 +378,13 @@ class BrowserGameWithBid(BrowserGameBase):
         print(self.field)
 
         self.play_cnt += 1
+
+    def close_game_on_browser(self) -> None:
+        """
+        ゲームを終了させる
+        """
+        self.decide_winner_in_game()        
+        self.is_finish = True
 
     # button による操作
     def go(self, event: JsProxy) -> None:
@@ -447,7 +424,7 @@ class BrowserGameWithBid(BrowserGameBase):
         elif next_action == "play_cpu":
             self.play_cpu()
         elif next_action == "next_track":
-            self.next_track()
+            self.next_track_on_browser()
         elif next_action == "talk":
             # しゃべることがないのに、トークはできない
             raise Exception(f"next action が異常: {next_action} / 喋れない")
@@ -469,7 +446,7 @@ class BrowserGameWithBid(BrowserGameBase):
         elif self.bid_manager.is_finish():
             # ビッドが終了したので、ゲームを開始する準備を行う
             self.declaration_buttons.delete()
-            self.close_bid()
+            self.close_bid_on_browser()
             return
 
         else:
@@ -487,11 +464,11 @@ class BrowserGameWithBid(BrowserGameBase):
         if self.play_cnt == len(self.field.players):
             # 全てのプレイヤーが、プレイし終わっていたら、
             # その tack が終了しているとして、新しいトラックを作成する
-            self.close_track()
+            self.close_track_on_browser()
 
         if self.track_cnt == self.hand_num:
             # すべてのトラックが終了したら、ゲームを終了させる手続きに入る
-            self.close_game()
+            self.close_game_on_browser()
             return
 
         # プレイヤーのプレイ

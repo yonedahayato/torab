@@ -121,7 +121,7 @@ class NapDeclaration(BaseDeclaration):
             point = int(self.table.query(f"name == '{self.name}'")["success_point"].values[0])
 
         else:
-            point = int(self.table.query(f"name == '{self.name}'")["failure_point_point"].values[0])
+            point = int(self.table.query(f"name == '{self.name}'")["failure_point"].values[0])
 
         return point
 

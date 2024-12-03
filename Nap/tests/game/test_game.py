@@ -42,10 +42,55 @@ class TestSimpleNapGame:
     def test_init(self):
         """
         SimpleNapGame クラスのインスタンスのテスト
+
+        Note:
+            以下の method の動作を確認できる
+                - set_deck
+                - _set_player
+                - shuffle
+                - deal
+                - _set_trump
+                - set_track
         """
         game = SimpleNapGame()
         assert game.hand_num == 3
         assert game.field.trump == Suit.spade
+
+    def test_get_start_player_id(self):
+        """
+        get_start_player_id method のテスト
+        """
+        game = SimpleNapGame()
+        assert game.get_start_player_id() == 0
+
+    def test_add_point(self):
+        """
+        add_point method のテスト
+        """
+        game = SimpleNapGame()
+        player_boss = game.field.players[0]
+        game.add_point(player_boss)
+        assert player_boss.point == 1
+
+    def test_play(self, capfd):
+        """
+        play method のテスト
+
+        Args:
+            capfd (_pytest.capture.CaptureFixture): 標準出力を確認するためのツール
+        """
+        game = SimpleNapGame()
+        captured = capfd.readouterr()
+        output_texts: str = captured.out
+
+        targets = [
+            "52 枚のカードを使用します",
+            str(game.field) + "\n",
+        ]
+        for cnt, output_text in enumerate(output_texts.split("\n\n")):
+            if cnt == 1:
+                print(output_text)
+            assert targets[cnt] == output_text
 
     def test_calculate_strongness(self):
         """

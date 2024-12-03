@@ -47,7 +47,13 @@ class TestGameMaster:
                 "VS Takeshi Lv.1"
             ),
             pytest.param(
-                "VS Takeshi Lv.1"
+                "VS Takeshi Lv.2"
+            ),
+            pytest.param(
+                "VS Shizuka Lv.1"
+            ),
+            pytest.param(
+                "VS Shizuka Lv.2"
             ),
         ]
     )
@@ -78,7 +84,7 @@ class TestGameMaster:
         # feild の状態を確認
         feild_element = soup.find(id="feild")
         feild_text = feild_element.get_text()
-        assert "山札: 46" in feild_text
+        assert "山札:" in feild_text
 
         # 表示されているボタンの内容の確認
         button_elements = soup.find(id="buttons")

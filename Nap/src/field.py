@@ -54,6 +54,8 @@ class Field(BasePicture):
 
         self._widow = []
         self._trump = None
+        self._declaration = ""
+        self._declarer = ""
         self._message = ""
         self._is_use_lead = False
 
@@ -111,7 +113,10 @@ class Field(BasePicture):
         field_str += f"{token_tab1}Players\n"
         for player in self.players:
             hand = player.show_hand()
-            field_str += f"{token_tab2}{player} ({player.point}): {[str(card) for card in hand]}\n"
+            if self.declaration != "":
+                field_str += f"{token_tab2}{player} [{self.declaration}] ({player.point}): {[str(card) for card in hand]}\n"
+            else:
+                field_str += f"{token_tab2}{player} ({player.point}): {[str(card) for card in hand]}\n"
             
         if self.message != "":
             field_str += f"{pad_str}\n"
@@ -154,7 +159,37 @@ class Field(BasePicture):
             widow (list[Card]): ウィドー
         """
         self._widow = widow
+
+    @property
+    def declaration(self) -> str:
+        """宣言の getter
+        """
+        return self._declaration
     
+    @declaration.setter
+    def declaration(self, declaration: str) -> None:
+        """宣言の setter
+
+        Attributes:
+            declaration (str): 宣言
+        """
+        self._declaration = declaration
+
+    @property
+    def declarer(self) -> str:
+        """ディクレアラーの getter
+        """
+        return self._declarer
+    
+    @declaration.setter
+    def declarer(self, declarer: str) -> None:
+        """ディクレアラーの setter
+
+        Attributes:
+            declaration (str): ディクレアラー
+        """
+        self._declarer = declarer
+
     @property
     def message(self):
         """メッセージの getter

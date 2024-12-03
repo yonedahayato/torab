@@ -47,10 +47,15 @@
           <p id="fukidasi"></p>
         </div>
 
-        <div id="describe">
+        <button onclick="showOverlay()">ゲームのルール確認</button>
+        <div id="overlay">
+          <div id="content">
+            <div class="close-btn" onclick="hideOverlay()">x</div>
+            <div id="describe">
+            </div>
         </div>
       </div>
-    </div>
+    </div><br><br>
 
     <script type="py" src="./pyscript/src/main.py" config="./pyscript/pyscript.toml"></script>
     <!-- <script type="py" src="./pyscript/src/worker.py" config="./pyscript/pyscript.toml" terminal worker></script> -->
@@ -60,4 +65,13 @@
 
     <div id="feild" hidden>for test</div>
   </body>
+  <script>
+    function showOverlay() {
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function hideOverlay() {
+        document.getElementById("overlay").style.display = "none";
+    }
+  </script>
 </html>

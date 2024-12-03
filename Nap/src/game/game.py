@@ -155,6 +155,38 @@ class Game:
         """
         player.point += 1
 
+    def close_track(self) -> None:
+        """
+        トラックの終了処理
+        """
+        winner = self.decide_winner_in_track()
+        self.add_point(winner)
+
+        self.field.message = f"Track {self.track_cnt} を {winner} がとりました"
+        print(self.field)
+
+    def next_track(self) -> None:
+        """
+        新しいトラックの準備
+        """
+        # 場のカードをリセット
+        self.field.clear()
+
+        self.track_cnt += 1
+        start_player_id = self.get_start_player_id()
+        self.set_track(start_player_id = start_player_id)
+
+        self.field.message = "次の Track です"
+        print(self.field)
+
+    def close_game(self) -> None:
+        """
+        ゲームを終了させる
+        """
+        winner = self.decide_winner_in_game()
+        self.field.message = f"このゲームの勝者は、{winner} です"
+        print(self.field)
+
     def play(self) -> None:
         """
         トラックの進行を行う
@@ -175,19 +207,15 @@ class Game:
             for field in self.track:
                 print(field)
 
-            winner = self.decide_winner_in_track()
-            self.add_point(winner)
+            self.field = field
 
-            self.field.clear()
-            print(field)
+            # トラックの終わりの処理
+            self.close_track()
 
-            self.track_cnt += 1
-            start_player_id = self.get_start_player_id()
-            self.set_track(start_player_id = start_player_id)
+            # 次のトラックの準備
+            self.next_track()
 
-        winner = self.decide_winner_in_game()
-        field.message = f"このゲームの勝者は、{winner} です"
-        print(field)
+        self.close_game()
 
 class SimpleNapGame(Game):
     """
@@ -467,8 +495,16 @@ class NapGame(EasyNapGame):
         """
         declarer_id = self.field.players.index(self.bid_manager.declarer)
         declarer_point = self.field.players[declarer_id].point
-        print(declarer_point)
-        raise NotImplementedError
+        is_achived = self.bid_manager.best_declaration.is_achieved(declarer_point)
+        game_point = self.bid_manager.best_declaration.get_point(is_achieved=is_achived)
+
+        if is_achived:
+            result_text = "成功"
+        else:
+            result_text = "失敗"
+
+        self.field.message = f"{self.bid_manager.declarer} の {str(self.bid_manager.best_declaration)} は {result_text}し、{game_point} 点獲得です"
+        print(self.field)
 
     def bid(self):
         """
@@ -477,10 +513,21 @@ class NapGame(EasyNapGame):
         for field in self.bid_manager:
             print(field)
 
+        self.field = field
+        self.close_bid()
+
+    def close_bid(self):
+
         if self.bid_manager.invalid:
             raise Exception("この試合は無効")
-        
-        field.message = f"{self.bid_manager.declarer} の {str(self.bid_manager.best_declaration)} が有効です"
+
+        self.declarer = self.bid_manager.declarer
+        self.best_declaration = self.bid_manager.best_declaration
+
+        self.field.declaration = str(self.bid_manager.best_declaration)
+        self.field.declarer = str(self.bid_manager.declarer)
+        self.field.message = f"{self.bid_manager.declarer} の {str(self.bid_manager.best_declaration)} が有効です"
+        print(self.field)
 
         # start_player_id = self.field.players.index(self.bid_manager.declarer)
         start_player_id = self.get_start_player_id()
@@ -522,9 +569,7 @@ class NapGame(EasyNapGame):
             start_player_id = self.get_start_player_id()
             self.set_track(start_player_id = start_player_id)
 
-        winner = self.decide_winner_in_game()
-        field.message = f"このゲームの勝者は、{winner} です"
-        print(field)
+        self.decide_winner_in_game(field)
 
 class NapoleonGame(Game):
     """
