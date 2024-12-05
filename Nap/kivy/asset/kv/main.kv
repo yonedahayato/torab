@@ -1,0 +1,46 @@
+#:kivy 2.1.0
+
+<CardButton>:
+    source: ''
+    size_hint_y: None
+    width: 100
+    pos: 0, 100
+
+<CharactorImage>:
+    source: ''
+    size_hint_y: None
+    width: 100
+    pos: -500, 1500
+
+<GameScreen>:
+    charactor_image: charactor_image
+    info_area: info_area
+    message_area: message_area
+
+    canvas.before:
+        # 背景を白に
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    CharactorImage:
+        id: charactor_image
+        centter: self.center
+
+    Label:
+        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+        text: ""
+        color: 0,0,0,1
+        # font_size: root.width * app.message_text_size_rate
+        font_size: 70
+        id: info_area
+
+    Label:
+        pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+        text: ""
+        color: 0,0,0,1
+        # font_size: root.width * app.message_text_size_rate
+        font_size: 70
+        id: message_area

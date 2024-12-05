@@ -14,7 +14,11 @@ from .button import (
     Buttons,
 )
 
-from src.player import Player
+from src.player import (
+    Player,
+    Takeshi,
+    Shizuka,
+)
 
 from src.game import (
     SimpleNapVSTakeshi,
@@ -37,7 +41,11 @@ def say(content: str, charactor_name: str = "takeshi") -> None:
 
     charactor_area = document.querySelector("#charactor")
 
-    charactor_area.src = f"./asset/image/charactor/{charactor_name}/v.0.0/main.png"
+    if charactor_name == "takeshi":
+        charactor = Takeshi()
+    elif charactor_name == "shizuka":
+        charactor = Shizuka()
+    charactor_area.src = charactor.image_path()
 
 class BrowserGameBase:
     """

@@ -16,6 +16,9 @@ lxml-html-clean = "^0.1.1"
 selenium = "^4.19.0"
 pydantic = "^2.7.0"
 pandas = "^2.2.3"
+kivy = "^2.3.0"
+japanize-kivy = "^0.1.1"
+opencv-python = "^4.10.0.84"
 
 [build-system]
 requires = ["poetry-core"]

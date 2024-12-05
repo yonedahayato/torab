@@ -48,6 +48,7 @@ class Field(BasePicture):
         super().__init__()
         self.cards = {}
         self.trash = []
+        self.message_log = []
 
         self.deck = deck
         self.players = players
@@ -123,6 +124,8 @@ class Field(BasePicture):
             field_str += f"{token_tab1}Message\n"
             field_str += f"{token_tab2}{self.message}\n"
             field_str += f"{pad_str}\n"
+            # 表示し終えたら削除する
+            self.message_log.append(self.message)
             self.message = ""
 
         field_str += f"{pad_str}\n"

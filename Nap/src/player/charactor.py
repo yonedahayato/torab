@@ -21,6 +21,13 @@ class Charactor(Player):
         else:
             lines = random.choice(list(dict.values()))
         return lines
+    
+    def image_path(self):
+        """
+        キャラクターの画像のパスを返す
+        index.htnl からのパス
+        """
+        return f"./asset/image/charactor/{self.en_name}/v.0.0/main.png"
 
 class Takeshi(Charactor):
     """
@@ -46,6 +53,7 @@ class Takeshi(Charactor):
 
     def __init__(self):
         super().__init__(name = "たけし", cpu = True)
+        self.en_name = "takeshi"
 
     def show_hand(self):
         """Show hand.
@@ -81,6 +89,7 @@ class Shizuka(Charactor):
 
     def __init__(self):
         super().__init__(name = "しずか", cpu = True)
+        self.en_name = "shizuka"
 
     def show_hand(self):
         """Show hand.

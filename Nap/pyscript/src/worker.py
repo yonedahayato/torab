@@ -19,17 +19,6 @@ from utils.games import (
 )
 from utils.button import make_button
 
-class FeildArea:
-    """
-    テストに利用する
-    フィールドの情報を格納する
-    """
-    def __init__(self):
-        self.feild_area = document.querySelector("#feild")
-
-    def set(self, feild: str):
-        self.feild_area.textContent = feild
-
 class GameMaster:
     """
     ゲームマスター
