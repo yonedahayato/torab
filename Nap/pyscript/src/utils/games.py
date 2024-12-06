@@ -132,8 +132,10 @@ class BrowserGameBase:
             Track.__next__ が動いているだけなので、この関数内では判断できない
             Game class でいうところの play method
         """
+        # カードの表示
         self.field = next(self.track)
         print(self.field)
+
         self.play_cnt += 1
 
     def close_track_on_browser(self) -> None:
@@ -217,6 +219,7 @@ class BrowserGameBase:
         Args:
             event (JsProxy): メッセージの確認後のイベントのため、情報としては何もない
         """
+        # ボタンの削除
         self.go_buttons.delete()
 
         next_action = event.target.getAttribute('value')

@@ -5,6 +5,7 @@
     size_hint_y: None
     width: 100
     pos: 0, 100
+    group:'radio_box'
 
 <CharactorImage>:
     source: ''
@@ -12,10 +13,24 @@
     width: 100
     pos: -500, 1500
 
+<GameSelectButton>:
+    # size_hint_y: None
+    # width: 100
+    # pos: -500, 1500
+    size_hint: 0.1, 0.1
+    pos_hint: {'x': 0.7, 'y': 0.75}
+
+<ProgressButton>:
+    text: "next"
+    size_hint: 0.1, 0.1
+    pos_hint: {'x': 0.7, 'y': 0.75}
+
 <GameScreen>:
     charactor_image: charactor_image
     info_area: info_area
     message_area: message_area
+    talk_area: talk_area
+    progress_button: progress_button
 
     canvas.before:
         # 背景を白に
@@ -38,9 +53,25 @@
         id: info_area
 
     Label:
-        pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+        pos_hint: {'center_x': 0.5, 'center_y': 0.3}
         text: ""
         color: 0,0,0,1
         # font_size: root.width * app.message_text_size_rate
         font_size: 70
         id: message_area
+
+    Label:
+        pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+        text: ""
+        color: 0,0,0,1
+        # font_size: root.width * app.message_text_size_rate
+        font_size: 70
+        id: talk_area
+
+    ProgressButton:
+        text: "next"
+        id: progress_button
+        size_hint: 0.1, 0.1
+        pos_hint: {'x': 0.7, 'y': 0.75}
+        opacity: 0  # デフォルトでは不可視
+        disabled: True  # デフォルトでは無効

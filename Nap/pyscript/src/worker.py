@@ -112,7 +112,10 @@ class GameMaster:
             選択後、ボタンを削除
             選択後、ゲームの説明を表示する
         """
+        # ゲーム名の取得
         game_name = event.target.getAttribute('value')
+
+        # ゲームクラスの取得
         game_class = self.games.get(game_name, None)
         if game_class is None:
             raise Exception("ゲームの選択に失敗")

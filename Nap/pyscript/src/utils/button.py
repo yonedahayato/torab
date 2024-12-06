@@ -60,7 +60,12 @@ class Buttons:
         self.buttons_area = document.querySelector(id_name)
         self.buttons = []
         
-    def make_card(self, cards: list[Card], func_name: str = "game.run", disable: list[bool] = None):
+    def make_card(
+            self, 
+            cards: list[Card], 
+            func_name: str = "game.run", 
+            disable: list[bool] = None
+        ) -> None:
         """
         カードの画像をボタンとして作成する
         
