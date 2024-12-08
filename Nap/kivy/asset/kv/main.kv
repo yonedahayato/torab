@@ -7,11 +7,17 @@
     pos: 0, 100
     group:'radio_box'
 
+<HandGrid>:
+    pos: root.width * 0.5, - root.height * 0.55
+    size_hint: 0.5, 0.5
+
 <CharactorImage>:
     source: ''
     size_hint_y: None
     width: 100
     pos: -500, 1500
+    # pos_hint: {'x': 0.7, 'y': 0.6}
+    # size_hint: 0.5, 0.5
 
 <GameSelectButton>:
     # size_hint_y: None
@@ -23,26 +29,21 @@
 <ProgressButton>:
     text: "next"
     size_hint: 0.1, 0.1
-    pos_hint: {'x': 0.7, 'y': 0.75}
+    pos_hint: {'x': 0.7, 'y': 0.3}
 
 <GameScreen>:
-    charactor_image: charactor_image
     info_area: info_area
     message_area: message_area
     talk_area: talk_area
     progress_button: progress_button
 
     canvas.before:
-        # 背景を白に
+        # 背景を緑に
         Color:
-            rgba: 1, 1, 1, 1
+            rgba: 0, 0.502, 0, 1
         Rectangle:
             pos: self.pos
             size: self.size
-
-    CharactorImage:
-        id: charactor_image
-        centter: self.center
 
     Label:
         pos_hint: {'center_x': 0.5, 'center_y': 0.4}
