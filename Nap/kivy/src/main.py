@@ -46,13 +46,19 @@ Builder.load_file(str(KV_DIR / "main.kv"))
 RESOURCE_DIR = BASE_DIR / "asset/image"
 CARD_IMAGE_DIR = RESOURCE_DIR / "cards/png"
 
-def read_image(image_path: str) -> np.ndarray:
+def read_image(
+        image_path: str,
+        is_white_padding: bool = True,
+        ) -> np.ndarray:
     """
     png の画像を opencv で読み込み、背景を白塗りする
+
+    Args:
+        image_path (str): 画像のパス
     """
     image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 
-    if image.shape[2] == 4:
+    if image.shape[2] == 4 and is_white_padding:
         # 透過部分の確認
         index = np.where(image[:, :, 3] == 0)
 
@@ -64,6 +70,30 @@ def read_image(image_path: str) -> np.ndarray:
 
     return image
 
+def draw_mark(mark: str, card_image: np.ndarray):
+    """
+    カードにマークの情報を記載
+    """
+    if mark == "♣":
+        mark_image_path = CARD_IMAGE_DIR / "club.png"
+    elif mark == "♠":
+        mark_image_path = CARD_IMAGE_DIR / "club.png"
+    elif mark == "♥":
+        mark_image_path = CARD_IMAGE_DIR / "club.png"
+    elif mark == "♦":
+        mark_image_path = CARD_IMAGE_DIR / "club.png"
+    else:
+        return card_image
+
+    mark_image = read_image(mark_image_path, is_white_padding=False)
+    mark_image = cv2.resize(mark_image, (90, 90))
+
+    x1, y1, x2, y2 = 0, 0, mark_image.shape[1], mark_image.shape[0]
+    card_image[y1:y2, x1:x2] = card_image[y1:y2, x1:x2] * (1 - mark_image[:, :, 3:] / 255) + \
+                mark_image[:, :, :3] * (mark_image[:, :, 3:] / 255)
+
+    return card_image
+
 class CardButton(ToggleButtonBehavior, Image):
     """
     カードのボタン
@@ -72,6 +102,7 @@ class CardButton(ToggleButtonBehavior, Image):
         self.is_available = kwargs.pop("is_available", None)
         self.run_func = kwargs.pop("run_func", None)
         self.card_id = kwargs.pop("card_id", None)
+        self.text = kwargs.pop("text", None)
 
         super().__init__(**kwargs)
         self.souce = kwargs["source"]
@@ -100,8 +131,14 @@ class CardButton(ToggleButtonBehavior, Image):
         if off:
             image = cv2.rectangle(image, (2, 2), (image.shape[1]-2, image.shape[0]-2), (255, 255, 0), 10)
 
+        if self.text:
+            # テキストの情報があれば、手札のマークなどの情報を表示する
+            image = draw_mark(self.text, image)
+
         # 上下反転
         buf = cv2.flip(image, 0)
+
+        # opencv は bgr 構造のため、それを明示
         image_texture = Texture.create(size=(image.shape[1], image.shape[0]), colorfmt='bgr')
         image_texture.blit_buffer(buf.tostring(), colorfmt='bgr', bufferfmt='ubyte')
 
@@ -171,7 +208,7 @@ class GameScreen(Screen):
         self.charactor_images = []
 
         self.start()
-        self.hands_box = None
+        self.hands_areas = {}
 
     def set_image_path(self,
                        object: ObjectProperty,
@@ -209,15 +246,67 @@ class GameScreen(Screen):
             self.charactor_images.append(self.charactor_image)
             self.add_widget(self.charactor_image)
 
-    def set_hands(self, 
+    def set_hands_area(self, 
+                       players: list[Player],
+                       can_play: bool,
+                       ) -> None:
+        """
+        各プレイヤーの手札を表示する場所を決定し、表示する
+
+        Args:
+            players (list[Player]): プレイヤーの集合
+            can_play (bool):
+                True: カードを選択する場面 / False: カードを選択する場面でない
+
+        Note:
+            参加しているプレイヤーの数によって、cpu のプレイヤーの場所は変わる
+        """
+        for player in players:
+            hand_area = self.hands_areas.get(str(player), None)
+
+            if hand_area:
+                # すでに手札が表示されているなら削除する
+                self.remove_widget(hand_area)
+
+            if player.cpu:
+                # cpu の手札を表示する
+                hands = player.show_hand()
+                # pos = [self.width * 0.5, - self.height * 0.3]
+                # pos = [self.width * 0.5, - self.height * 0.55]
+                pos_hint = {'x': 0.37, 'y': 0.67}
+                size_hint = [0.3, 0.3]
+            else:
+                hands = player.cards
+                # pos = [self.root.width * 0.5, - self.root.height * 0.55]
+                # pos = [self.width * 0.5, - self.height * 0.55]
+                pos_hint = {'x': 0.25, 'y': -0.25}
+                size_hint = [0.5, 0.5]
+
+            # 表示するエリアを決定
+            hands_area = HandGrid(cols=len(hands), spacing=10, size_hint=size_hint, pos_hint=pos_hint)
+            hands_area.bind(minimum_height=hands_area.setter('height'))
+            # todo: ハンドを表示する位置やサイズを決定する
+
+            hands_area = self.set_each_hands(hands, hands_area, can_play=can_play, is_cpu=player.cpu)
+
+            self.add_widget(hands_area)
+            self.hands_areas[str(player)] = hands_area
+
+    def set_each_hands(self, 
                   hands: list, 
+                  hands_area: HandGrid,
+                  is_cpu: bool,
                   can_play: bool = False,
-                  disables: list[bool] = None):
+                  disables: list[bool] = None,
+                  ) -> None:
         """
         手札のカードを表示する
 
         Args:
             hands (list): ハンドのカード
+            hands_area: ハンドを表示するエリア
+            is_cpu (bool): 表示するハンドがcpuのものかどうか
+
             can_play (bool): 下の1の状況下どうか
                 True: カードを選択する場面 / False: カードを選択する場面でない
             disables (list[bool]): カードごとに、提出できるカードかどうかが格納されたリスト
@@ -227,27 +316,43 @@ class GameScreen(Screen):
                 1. カードは配ってあるが、ゲームが始まっていないなどの、カードを選択する場面でない
                 2. カードを選択する場面であるが、提出できないカードである
         """
-        if self.hands_box:
-            # すでに手札があるなが削除する
-            self.remove_widget(self.hands_box)
 
-        self.hands_box = HandGrid(cols=len(hands), spacing=10, size_hint_y=None)
-        self.hands_box.bind(minimum_height=self.hands_box.setter('height'))
-
+        # None の場合は、すべて、実行可能な状態にする
         if disables is None:
             disables = [True] * len(hands)
 
         for card_id, (card_tmp, disable) in enumerate(zip(hands, disables, strict=True)):
-            # self.card_button = self.set_card(self.card_button, str(card_tmp.image_path.name))
-            is_available = can_play and disable
-            card_button = CardButton(source=str(CARD_IMAGE_DIR / card_tmp.image_path.name), 
-                                     is_available=is_available, 
-                                     run_func=self.run,
-                                     card_id = card_id)
-            card_button.size = [300, 300]
-            self.hands_box.add_widget(card_button)
+            
+            if is_cpu:
+                if card_tmp != "?":
+                    text = card_tmp.split("-")[0]
+                else:
+                    text = None
+                # cpu のカードを表示
+                card_button = CardButton(
+                    source=str(CARD_IMAGE_DIR / "back.png"),
+                    is_available=False,
+                    run_func=None,
+                    card_id=card_id,
+                    text=text
+                )
+                card_button.size = [300, 300]
+            else:
+                # ユーザのカードを表示
 
-        self.add_widget(self.hands_box)
+                # ボタンを実行可能な状態にするかどうか
+                is_available = (can_play and disable)
+
+                # ユーザのカードを表示
+                card_button = CardButton(source=str(CARD_IMAGE_DIR / card_tmp.image_path.name), 
+                                        is_available=is_available,
+                                        run_func=self.run,
+                                        card_id=card_id)
+                card_button.size = [300, 300]
+
+            hands_area.add_widget(card_button)
+
+        return hands_area
 
     def set_info(self, field: Field):
         """
@@ -297,11 +402,11 @@ class GameScreen(Screen):
         cpus = [p for p in field.players if p.cpu]
         user = [p for p in field.players if not p.cpu][0]
 
-        # cpu は、キャラクターを表示する
+        # cpu のキャラクターを表示する
         self.set_charactors(cpus)
 
-        # ユーザは、カードを表示する
-        self.set_hands(user.cards, can_play)
+        # cpu と ユーザのカードを表示
+        self.set_hands_area(field.players, can_play)
 
         # 山札、捨て札、場、切り札などの情報を表示する
         self.set_info(field)

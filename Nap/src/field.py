@@ -86,33 +86,49 @@ class Field(BasePicture):
                     プレイヤーにカードを見せてもらう
         """
 
+        # tab の文字列の準備
         token_tab1 = f"{pad_str}\t"
         token_tab2 = f"{pad_str}\t\t"
         token_tab3 = f"{pad_str}\t\t\t"
         token_tab4 = f"{pad_str}\t\t\t\t"
 
+        # フィールドを表現する文字列の準備
         field_str = "\n"
         field_str += pad_str * width
         field_str += f"\n{pad_str}\n"
 
+        # widow の表示
         if len(self.widow) != 0:
             field_str += f"{token_tab3}ウィドー: {len(self.widow)}\n"
+        
+        # 山札、捨て札の表示
         field_str += f"{token_tab3}山札: {len(self.deck)}\n"
         field_str += f"{token_tab3}捨て札: {len(self.trash)}\n"
+
+        # 出されているカードの件数の表示
         if len(self.cards) == 0:
             field_str += f"{token_tab3}場: {len(self.cards)}\n"
         else:
             field_str += f"{token_tab3}場:\n"
+
+            # 場に出されてカードの情報
             for n, c in self.cards.items():
                 field_str += f"{token_tab4}{n}: {str(c)}\n"
+
+        # 切り札の表示
         if self.trump:
             field_str += f"{token_tab3}切り札: {self.trump.mark}\n"
+
+        # 台札の表示
         if self.is_use_lead and self.lead is not None:
             field_str += f"{token_tab3}台札: {self.lead.mark}\n"
 
+        # プレイヤーの情報の表示
         field_str += f"{pad_str}\n"
         field_str += f"{token_tab1}Players\n"
         for player in self.players:
+
+            # 表示するカードの情報を取得する
             hand = player.show_hand()
             if self.declaration != "" and (str(self.declarer) == str(player)):
                 field_str += f"{token_tab2}{player} [{self.declaration}] ({player.point}): {[str(card) for card in hand]}\n"
