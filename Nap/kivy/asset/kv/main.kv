@@ -32,7 +32,6 @@
     pos_hint: {'x': 0.7, 'y': 0.3}
 
 <GameScreen>:
-    info_area: info_area
     message_area: message_area
     talk_area: talk_area
     progress_button: progress_button
@@ -46,15 +45,7 @@
             size: self.size
 
     Label:
-        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-        text: ""
-        color: 0,0,0,1
-        # font_size: root.width * app.message_text_size_rate
-        font_size: 70
-        id: info_area
-
-    Label:
-        pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+        pos_hint: {'center_x': 0.5, 'center_y': 0.45}
         text: ""
         color: 0,0,0,1
         # font_size: root.width * app.message_text_size_rate
@@ -62,7 +53,7 @@
         id: message_area
 
     Label:
-        pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+        pos_hint: {'center_x': 0.5, 'center_y': 0.75}
         text: ""
         color: 0,0,0,1
         # font_size: root.width * app.message_text_size_rate

@@ -264,7 +264,7 @@ class VSTakeshiGUIGame(GUIGameBase, SimpleNapVSTakeshi):
                  make_go_button: Callable,
                  message_func: Callable,
                  set_field_func: Callable,
-                 set_talk_func: Callable
+                 set_talk_func: Callable,
                  ):
         SimpleNapVSTakeshi.__init__(self, player_how_to_choose = "set")
         GUIGameBase.__init__(self, delete_go_button, make_go_button, message_func, 

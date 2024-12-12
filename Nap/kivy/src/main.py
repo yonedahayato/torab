@@ -70,9 +70,16 @@ def read_image(
 
     return image
 
-def draw_mark(mark: str, card_image: np.ndarray):
+def draw_mark(mark: str, card_image: np.ndarray) -> np.ndarray:
     """
     カードにマークの情報を記載
+
+    Args:
+        mark (str): 表示するマーク
+        card_image (np.ndarray): 表示するカードの画像
+
+    Returns:
+        np.ndarray: 記載したカードの画像
     """
     if mark == "♣":
         mark_image_path = CARD_IMAGE_DIR / "club.png"
@@ -86,11 +93,28 @@ def draw_mark(mark: str, card_image: np.ndarray):
         return card_image
 
     mark_image = read_image(mark_image_path, is_white_padding=False)
-    mark_image = cv2.resize(mark_image, (90, 90))
+    mark_image_size = min(int(card_image.shape[0] * 0.8), int(card_image.shape[1] * 0.8))
+    mark_image = cv2.resize(mark_image, (mark_image_size, mark_image_size))
 
-    x1, y1, x2, y2 = 0, 0, mark_image.shape[1], mark_image.shape[0]
+    offset = int(card_image.shape[0] * 0.07)
+    x1, y1, x2, y2 = offset, offset, mark_image.shape[1] + offset, mark_image.shape[0] + offset
     card_image[y1:y2, x1:x2] = card_image[y1:y2, x1:x2] * (1 - mark_image[:, :, 3:] / 255) + \
                 mark_image[:, :, :3] * (mark_image[:, :, 3:] / 255)
+
+    return card_image
+
+def draw_number(num: int, card_image: np.ndarray) -> np.ndarray:
+    """
+    カードに数字の情報を記載
+
+    Args:
+        num (int): 表示するマーク
+        card_image (np.ndarray): 表示するカードの画像
+
+    Returns:
+        np.ndarray: 記載したカードの画像
+    """
+    card_image = cv2.putText(card_image, str(num), (25, 130), cv2.FONT_HERSHEY_DUPLEX, 3.0, (0, 0, 0), 4)
 
     return card_image
 
@@ -135,12 +159,16 @@ class CardButton(ToggleButtonBehavior, Image):
             # テキストの情報があれば、手札のマークなどの情報を表示する
             image = draw_mark(self.text, image)
 
+        if isinstance(self.text, int):
+            image = draw_number(self.text, image)
+
         # 上下反転
         buf = cv2.flip(image, 0)
 
         # opencv は bgr 構造のため、それを明示
         image_texture = Texture.create(size=(image.shape[1], image.shape[0]), colorfmt='bgr')
-        image_texture.blit_buffer(buf.tostring(), colorfmt='bgr', bufferfmt='ubyte')
+        # image_texture.blit_buffer(buf.tostring(), colorfmt='bgr', bufferfmt='ubyte')
+        image_texture.blit_buffer(buf.tobytes(), colorfmt='bgr', bufferfmt='ubyte')
 
         return image_texture
 
@@ -197,7 +225,6 @@ class GameScreen(Screen):
     """
     ゲームの進行について
     """
-    info_area = ObjectProperty(None)
     message_area = ObjectProperty(None)
     talk_area = ObjectProperty(None)
     progress_button = ProgressButton()
@@ -209,6 +236,8 @@ class GameScreen(Screen):
 
         self.start()
         self.hands_areas = {}
+        self.field_cards = {}
+        self.info_area = None
 
     def set_image_path(self,
                        object: ObjectProperty,
@@ -357,26 +386,90 @@ class GameScreen(Screen):
     def set_info(self, field: Field):
         """
         フィールドの情報を表示する
+
+        Args:
+            field (Field): フィールド
         """
-        targets = {
-            "山札" : len(field.deck), 
-            "捨て札" : len(field.trash),
-            "場" : len(field.cards),
-            }
-        
-        if field._trump:
-            targets["切り札"] = field.trump.mark
 
-        output_text = ""
-        for key, value in targets.items():
-            if key == "場" and value != 0:
-                output_text += "場 : \n"
-                for player, card in field.cards.items():
-                    output_text += f"    {player}: {str(card)}\n"
+        if self.info_area is not None:
+            self.remove_widget(self.info_area)
+
+        pos_hint = {'x': 0.2, 'y': 0.3}
+        size_hint = [0.3, 0.3]
+        self.info_area = HandGrid(cols=3, spacing=10, size_hint=size_hint, pos_hint=pos_hint)
+
+        # 山札の表示
+        deck = CardButton(
+            source=str(CARD_IMAGE_DIR / "back.png"),
+            is_available=False,
+            run_func=None,
+            card_id=0,
+            text=len(field.deck)
+        )
+        deck.size = [200, 200]
+        self.info_area.add_widget(deck)
+
+        # 捨て札の表示
+        trash = CardButton(
+            source=str(CARD_IMAGE_DIR / "trash.png"),
+            is_available=False,
+            run_func=None,
+            card_id=0,
+            text=len(field.trash)
+        )
+        trash.size = [150, 150]
+        self.info_area.add_widget(trash)
+
+        trump = CardButton(
+            source=str(CARD_IMAGE_DIR / "blue_back.png"),
+            is_available=False,
+            run_func=None,
+            card_id=0,
+            text=field.trump.mark
+        )
+        trump.size = [200, 200]
+        self.info_area.add_widget(trump)
+
+        self.add_widget(self.info_area)
+
+    def set_field_cards(self, field: Field) -> None:
+        """
+        出したカードを表示する
+
+        Args:
+            field (Field): フィールド
+        """
+        self.delete_field_cards()
+
+        for card_id, player in enumerate(field.players):
+            card = field.cards.get(str(player), None)
+
+            if card is None:
+                continue
+
+            if player.cpu:
+                pos_hint = {'x': 0.45, 'y': 0.6}
             else:
-                output_text += f"{key} : {value}\n"
+                pos_hint = {'x': 0.45, 'y': 0.3}
 
-        self.info_area.text = output_text
+            card_button = CardButton(
+                source=str(CARD_IMAGE_DIR / card.image_path.name),
+                is_available=False,
+                run_func=None,
+                card_id=card_id,
+                text=None,
+            )
+            card_button.pos_hint = pos_hint
+            card_button.size_hint = [0.1, 0.1]
+            self.field_cards[str(player)] = card_button
+            self.add_widget(card_button)
+
+    def delete_field_cards(self):
+        """
+        出したカードを削除する
+        """
+        for card in self.field_cards.values():
+            self.remove_widget(card)
 
     def set_message(self, message: str, charactor_name: str = None) -> None:
         """
@@ -410,6 +503,13 @@ class GameScreen(Screen):
 
         # 山札、捨て札、場、切り札などの情報を表示する
         self.set_info(field)
+
+        if len(field.cards) == 0:
+            # 場のカードがなければ、表示されているカードを削除する
+            self.delete_field_cards()
+        else:
+            # 出したカードを表示する
+            self.set_field_cards(field)
 
         # message を表示する
         self.set_message(field.message_log[-1])
@@ -452,9 +552,13 @@ class GameScreen(Screen):
         self.talk_area.text = ""
         self.info_area.text = ""
 
+        # 画面上にある不要なものを削除
         for charactor_image in self.charactor_images:
             self.remove_widget(charactor_image)
+
+        self.delete_field_cards()
         self.delete_go_button()
+        self.remove_widget(self.info_area)
 
         self.start()
         # self.describe_area.removeChild(self.ul_tag)
@@ -475,12 +579,13 @@ class GameScreen(Screen):
             raise Exception("ゲームの選択に失敗")
 
         # ゲーム決定
-        self.game = game_class(self.delete_go_button, 
-                               self.make_go_button,
-                               self.set_message,
-                               self.set_field,
-                               self.set_talk,
-                               )
+        self.game = game_class(
+            self.delete_go_button, 
+            self.make_go_button,
+            self.set_message,
+            self.set_field,
+            self.set_talk,
+            )
         self.set_field(self.game.field)
 
         # ゲームのタイトルと説明を表示
@@ -508,7 +613,6 @@ class GameScreen(Screen):
         ゲームを実行する        
         """
         self.game.run(card_id)
-        # self.feild_area.textContent = str(self.game.field)
 
         if self.game.is_finish:
             self.restart()
